@@ -41,12 +41,15 @@ one small, deterministic, fully inspectable function:
   zone **plus `drivers`** — exactly which signals drove the decision and by how
   much (`contribution` and `share`). No LLM, no clock, no randomness. Covered by
   unit tests (`src/lib/zone.test.ts`): steady, drifting-to-amber, and red cases,
-  plus windowing and explainability. Run with `npm test`.
+  plus windowing and explainability. Run with `npm test`. **`/dashboard` renders
+  this engine** — the status card, 7-day trend and "what I'm watching" list all
+  come from its output (`src/lib/dashboard.ts` turns that output into calm,
+  template-based copy — still no LLM).
 - **`src/lib/rules-engine.ts`** — `evaluateZone()`. The simpler, original engine:
   count how many signs are present, compare against `baseline.amberAt/redAt`.
-  Still pure and inspectable; currently what `/dashboard` renders.
-- The dashboard renders the reasons in full (`/dashboard`) — nothing about the
-  decision is hidden.
+  Still pure and inspectable; kept for reference.
+- The dashboard shows the per-signal reasons in full (`/dashboard`) — nothing
+  about the decision is hidden.
 - **`src/lib/messaging.ts`** — `phraseMessage()` is the **only** place an LLM is
   ever permitted, and it may rephrase the human-facing `message` string **and
   nothing else**. It contains a runtime guard that throws if the zone is ever
@@ -100,7 +103,7 @@ npm test           # vitest run (unit tests for the zone engine)
 | `/`            | Landing page — the three principles, calm entry point.                  | built |
 | `/onboarding`  | A few gentle steps, done **when well**: pick early-warning signs from a starter library and add custom ones, set a baseline + name the three zones in your own words, write staying-well actions, add a trusted circle, and a crisis line. Saves to the local store. | **built** |
 | `/checkin`     | A ~30-second daily check-in: sleep (good/okay/poor), mood (1–5), and a quick yes/no on your own early-warning signs. Saves a dated `CheckIn` to the store (re-checking the same day updates that day's record). | built |
-| `/dashboard`   | The zone (in your words) + **why** — full, inspectable reasons from the rules engine. | built |
+| `/dashboard`   | A calm **status card** (zone in your words + specific, gentle copy), a **7-day trend**, and a **"what I'm watching"** signal list — all pulled from the `computeZone` engine. Green reassures; amber is gentle and specific; red surfaces support. | built |
 | `/plan`        | The whole plan mirrored back, plus **export / erase my data** controls. | built |
 
 ### Onboarding flow
@@ -170,7 +173,8 @@ anchor/
         ├── starter-library.ts  # small starter sign library + default zone words + crisis line
         ├── zone.ts             # drift-over-window zone engine — pure, explainable, no LLM
         ├── zone.test.ts        # unit tests: steady / amber / red + windowing + drivers
-        ├── rules-engine.ts     # simpler count-based zone engine (currently powers /dashboard)
+        ├── dashboard.ts        # turns zone-engine output into calm copy + 7-day trend (no LLM)
+        ├── rules-engine.ts     # simpler count-based zone engine (kept for reference)
         ├── messaging.ts        # the ONLY place an LLM may touch — wording only
         ├── store.ts            # local (localStorage) store; swappable for Supabase later
         └── useProfile.ts       # client hook to read the saved profile after hydration

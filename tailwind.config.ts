@@ -14,8 +14,9 @@ import type { Config } from "tailwindcss";
  */
 const config: Config = {
   content: [
-    "./src/app/**/*.{ts,tsx}",
-    "./src/components/**/*.{ts,tsx}",
+    // Scan all of src so class strings declared in design tokens and lib
+    // helpers (e.g. ZONE_STYLES) are not purged.
+    "./src/**/*.{ts,tsx}",
   ],
   theme: {
     extend: {
