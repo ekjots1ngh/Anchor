@@ -150,6 +150,33 @@ whole exercise as writing a note to your future self.
 Steps: **Welcome → Your signs → Your baseline → What helps → Your circle →
 Crisis line → Review**.
 
+## Deploying to Vercel
+
+Next.js App Router deploys to Vercel with **zero config** (no `vercel.json` needed).
+
+1. **Import** `ekjots1ngh/Anchor` at [vercel.com/new](https://vercel.com/new) — the
+   framework auto-detects as Next.js.
+2. **Set the env var** (Settings → Environment Variables, for Production + Preview):
+   `ANTHROPIC_API_KEY = <your key>`. The `/api/message` route reads it **server-side
+   only** (it runs as a Node serverless function — `runtime = "nodejs"`), so the key
+   is never exposed to the browser. Optionally set `NEXT_PUBLIC_DEMO_MODE=1` to keep
+   the demo panel on the deployed build.
+3. **Pick the production branch** (Settings → Git) — either set it to the working
+   branch, or merge to `main` and deploy that. Then **Deploy**.
+4. **Env var changes require a redeploy** to take effect.
+
+Verify the API route in production once deployed:
+
+```bash
+curl -s -X POST https://<your-url>/api/message \
+  -H 'content-type: application/json' \
+  -d '{"zone":"amber","drivers":[{"label":"Sleep","drift":0.4}],"stayingWellActions":["A short walk"]}'
+# → {"message":"…"}   (a 503 "messaging is not configured" means the key isn't set for this env)
+```
+
+If the key is unset, the app still works — the dashboard falls back to its
+deterministic copy instead of the warm LLM note.
+
 ## Demo mode (dev/stage only)
 
 A floating **Demo** panel (`src/components/DemoPanel.tsx`) appears in `npm run dev`
