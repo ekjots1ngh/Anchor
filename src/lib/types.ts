@@ -156,9 +156,23 @@ export interface CheckInAnswer {
   note?: string;
 }
 
+/** How the person slept — a quick three-way, not a sleep diary. */
+export type SleepQuality = "good" | "okay" | "poor";
+
+/** Mood on a gentle 1–5 scale (1 = very low, 5 = very good). */
+export type MoodRating = 1 | 2 | 3 | 4 | 5;
+
+/**
+ * One daily check-in. Designed to take ~30 seconds: how you slept, a mood
+ * number, and a quick yes/no on your own early-warning signs. Sleep and mood
+ * are recorded for the person's own reflection/trends — the ZONE itself still
+ * comes only from the signs, via the rules engine.
+ */
 export interface CheckIn {
   id: string;
   createdAt: string; // ISO timestamp
+  sleep: SleepQuality;
+  mood: MoodRating;
   answers: CheckInAnswer[];
 }
 

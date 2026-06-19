@@ -93,7 +93,7 @@ npm run typecheck  # tsc --noEmit
 | -------------- | ----------------------------------------------------------------------- | ----- |
 | `/`            | Landing page — the three principles, calm entry point.                  | built |
 | `/onboarding`  | A few gentle steps, done **when well**: pick early-warning signs from a starter library and add custom ones, set a baseline + name the three zones in your own words, write staying-well actions, add a trusted circle, and a crisis line. Saves to the local store. | **built** |
-| `/checkin`     | A quick "which of my signs are around today?" check-in; runs the rules engine. | built (light) |
+| `/checkin`     | A ~30-second daily check-in: sleep (good/okay/poor), mood (1–5), and a quick yes/no on your own early-warning signs. Saves a dated `CheckIn` to the store (re-checking the same day updates that day's record). | built |
 | `/dashboard`   | The zone (in your words) + **why** — full, inspectable reasons from the rules engine. | built |
 | `/plan`        | The whole plan mirrored back, plus **export / erase my data** controls. | built |
 
