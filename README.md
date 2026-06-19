@@ -34,13 +34,18 @@ the people on their plan.
 Which zone a check-in falls into (`steady` vs `worth a check-in`) is decided by
 one small, deterministic, fully inspectable function:
 
-- **`src/lib/rules-engine.ts`** — `evaluateZone()`. Pure function, no I/O, no
-  network, no model. Same inputs → same zone, forever. The whole rule is small
-  enough to read aloud: count how many of the person's own early-warning signs
-  are present, then compare against the two thresholds the person set while
-  well (`baseline.amberAt`, `baseline.redAt`). It returns the zone **plus every
-  reason behind it**.
-- The dashboard renders those reasons in full (`/dashboard`) — nothing about the
+- **`src/lib/zone.ts`** — `computeZone()`. The richer, pure, well-tested engine.
+  Given the person's baseline and recent check-ins, it measures how far each
+  *signal* has **drifted** from baseline over a rolling window, weights **sleep
+  and social withdrawal the most heavily** (strong early signs), and returns the
+  zone **plus `drivers`** — exactly which signals drove the decision and by how
+  much (`contribution` and `share`). No LLM, no clock, no randomness. Covered by
+  unit tests (`src/lib/zone.test.ts`): steady, drifting-to-amber, and red cases,
+  plus windowing and explainability. Run with `npm test`.
+- **`src/lib/rules-engine.ts`** — `evaluateZone()`. The simpler, original engine:
+  count how many signs are present, compare against `baseline.amberAt/redAt`.
+  Still pure and inspectable; currently what `/dashboard` renders.
+- The dashboard renders the reasons in full (`/dashboard`) — nothing about the
   decision is hidden.
 - **`src/lib/messaging.ts`** — `phraseMessage()` is the **only** place an LLM is
   ever permitted, and it may rephrase the human-facing `message` string **and
@@ -85,6 +90,7 @@ Other scripts:
 npm run build      # production build
 npm run lint       # next lint
 npm run typecheck  # tsc --noEmit
+npm test           # vitest run (unit tests for the zone engine)
 ```
 
 ## Routes
@@ -162,11 +168,16 @@ anchor/
     └── lib/
         ├── types.ts            # core domain types — no "diagnosis"/"severity" anywhere
         ├── starter-library.ts  # small starter sign library + default zone words + crisis line
-        ├── rules-engine.ts     # THE zone decision. Deterministic. No LLM. Ever.
+        ├── zone.ts             # drift-over-window zone engine — pure, explainable, no LLM
+        ├── zone.test.ts        # unit tests: steady / amber / red + windowing + drivers
+        ├── rules-engine.ts     # simpler count-based zone engine (currently powers /dashboard)
         ├── messaging.ts        # the ONLY place an LLM may touch — wording only
         ├── store.ts            # local (localStorage) store; swappable for Supabase later
         └── useProfile.ts       # client hook to read the saved profile after hydration
 ```
+
+Tests use **Vitest** (`vitest.config.ts`); `@/…` path aliases resolve via the
+config's `resolve.alias`.
 
 ## Core domain types (`src/lib/types.ts`)
 
