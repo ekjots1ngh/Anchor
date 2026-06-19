@@ -3,12 +3,14 @@ import type { Config } from "tailwindcss";
 /**
  * Anchor design tokens.
  *
- * Calm by design. Two and only two "zone" colours:
- *   - steady  → muted sage-green  ("things look steady")
- *   - checkin → warm amber        ("might be worth a check-in")
+ * Calm by design. Three "zone" colours, none of them alarming:
+ *   - steady  → muted sage-green  (zone "green":  the person is anchored)
+ *   - checkin → warm amber        (zone "amber":  worth a check-in)
+ *   - crisis  → muted clay        (zone "red":    real support, now)
  *
- * There is deliberately NO red / alarm colour. Anchor never shouts at a
- * person about their own mental health. See README → "Design principles".
+ * The "red" zone is a dignified, muted clay/terracotta — deliberately NOT an
+ * emergency red. Anchor never shouts at a person about their own mental
+ * health. See README → "Design principles".
  */
 const config: Config = {
   content: [
@@ -50,6 +52,19 @@ const config: Config = {
           500: "#bb8038",
           600: "#98662c",
           700: "#755024",
+        },
+
+        // Zone: CRISIS / RED — muted clay/terracotta. Serious and warm, NOT
+        // an alarm red. This is the "real support, now" zone, kept dignified.
+        crisis: {
+          50: "#f7efea",
+          100: "#ecdacf",
+          200: "#dcb8a6",
+          300: "#c9947c",
+          400: "#b5745a", // primary clay
+          500: "#9c5e47",
+          600: "#7e4b39",
+          700: "#613a2d",
         },
       },
       borderRadius: {

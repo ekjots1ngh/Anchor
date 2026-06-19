@@ -1,52 +1,45 @@
+import type { ZoneId } from "@/lib/types";
+
 /**
  * Design tokens, in code.
  *
- * These mirror the Tailwind theme (tailwind.config.ts) and exist so that
- * non-CSS code (e.g. the rules engine's presentation layer) can refer to
- * zones by a single source of truth instead of hard-coding hex values.
+ * These mirror the Tailwind theme (tailwind.config.ts) and give non-CSS code
+ * a single source of truth for how each zone is presented.
  *
- * Two zones. No red. See README → "Design principles".
+ * Three zones — and NO alarm colour. "red" is rendered as a muted, dignified
+ * clay/terracotta, never an emergency red. Anchor is calm by design.
+ * See README → "Design principles".
  */
 
-export type Zone = "steady" | "checkin";
-
-export interface ZoneToken {
-  id: Zone;
-  /** Short, human label shown in the UI. */
-  label: string;
-  /** One calm sentence describing the zone. */
-  description: string;
-  /** Tailwind utility fragments, so components stay declarative. */
-  classes: {
-    badgeBg: string;
-    badgeText: string;
-    accentBar: string;
-    softBg: string;
-  };
+export interface ZoneStyle {
+  badgeBg: string;
+  badgeText: string;
+  dot: string;
+  softBg: string;
+  ring: string;
 }
 
-export const ZONES: Record<Zone, ZoneToken> = {
-  steady: {
-    id: "steady",
-    label: "Steady",
-    description: "Things look steady today.",
-    classes: {
-      badgeBg: "bg-steady-100",
-      badgeText: "text-steady-700",
-      accentBar: "bg-steady-400",
-      softBg: "bg-steady-50",
-    },
+export const ZONE_STYLES: Record<ZoneId, ZoneStyle> = {
+  green: {
+    badgeBg: "bg-steady-100",
+    badgeText: "text-steady-700",
+    dot: "bg-steady-400",
+    softBg: "bg-steady-50",
+    ring: "ring-steady-200",
   },
-  checkin: {
-    id: "checkin",
-    label: "Worth a check-in",
-    description: "A few of your early-warning signs are showing. Might be worth reaching out.",
-    classes: {
-      badgeBg: "bg-checkin-100",
-      badgeText: "text-checkin-700",
-      accentBar: "bg-checkin-400",
-      softBg: "bg-checkin-50",
-    },
+  amber: {
+    badgeBg: "bg-checkin-100",
+    badgeText: "text-checkin-700",
+    dot: "bg-checkin-400",
+    softBg: "bg-checkin-50",
+    ring: "ring-checkin-200",
+  },
+  red: {
+    badgeBg: "bg-crisis-100",
+    badgeText: "text-crisis-700",
+    dot: "bg-crisis-400",
+    softBg: "bg-crisis-50",
+    ring: "ring-crisis-200",
   },
 };
 

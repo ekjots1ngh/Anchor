@@ -1,74 +1,73 @@
 import type { Profile } from "@/lib/types";
+import { DEFAULT_CRISIS_LINE, DEFAULT_ZONE_WORDS } from "@/lib/starter-library";
 
 /**
- * Local data store (scaffold).
+ * Local data store (prototype).
  *
- * Principle (3): the person owns their data. For this prototype we keep
- * everything in a single local JSON file under /data, which is gitignored
- * so a person's signs and notes never get committed. The interface below
- * is deliberately storage-agnostic so we can swap this implementation for
- * Supabase later WITHOUT touching the rest of the app.
- *
- * NOTE: This is a placeholder. Reads/writes are not wired into the routes
- * yet — we're scaffolding. The shape is what matters here.
+ * Principle (3): the person owns their data. For now everything lives in the
+ * browser's localStorage — on the person's own device, never sent anywhere.
+ * The API below is deliberately storage-agnostic so we can swap in Supabase
+ * (or an encrypted local JSON file) later WITHOUT touching the rest of the
+ * app.
  */
 
-export interface ProfileStore {
-  get(id: string): Promise<Profile | null>;
-  save(profile: Profile): Promise<void>;
-  /** Hard delete — the person can erase their data at any time. */
-  remove(id: string): Promise<void>;
+const STORAGE_KEY = "anchor.profile.v1";
+
+const isBrowser = (): boolean => typeof window !== "undefined";
+
+/** A fresh, empty profile prefilled with gentle defaults the person edits. */
+export function createEmptyProfile(): Profile {
+  const now = new Date().toISOString();
+  return {
+    id: crypto.randomUUID(),
+    displayName: "",
+    createdAt: now,
+    onboardedAt: null,
+    signs: [],
+    zones: {
+      green: { id: "green", ...DEFAULT_ZONE_WORDS.green },
+      amber: { id: "amber", ...DEFAULT_ZONE_WORDS.amber },
+      red: { id: "red", ...DEFAULT_ZONE_WORDS.red },
+    },
+    baseline: {
+      description: "",
+      amberAt: 2,
+      redAt: 4,
+    },
+    stayingWellActions: [],
+    trustedContacts: [],
+    crisisPlan: {
+      crisisLineName: DEFAULT_CRISIS_LINE.name,
+      crisisLinePhone: DEFAULT_CRISIS_LINE.phone,
+    },
+    checkIns: [],
+  };
 }
 
-/**
- * A starter profile used to render the scaffolded screens with realistic,
- * person-authored content. Replace with real onboarding output later.
- */
-export const sampleProfile: Profile = {
-  id: "sample",
-  displayName: "Friend",
-  onboardedAt: null,
-  signs: [
-    { id: "sleep", label: "Sleeping less than 5 hours", weight: 2 },
-    { id: "withdraw", label: "Not replying to friends for a few days", weight: 1 },
-    { id: "noise", label: "Background noises feel like they mean something", weight: 3 },
-    { id: "skip-meds", label: "Skipping medication", weight: 3 },
-  ],
-  plan: {
-    whatHelps: [
-      "Getting to bed before midnight",
-      "A walk outside, even a short one",
-      "Texting Sam before things build up",
-    ],
-    contacts: [
-      { id: "sam", name: "Sam", relationship: "Close friend" },
-      { id: "cc", name: "Care coordinator", relationship: "Clinical team" },
-    ],
-    // People agree this threshold together. Here: any single weight-3 sign,
-    // or a combination, reaches "worth a check-in".
-    checkinThreshold: 3,
-  },
-  checkIns: [],
-};
-
-/**
- * In-memory placeholder implementation. Swappable for a JSON-file or
- * Supabase implementation behind the same interface.
- */
-class MemoryProfileStore implements ProfileStore {
-  private profiles = new Map<string, Profile>([[sampleProfile.id, sampleProfile]]);
-
-  async get(id: string): Promise<Profile | null> {
-    return this.profiles.get(id) ?? null;
-  }
-
-  async save(profile: Profile): Promise<void> {
-    this.profiles.set(profile.id, profile);
-  }
-
-  async remove(id: string): Promise<void> {
-    this.profiles.delete(id);
+/** Read the saved profile. Returns null on the server or if none is saved. */
+export function loadProfile(): Profile | null {
+  if (!isBrowser()) return null;
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    return raw ? (JSON.parse(raw) as Profile) : null;
+  } catch {
+    return null;
   }
 }
 
-export const profileStore: ProfileStore = new MemoryProfileStore();
+/** Persist the profile. No-op on the server. */
+export function saveProfile(profile: Profile): void {
+  if (!isBrowser()) return;
+  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
+}
+
+/** Erase everything. The person can do this at any time, no questions asked. */
+export function clearProfile(): void {
+  if (!isBrowser()) return;
+  window.localStorage.removeItem(STORAGE_KEY);
+}
+
+/** True once the person has completed onboarding. */
+export function hasOnboarded(): boolean {
+  return loadProfile()?.onboardedAt != null;
+}

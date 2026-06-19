@@ -35,9 +35,11 @@ Which zone a check-in falls into (`steady` vs `worth a check-in`) is decided by
 one small, deterministic, fully inspectable function:
 
 - **`src/lib/rules-engine.ts`** — `evaluateZone()`. Pure function, no I/O, no
-  network, no model. Same inputs → same zone, forever. It sums the weights of
-  the signs the person reported, compares against a threshold the person and
-  their care team agreed, and returns the zone **plus every reason behind it**.
+  network, no model. Same inputs → same zone, forever. The whole rule is small
+  enough to read aloud: count how many of the person's own early-warning signs
+  are present, then compare against the two thresholds the person set while
+  well (`baseline.amberAt`, `baseline.redAt`). It returns the zone **plus every
+  reason behind it**.
 - The dashboard renders those reasons in full (`/dashboard`) — nothing about the
   decision is hidden.
 - **`src/lib/messaging.ts`** — `phraseMessage()` is the **only** place an LLM is
@@ -50,12 +52,16 @@ one small, deterministic, fully inspectable function:
 
 ### 3. The person owns their data.
 
-- Data lives in a simple local store (`src/lib/store.ts`) behind a
-  storage-agnostic `ProfileStore` interface, so we can swap to Supabase later
-  without touching the rest of the app.
-- For now it's local JSON under `/data`, which is **gitignored** — a person's
-  signs and notes are never committed (`.gitignore`, `data/.gitkeep`).
-- The plan screen states the person can export or erase everything at any time.
+- Data lives in a simple local store (`src/lib/store.ts`) behind a small,
+  storage-agnostic API (`loadProfile` / `saveProfile` / `clearProfile`), so we
+  can swap to Supabase (or an encrypted local file) later without touching the
+  rest of the app.
+- For now it's the browser's `localStorage` — on the person's own device,
+  never sent anywhere. The `/data` folder remains reserved for a future local
+  JSON/file store and its `*.json` contents are **gitignored**
+  (`.gitignore`, `data/.gitkeep`).
+- The **plan screen** (`/plan`) lets the person **export** their whole profile
+  as JSON or **erase** it entirely, any time, no questions asked.
 
 ---
 
@@ -63,7 +69,7 @@ one small, deterministic, fully inspectable function:
 
 - **Next.js 14** (App Router) + **TypeScript**
 - **Tailwind CSS 3** for the design system
-- **Local JSON / in-memory store** for now (swappable for **Supabase** later)
+- **`localStorage`** local store for now (swappable for **Supabase** later)
 - Deploy target: **Vercel**
 
 ## Getting started
@@ -81,18 +87,26 @@ npm run lint       # next lint
 npm run typecheck  # tsc --noEmit
 ```
 
-## Routes (scaffolded)
+## Routes
 
-| Route          | Purpose                                                                 |
-| -------------- | ----------------------------------------------------------------------- |
-| `/`            | Landing page — the three principles, calm entry point.                  |
-| `/onboarding`  | Where a person defines their own signs, weights, contacts and plan.     |
-| `/checkin`     | A quick "which of my signs are around today?" check-in.                 |
-| `/dashboard`   | The zone + **why** (full, inspectable reasons from the rules engine).   |
-| `/plan`        | The person's staying-well plan and support contacts, mirrored back.     |
+| Route          | Purpose                                                                 | State |
+| -------------- | ----------------------------------------------------------------------- | ----- |
+| `/`            | Landing page — the three principles, calm entry point.                  | built |
+| `/onboarding`  | A few gentle steps, done **when well**: pick early-warning signs from a starter library and add custom ones, set a baseline + name the three zones in your own words, write staying-well actions, add a trusted circle, and a crisis line. Saves to the local store. | **built** |
+| `/checkin`     | A quick "which of my signs are around today?" check-in; runs the rules engine. | built (light) |
+| `/dashboard`   | The zone (in your words) + **why** — full, inspectable reasons from the rules engine. | built |
+| `/plan`        | The whole plan mirrored back, plus **export / erase my data** controls. | built |
 
-> These are **placeholder scaffolds** — no features are wired up yet beyond a
-> live demonstration of the rules engine on `/dashboard`.
+### Onboarding flow
+
+`/onboarding` is a single client component (`src/app/onboarding/page.tsx`) that
+holds a **draft** `Profile` in memory and only writes to the store when the
+person taps *Save my plan*. The tone throughout assumes the person is doing
+this on a good day — it opens with *"Best done on a good day"* and frames the
+whole exercise as writing a note to your future self.
+
+Steps: **Welcome → Your signs → Your baseline → What helps → Your circle →
+Crisis line → Review**.
 
 ## Design system
 
@@ -100,11 +114,15 @@ Calm by design. The goal is that opening Anchor never raises a person's
 heart rate.
 
 - **Soft neutral canvas** (`canvas` / warm off-white) with raised `surface` cards.
-- **Two — and only two — zone colours:**
-  - `steady` → **muted sage-green** ("things look steady")
-  - `checkin` → **warm amber** ("might be worth a check-in")
-- **No red. No alarm colours.** There is deliberately no "danger" state in the
-  palette — Anchor does not shout at people about their own mental health.
+- **Three zones — and not one alarm colour among them:**
+  - `green` → **muted sage-green** (`steady` palette) — the person is anchored.
+  - `amber` → **warm amber** (`checkin` palette) — worth a check-in.
+  - `red` → **muted clay / terracotta** (`crisis` palette) — *"real support, now."*
+- **No alarm-red.** The `red` zone exists in the model (it's the crisis tier and
+  maps to the crisis plan), but it is rendered as a dignified, muted clay —
+  **never** an emergency red. Anchor does not shout at people about their own
+  mental health. The zones are also shown using **the person's own words**, not
+  labels like "relapse" or "crisis".
 - **Generous spacing**, **rounded cards** (`rounded-card`), soft low-contrast
   shadows.
 
@@ -118,42 +136,57 @@ anchor/
 ├── README.md
 ├── package.json
 ├── next.config.mjs
-├── tailwind.config.ts          # design tokens: sage = steady, amber = check-in, no red
+├── tailwind.config.ts          # design tokens: sage=green, amber=amber, clay=red (no alarm-red)
 ├── postcss.config.mjs
 ├── tsconfig.json
 ├── .eslintrc.json
 ├── .gitignore                  # /data/*.json is ignored — the person's data stays theirs
 ├── data/
-│   └── .gitkeep                # local JSON store lives here (gitignored content)
+│   └── .gitkeep                # reserved for a future local JSON/file store (gitignored content)
 └── src/
     ├── app/
     │   ├── layout.tsx          # root layout + fonts
     │   ├── globals.css         # Tailwind layers + base styles
     │   ├── page.tsx            # landing page
-    │   ├── onboarding/page.tsx # scaffold
-    │   ├── checkin/page.tsx    # scaffold
-    │   ├── dashboard/page.tsx  # scaffold — renders a live rules-engine result
-    │   └── plan/page.tsx       # scaffold
+    │   ├── onboarding/page.tsx # the gentle multi-step "set up when well" flow
+    │   ├── checkin/page.tsx    # mark which signs are present → runs the rules engine
+    │   ├── dashboard/page.tsx  # zone (in the person's words) + full inspectable reasons
+    │   └── plan/page.tsx       # whole plan mirrored back + export / erase my data
     ├── components/
     │   ├── PageShell.tsx       # page frame, nav, persistent care-not-replace footer
     │   ├── Card.tsx            # soft rounded surface
     │   ├── Button.tsx          # calm pill action
-    │   └── ZoneBadge.tsx       # sage / amber badge (no red variant exists)
+    │   └── ZoneBadge.tsx       # green / amber / clay badge (no alarm-red variant exists)
     ├── design/
-    │   └── tokens.ts           # zones + spacing/radius tokens in code
+    │   └── tokens.ts           # per-zone style tokens + spacing/radius, in code
     └── lib/
-        ├── types.ts            # domain types — note: no "diagnosis"/"severity"
+        ├── types.ts            # core domain types — no "diagnosis"/"severity" anywhere
+        ├── starter-library.ts  # small starter sign library + default zone words + crisis line
         ├── rules-engine.ts     # THE zone decision. Deterministic. No LLM. Ever.
         ├── messaging.ts        # the ONLY place an LLM may touch — wording only
-        └── store.ts            # ProfileStore interface + local store (Supabase later)
+        ├── store.ts            # local (localStorage) store; swappable for Supabase later
+        └── useProfile.ts       # client hook to read the saved profile after hydration
 ```
 
-## Roadmap (post-scaffold)
+## Core domain types (`src/lib/types.ts`)
 
-- Wire onboarding → store → check-in → dashboard end to end.
-- Persist to local JSON, then add a Supabase `ProfileStore` implementation.
-- Add the optional LLM rephrasing behind `phraseMessage()` (wording only).
-- Data export & erase controls on `/plan`.
+- **`EarlyWarningSign`** — `name`, `category` (sleep / social / thought / mood /
+  perception / self-care), and the person's own `description`.
+- **`Zone`** — one of `green` / `amber` / `red`, each carrying the person's own
+  `label` and `description` (their words, not ours).
+- **`Baseline`** — "what well looks like for me", plus the transparent
+  `amberAt` / `redAt` thresholds the rules engine uses.
+- **`StayingWellAction`** — something that helps, optionally tied to a zone.
+- **`TrustedContact`** — `name`, `relationship`, optional `phone`, an
+  `alertAtZone`, and a `consent` flag (never added silently).
+- **`CrisisPlan`** — a real crisis line plus the person's own wishes for a crisis.
+
+## Roadmap (next)
+
+- Trends over time on the dashboard (history of check-ins).
+- A Supabase store implementation behind the same `load/save/clear` API.
+- The optional LLM rephrasing behind `phraseMessage()` (wording only).
+- Optional reminders / notifications to the trusted circle (with consent).
 
 ## License
 
