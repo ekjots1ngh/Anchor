@@ -121,7 +121,29 @@ npm test           # vitest run (unit tests for the zone engine)
 | `/onboarding`  | A few gentle steps, done **when well**: pick early-warning signs from a starter library and add custom ones, set a baseline + name the three zones in your own words, write staying-well actions, add a trusted circle, and a crisis line. Saves to the local store. | **built** |
 | `/checkin`     | A ~30-second daily check-in: sleep (good/okay/poor), mood (1–5), and a quick yes/no on your own early-warning signs. Saves a dated `CheckIn` to the store (re-checking the same day updates that day's record). | built |
 | `/dashboard`   | A calm **status card** (zone in your words + specific, gentle copy), a **7-day trend**, and a **"what I'm watching"** signal list — all pulled from the `computeZone` engine. In **amber/red** it leads with **"Reach a person"**: one-tap, consent-gated, pre-filled **Message** to your trusted circle + quick **Call** to your crisis line. | built |
-| `/plan`        | Your staying-well plan and crisis plan mirrored back — zones, signs, what helps, trusted circle (with one-tap Message/Call), crisis line — plus **export / erase my data**. | built |
+| `/plan`        | Your staying-well plan and crisis plan mirrored back — zones, signs, what helps, trusted circle (with one-tap Message/Call), crisis line. Points to **Your data** for ownership controls. | built |
+| `/data`        | **Data-ownership panel**: see everything stored (incl. raw JSON), export it, erase all of it, and control per contact *when* they're reached and *exactly what they can see*. | built |
+
+### "Why this zone?" — the transparency proof
+
+The dashboard status card has a tap-to-open **"Why this zone?"** view (`WhyThisZone` +
+`src/lib/explain.ts`). It turns the rules engine's output into plain language — *which*
+of the person's own signals moved, *by how much* ("drifted a lot / somewhat / a little"),
+and each one's share of the decision — plus the rule itself stated as a percentage and a
+line of reassurance. It is **deterministic, straight from `computeZone`, no LLM** — the
+feature that proves Anchor mirrors the person's own signs rather than an AI judging them.
+
+### You own your data — a usable feature, not a claim
+
+`/data` makes data sovereignty concrete:
+
+- **See everything** stored about you, in plain rows, with a "raw JSON" expander for the
+  full truth — and a clear statement that it lives only in your browser, never on a server.
+- **Export** a full copy, or **erase everything** from the device (no account, no copies).
+- **Control each contact**: *when* they're reached (`alertAtZone`) and *what they can see* —
+  `nudge` (only that you'd like to talk) / `zone` (+ how you're doing) / `signals` (+ which
+  signs are showing). That `visibility` setting **drives exactly what a pre-filled message
+  reveals** — so the control is real, not cosmetic. Nothing is shared unless you press send.
 
 ### Amber/red: connect to a human, fast
 

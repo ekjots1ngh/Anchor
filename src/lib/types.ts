@@ -115,10 +115,25 @@ export interface StayingWellAction {
 /* ------------------------------------------------------------------ */
 
 /**
+ * How much a trusted contact is allowed to see about the person. This is a
+ * data-sovereignty control: it decides exactly what a pre-filled message ever
+ * reveals to that contact — nothing more is shared, and only when the person
+ * chooses to send it.
+ */
+export type ContactVisibility = "nudge" | "zone" | "signals";
+
+export const CONTACT_VISIBILITY_LABELS: Record<ContactVisibility, string> = {
+  nudge: "Only that I'd like to talk",
+  zone: "That, plus how I'm doing (my zone)",
+  signals: "That, plus which signs are showing",
+};
+
+/**
  * A real human in the person's trusted circle. `alertAtZone` is the zone at
  * which the person would want this contact looped in. `consent` records that
  * the person has confirmed this contact has agreed to be part of the circle —
- * Anchor never adds someone silently.
+ * Anchor never adds someone silently. `visibility` is what they're allowed to
+ * see (defaults to the most private, "nudge").
  */
 export interface TrustedContact {
   id: string;
@@ -129,6 +144,8 @@ export interface TrustedContact {
   alertAtZone: ZoneId;
   /** The contact has agreed to be part of the trusted circle. */
   consent: boolean;
+  /** What this contact is allowed to see. */
+  visibility: ContactVisibility;
 }
 
 /**

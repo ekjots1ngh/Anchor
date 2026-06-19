@@ -14,9 +14,15 @@ import type { Profile, ZoneId } from "@/lib/types";
 export function ConnectActions({
   profile,
   zone,
+  zoneLabel,
+  signalLabels,
 }: {
   profile: Profile;
   zone: Extract<ZoneId, "amber" | "red">;
+  /** The person's own word for this zone, and the signals drifting — used to
+   *  pre-fill messages, filtered per contact by their visibility setting. */
+  zoneLabel?: string;
+  signalLabels?: string[];
 }) {
   const reachable = profile.trustedContacts.filter(
     (c) => c.consent && zoneRank(c.alertAtZone) <= zoneRank(zone),
@@ -40,7 +46,7 @@ export function ConnectActions({
                 <span className="text-sm text-ink-faint">{c.relationship}</span>
               </div>
               <div className="mt-3">
-                <ContactActions contact={c} />
+                <ContactActions contact={c} context={{ zoneLabel, signalLabels }} />
               </div>
             </li>
           ))}

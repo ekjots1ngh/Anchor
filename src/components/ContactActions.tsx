@@ -13,7 +13,14 @@ import type { TrustedContact } from "@/lib/types";
  * The Message button pre-fills a warm note but opens the device's own SMS app —
  * the person sends it themselves.
  */
-export function ContactActions({ contact }: { contact: TrustedContact }) {
+export function ContactActions({
+  contact,
+  context,
+}: {
+  contact: TrustedContact;
+  /** Live info available to fill the message — filtered by the contact's visibility. */
+  context?: { zoneLabel?: string; signalLabels?: string[] };
+}) {
   if (!contact.consent) {
     return (
       <p className="text-sm text-ink-faint">
@@ -31,11 +38,17 @@ export function ContactActions({ contact }: { contact: TrustedContact }) {
   }
 
   const phone = contact.phone as string;
+  const body = prefilledMessage({
+    contactName: contact.name,
+    visibility: contact.visibility,
+    zoneLabel: context?.zoneLabel,
+    signalLabels: context?.signalLabels,
+  });
 
   return (
     <div className="flex flex-wrap gap-2">
       <a
-        href={smsHref(phone, prefilledMessage(contact.name))}
+        href={smsHref(phone, body)}
         className="inline-flex min-h-[2.75rem] items-center justify-center rounded-pill bg-steady-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-steady-700"
       >
         Message {firstNameOf(contact.name)}

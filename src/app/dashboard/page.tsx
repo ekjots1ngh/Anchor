@@ -5,6 +5,7 @@ import { PageShell } from "@/components/PageShell";
 import { Card } from "@/components/Card";
 import { ZoneBadge } from "@/components/ZoneBadge";
 import { WarmMessage } from "@/components/WarmMessage";
+import { WhyThisZone } from "@/components/WhyThisZone";
 import { ConnectActions } from "@/components/ConnectActions";
 import { ZONE_STYLES } from "@/design/tokens";
 import { useProfile } from "@/lib/useProfile";
@@ -96,15 +97,17 @@ export default function DashboardPage() {
             fallback={copy.body}
           />
         )}
-        <p className="mt-5 text-sm text-ink-faint">
-          {topWhy.length ? <>Mainly: {topWhy.join(", ")}. </> : null}
-          Worked out by a transparent rules engine, never an AI — see your signals below.
-        </p>
+        <WhyThisZone result={result} zoneLabel={zoneWord.label} />
       </Card>
 
       {/* Amber/red: connect to a real person, fast. Anchor is the nudge. */}
       {result.zone !== "green" && (
-        <ConnectActions profile={profile} zone={result.zone} />
+        <ConnectActions
+          profile={profile}
+          zone={result.zone}
+          zoneLabel={zoneWord.label}
+          signalLabels={topWhy}
+        />
       )}
 
       {/* 7-day trend */}

@@ -1,21 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { PageShell } from "@/components/PageShell";
 import { Card } from "@/components/Card";
 import { ZoneBadge } from "@/components/ZoneBadge";
 import { ContactActions } from "@/components/ContactActions";
 import { useProfile } from "@/lib/useProfile";
-import { clearProfile } from "@/lib/store";
 import { telHref } from "@/lib/contact";
 import { ZONE_STYLES } from "@/design/tokens";
-import type { ZoneId } from "@/lib/types";
+import { CONTACT_VISIBILITY_LABELS, type ZoneId } from "@/lib/types";
 
 const ZONE_ORDER: ZoneId[] = ["green", "amber", "red"];
 
 export default function PlanPage() {
-  const router = useRouter();
   const { profile, loading } = useProfile();
 
   if (loading) return <PageShell title="Your staying-well plan">{null}</PageShell>;
@@ -37,29 +34,6 @@ export default function PlanPage() {
       </PageShell>
     );
   }
-
-  const exportData = () => {
-    const blob = new Blob([JSON.stringify(profile, null, 2)], {
-      type: "application/json",
-    });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "anchor-plan.json";
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const erase = () => {
-    if (
-      window.confirm(
-        "This permanently erases your plan from this device. There's no undo. Continue?",
-      )
-    ) {
-      clearProfile();
-      router.push("/");
-    }
-  };
 
   return (
     <PageShell
@@ -124,6 +98,9 @@ export default function PlanPage() {
                 </span>
                 <ZoneBadge zone={c.alertAtZone} label={profile.zones[c.alertAtZone].label} />
               </div>
+              <p className="mt-2 text-sm text-ink-faint">
+                Sees: {CONTACT_VISIBILITY_LABELS[c.visibility ?? "nudge"].toLowerCase()}
+              </p>
               <div className="mt-3">
                 <ContactActions contact={c} />
               </div>
@@ -169,24 +146,17 @@ export default function PlanPage() {
       <Card>
         <h2 className="text-xl font-semibold">Your data</h2>
         <p className="mt-2 text-sm leading-relaxed text-ink-muted">
-          Everything here belongs to you and lives only on this device. Export a
-          copy or erase it entirely, any time, no questions asked.
+          Everything here belongs to you and lives only on this device. See
+          exactly what&rsquo;s stored, take a copy, erase it all, or change what
+          each person can see — in one place.
         </p>
-        <div className="mt-5 flex flex-wrap gap-3">
-          <button
-            type="button"
-            onClick={exportData}
-            className="rounded-pill border border-steady-300 px-5 py-2.5 font-medium text-steady-700 hover:bg-steady-50"
+        <div className="mt-5">
+          <Link
+            href="/data"
+            className="inline-flex min-h-[2.75rem] items-center rounded-pill border border-steady-300 px-5 py-2.5 font-medium text-steady-700 hover:bg-steady-50"
           >
-            Export my data
-          </button>
-          <button
-            type="button"
-            onClick={erase}
-            className="rounded-pill border border-line px-5 py-2.5 font-medium text-ink-muted hover:bg-canvas"
-          >
-            Erase everything
-          </button>
+            Open Your data
+          </Link>
         </div>
       </Card>
     </PageShell>

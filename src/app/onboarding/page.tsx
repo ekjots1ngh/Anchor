@@ -12,7 +12,9 @@ import {
   type StarterSign,
 } from "@/lib/starter-library";
 import {
+  CONTACT_VISIBILITY_LABELS,
   SIGN_CATEGORY_LABELS,
+  type ContactVisibility,
   type EarlyWarningSign,
   type Profile,
   type SignCategory,
@@ -714,6 +716,7 @@ function AddContact({ onAdd }: { onAdd: (c: TrustedContact) => void }) {
   const [relationship, setRelationship] = useState("");
   const [phone, setPhone] = useState("");
   const [alertAtZone, setAlertAtZone] = useState<ZoneId>("amber");
+  const [visibility, setVisibility] = useState<ContactVisibility>("nudge");
   const [consent, setConsent] = useState(false);
 
   const canAdd = name.trim().length > 0 && consent;
@@ -726,12 +729,14 @@ function AddContact({ onAdd }: { onAdd: (c: TrustedContact) => void }) {
       relationship: relationship.trim(),
       phone: phone.trim() || undefined,
       alertAtZone,
+      visibility,
       consent,
     });
     setName("");
     setRelationship("");
     setPhone("");
     setAlertAtZone("amber");
+    setVisibility("nudge");
     setConsent(false);
   };
 
@@ -772,6 +777,22 @@ function AddContact({ onAdd }: { onAdd: (c: TrustedContact) => void }) {
             <option value="green">Green — keep them in the loop anytime</option>
             <option value="amber">Amber — when a few signs show</option>
             <option value="red">Red — only when I really need support</option>
+          </select>
+        </Field>
+        <Field
+          label="What can they see?"
+          hint="You can change this any time in Your data."
+        >
+          <select
+            className={inputBase}
+            value={visibility}
+            onChange={(e) => setVisibility(e.target.value as ContactVisibility)}
+          >
+            {(Object.keys(CONTACT_VISIBILITY_LABELS) as ContactVisibility[]).map((v) => (
+              <option key={v} value={v}>
+                {CONTACT_VISIBILITY_LABELS[v]}
+              </option>
+            ))}
           </select>
         </Field>
         <label className="flex items-start gap-3">

@@ -99,6 +99,7 @@ function baseProfile(): Profile {
         phone: "07700 900123",
         alertAtZone: "amber",
         consent: true,
+        visibility: "signals",
       },
     ],
     crisisPlan: {
