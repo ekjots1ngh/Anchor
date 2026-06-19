@@ -13,7 +13,14 @@ import { DEFAULT_CRISIS_LINE, DEFAULT_ZONE_WORDS } from "@/lib/starter-library";
 
 const STORAGE_KEY = "anchor.profile.v1";
 
+/** Fired after any write, so hooks (e.g. useProfile) can re-read live. */
+export const PROFILE_CHANGED_EVENT = "anchor:profile-changed";
+
 const isBrowser = (): boolean => typeof window !== "undefined";
+
+function notifyChange(): void {
+  if (isBrowser()) window.dispatchEvent(new Event(PROFILE_CHANGED_EVENT));
+}
 
 /** A fresh, empty profile prefilled with gentle defaults the person edits. */
 export function createEmptyProfile(): Profile {
@@ -59,12 +66,14 @@ export function loadProfile(): Profile | null {
 export function saveProfile(profile: Profile): void {
   if (!isBrowser()) return;
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
+  notifyChange();
 }
 
 /** Erase everything. The person can do this at any time, no questions asked. */
 export function clearProfile(): void {
   if (!isBrowser()) return;
   window.localStorage.removeItem(STORAGE_KEY);
+  notifyChange();
 }
 
 /** True once the person has completed onboarding. */

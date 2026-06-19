@@ -31,12 +31,15 @@ export function WarmMessage({
   className?: string;
 }) {
   const [message, setMessage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   // Stable signature so we only re-request when the inputs actually change.
   const signature = JSON.stringify({ zone, drivers, stayingWellActions });
 
   useEffect(() => {
     let cancelled = false;
+    setLoading(true);
+    setMessage(null);
     fetch("/api/message", {
       method: "POST",
       headers: { "content-type": "application/json" },
@@ -48,6 +51,9 @@ export function WarmMessage({
       })
       .catch(() => {
         /* fall back to deterministic copy */
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
       });
     return () => {
       cancelled = true;
@@ -55,8 +61,22 @@ export function WarmMessage({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [signature]);
 
+  // While the note is being written, show a calm "generating" line so the
+  // person sees a warm message forming (rather than a flash of fallback copy).
+  if (loading) {
+    return (
+      <p
+        className={`flex items-center gap-2 text-lg leading-relaxed text-ink-faint ${className}`}
+        aria-live="polite"
+      >
+        <span className="inline-block h-2 w-2 animate-pulse rounded-pill bg-checkin-400" aria-hidden />
+        Finding the right words&hellip;
+      </p>
+    );
+  }
+
   return (
-    <p className={`text-lg leading-relaxed text-ink-muted ${className}`}>
+    <p className={`text-lg leading-relaxed text-ink-muted ${className}`} aria-live="polite">
       {message ?? fallback}
     </p>
   );

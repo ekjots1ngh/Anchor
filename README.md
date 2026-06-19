@@ -150,6 +150,26 @@ whole exercise as writing a note to your future self.
 Steps: **Welcome → Your signs → Your baseline → What helps → Your circle →
 Crisis line → Review**.
 
+## Demo mode (dev/stage only)
+
+A floating **Demo** panel (`src/components/DemoPanel.tsx`) appears in `npm run dev`
+— or on a deployed *preview* when `NEXT_PUBLIC_DEMO_MODE=1` — and never in a normal
+production build. It drives a clean on-stage reveal:
+
+1. **Seed steady week** — writes a full demo profile with 7 calm days; the
+   dashboard sits **green**.
+2. **Tip to amber** — the one stage button. Injects 3 days of dipping sleep +
+   social withdrawal; the dashboard tips **green → amber live** (no reload — the
+   store fires a change event and `useProfile` re-reads), and the **warm LLM note
+   generates on screen** (with a "Finding the right words…" state).
+3. **Reset** — wipes the demo data.
+
+The numbers are deterministic and unit-tested (`src/lib/demo.test.ts`): the seed
+scores 0 (green), the tip scores ~0.32 — comfortably between the 0.25 amber and
+0.5 red thresholds — driven by **Sleep** and **Social withdrawal**, which is also
+what the note names. For the LLM note to generate (rather than fall back to
+deterministic copy), set `ANTHROPIC_API_KEY`.
+
 ## Design system
 
 Calm by design. The goal is that opening Anchor never raises a person's
