@@ -50,13 +50,28 @@ one small, deterministic, fully inspectable function:
   Still pure and inspectable; kept for reference.
 - The dashboard shows the per-signal reasons in full (`/dashboard`) — nothing
   about the decision is hidden.
-- **`src/lib/messaging.ts`** — `phraseMessage()` is the **only** place an LLM is
-  ever permitted, and it may rephrase the human-facing `message` string **and
-  nothing else**. It contains a runtime guard that throws if the zone is ever
-  changed. Today it's a no-op pass-through (scaffold).
+- **`src/app/api/message/route.ts`** — the LLM seam, in production. A **server-side**
+  route that calls the Anthropic API (model `claude-opus-4-8`) with a key from
+  the `ANTHROPIC_API_KEY` env var — **never exposed to the browser**. It is handed
+  the zone engine's output (which signals drifted, and by how much) plus the
+  person's own staying-well actions, and returns **only a warm, non-alarming
+  message**. Its system prompt hard-enforces: never diagnose, never predict an
+  episode, never give medical advice, never catastrophise; reassure that drift
+  doesn't mean an episode is coming; encourage reaching a real person. The
+  **zone is already decided before this route is called** — the model phrases,
+  it never decides. Shown on `/dashboard` **only in amber/red**; if no key is
+  configured (or the call fails), the dashboard silently falls back to its
+  deterministic, template-based copy.
+- **`src/lib/messaging.ts`** — the same boundary expressed for the legacy
+  `rules-engine.ts` path: a no-op `phraseMessage()` with a runtime guard that
+  throws if the zone is ever changed. Kept as the in-process reference.
 
 > Rule of thumb: the **decision** is always code you can read. The **wording**
 > can be made warmer by a model. The two never mix.
+
+> **Configuring the LLM message:** copy `.env.example` to `.env.local` and set
+> `ANTHROPIC_API_KEY`. Without it, everything still works — the dashboard just
+> uses its deterministic copy instead of the warm phrased note.
 
 ### 3. The person owns their data.
 
@@ -78,6 +93,8 @@ one small, deterministic, fully inspectable function:
 - **Next.js 14** (App Router) + **TypeScript**
 - **Tailwind CSS 3** for the design system
 - **`localStorage`** local store for now (swappable for **Supabase** later)
+- **`@anthropic-ai/sdk`** (`claude-opus-4-8`) behind a server-side route, for the
+  warm message only — key from `ANTHROPIC_API_KEY`, never client-side
 - Deploy target: **Vercel**
 
 ## Getting started
@@ -157,6 +174,7 @@ anchor/
     │   ├── layout.tsx          # root layout + fonts
     │   ├── globals.css         # Tailwind layers + base styles
     │   ├── page.tsx            # landing page
+    │   ├── api/message/route.ts # server-side LLM seam: phrases the warm note (key stays server-side)
     │   ├── onboarding/page.tsx # the gentle multi-step "set up when well" flow
     │   ├── checkin/page.tsx    # mark which signs are present → runs the rules engine
     │   ├── dashboard/page.tsx  # zone (in the person's words) + full inspectable reasons
@@ -165,6 +183,7 @@ anchor/
     │   ├── PageShell.tsx       # page frame, nav, persistent care-not-replace footer
     │   ├── Card.tsx            # soft rounded surface
     │   ├── Button.tsx          # calm pill action
+    │   ├── WarmMessage.tsx     # amber/red only: fetches the LLM note, falls back to template copy
     │   └── ZoneBadge.tsx       # green / amber / clay badge (no alarm-red variant exists)
     ├── design/
     │   └── tokens.ts           # per-zone style tokens + spacing/radius, in code

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { PageShell } from "@/components/PageShell";
 import { Card } from "@/components/Card";
 import { ZoneBadge } from "@/components/ZoneBadge";
+import { WarmMessage } from "@/components/WarmMessage";
 import { ZONE_STYLES } from "@/design/tokens";
 import { useProfile } from "@/lib/useProfile";
 import { computeZoneForProfile } from "@/lib/zone";
@@ -86,7 +87,23 @@ export default function DashboardPage() {
           </span>
         </div>
         <h2 className="mt-5 text-2xl font-semibold tracking-tight">{copy.headline}</h2>
-        <p className="mt-3 text-lg leading-relaxed text-ink-muted">{copy.body}</p>
+        {result.zone === "green" ? (
+          <p className="mt-3 text-lg leading-relaxed text-ink-muted">{copy.body}</p>
+        ) : (
+          // Amber/red only: a warm, LLM-phrased note (server-side; falls back to
+          // the deterministic copy if messaging isn't available).
+          <WarmMessage
+            className="mt-3"
+            zone={result.zone}
+            zoneLabel={zoneWord.label}
+            drivers={watching
+              .filter((d) => d.drift > 0)
+              .map((d) => ({ label: d.label, drift: d.drift }))}
+            stayingWellActions={profile.stayingWellActions.map((a) => a.text)}
+            firstName={firstName}
+            fallback={copy.body}
+          />
+        )}
         <p className="mt-5 text-sm text-ink-faint">
           {topWhy.length ? <>Mainly: {topWhy.join(", ")}. </> : null}
           Worked out by a transparent rules engine, never an AI — see your signals below.
