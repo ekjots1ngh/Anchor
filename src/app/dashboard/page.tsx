@@ -5,16 +5,11 @@ import { PageShell } from "@/components/PageShell";
 import { Card } from "@/components/Card";
 import { ZoneBadge } from "@/components/ZoneBadge";
 import { WarmMessage } from "@/components/WarmMessage";
+import { ConnectActions } from "@/components/ConnectActions";
 import { ZONE_STYLES } from "@/design/tokens";
 import { useProfile } from "@/lib/useProfile";
 import { computeZoneForProfile } from "@/lib/zone";
-import {
-  buildTrend,
-  signalStatus,
-  statusCopy,
-  trendBar,
-  zoneRank,
-} from "@/lib/dashboard";
+import { buildTrend, signalStatus, statusCopy, trendBar } from "@/lib/dashboard";
 
 export default function DashboardPage() {
   const { profile, loading } = useProfile();
@@ -67,9 +62,6 @@ export default function DashboardPage() {
   const trend = buildTrend(profile);
   const watching = result.drivers;
 
-  const reachable = profile.trustedContacts.filter(
-    (c) => zoneRank(c.alertAtZone) <= zoneRank(result.zone),
-  );
   const topWhy = watching
     .filter((d) => d.drift > 0)
     .slice(0, 3)
@@ -109,6 +101,11 @@ export default function DashboardPage() {
           Worked out by a transparent rules engine, never an AI — see your signals below.
         </p>
       </Card>
+
+      {/* Amber/red: connect to a real person, fast. Anchor is the nudge. */}
+      {result.zone !== "green" && (
+        <ConnectActions profile={profile} zone={result.zone} />
+      )}
 
       {/* 7-day trend */}
       <Card>
@@ -198,45 +195,6 @@ export default function DashboardPage() {
         </Card>
       )}
 
-      {result.zone !== "green" && reachable.length > 0 && (
-        <Card className={style.softBg}>
-          <h2 className="text-lg font-semibold">People you might reach</h2>
-          <ul className="mt-4 space-y-2">
-            {reachable.map((c) => (
-              <li
-                key={c.id}
-                className="flex items-center justify-between rounded-2xl border border-line bg-surface px-5 py-3"
-              >
-                <span>
-                  <span className="font-medium text-ink">{c.name}</span>
-                  <span className="block text-sm text-ink-faint">{c.relationship}</span>
-                </span>
-                {c.phone ? (
-                  <a href={`tel:${c.phone}`} className="text-sm font-medium text-steady-700">
-                    {c.phone}
-                  </a>
-                ) : null}
-              </li>
-            ))}
-          </ul>
-        </Card>
-      )}
-
-      {result.zone === "red" && (
-        <Card className={ZONE_STYLES.red.softBg}>
-          <h2 className="text-lg font-semibold">Your crisis line</h2>
-          <p className="mt-3">
-            <span className="font-medium text-ink">{profile.crisisPlan.crisisLineName}</span>
-            {" · "}
-            <a
-              href={`tel:${profile.crisisPlan.crisisLinePhone}`}
-              className="font-medium text-crisis-700"
-            >
-              {profile.crisisPlan.crisisLinePhone}
-            </a>
-          </p>
-        </Card>
-      )}
     </PageShell>
   );
 }

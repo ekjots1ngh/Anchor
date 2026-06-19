@@ -5,8 +5,10 @@ import { useRouter } from "next/navigation";
 import { PageShell } from "@/components/PageShell";
 import { Card } from "@/components/Card";
 import { ZoneBadge } from "@/components/ZoneBadge";
+import { ContactActions } from "@/components/ContactActions";
 import { useProfile } from "@/lib/useProfile";
 import { clearProfile } from "@/lib/store";
+import { telHref } from "@/lib/contact";
 import { ZONE_STYLES } from "@/design/tokens";
 import type { ZoneId } from "@/lib/types";
 
@@ -105,20 +107,26 @@ export default function PlanPage() {
 
       <Card>
         <h2 className="text-xl font-semibold">Your trusted circle</h2>
+        <p className="mt-1 text-sm text-ink-faint">
+          Reach any of them in one tap — the message comes pre-filled, and you
+          send it from your own phone.
+        </p>
         <ul className="mt-4 space-y-3">
           {profile.trustedContacts.map((c) => (
-            <li
-              key={c.id}
-              className="flex items-center justify-between rounded-2xl border border-line px-4 py-3"
-            >
-              <span>
-                <span className="font-medium text-ink">{c.name}</span>
-                <span className="block text-sm text-ink-faint">
-                  {c.relationship}
-                  {c.phone ? ` · ${c.phone}` : ""}
+            <li key={c.id} className="rounded-2xl border border-line px-4 py-3">
+              <div className="flex items-baseline justify-between gap-3">
+                <span>
+                  <span className="font-medium text-ink">{c.name}</span>
+                  <span className="block text-sm text-ink-faint">
+                    {c.relationship}
+                    {c.phone ? ` · ${c.phone}` : ""}
+                  </span>
                 </span>
-              </span>
-              <ZoneBadge zone={c.alertAtZone} label={profile.zones[c.alertAtZone].label} />
+                <ZoneBadge zone={c.alertAtZone} label={profile.zones[c.alertAtZone].label} />
+              </div>
+              <div className="mt-3">
+                <ContactActions contact={c} />
+              </div>
             </li>
           ))}
         </ul>
@@ -126,16 +134,18 @@ export default function PlanPage() {
 
       <Card>
         <h2 className="text-xl font-semibold">Crisis line</h2>
-        <p className="mt-3">
-          <span className="font-medium text-ink">{profile.crisisPlan.crisisLineName}</span>
-          {" · "}
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+          <span className="text-ink">
+            <span className="font-medium">{profile.crisisPlan.crisisLineName}</span>
+            <span className="text-ink-faint"> · {profile.crisisPlan.crisisLinePhone}</span>
+          </span>
           <a
-            href={`tel:${profile.crisisPlan.crisisLinePhone}`}
-            className="font-medium text-steady-700"
+            href={telHref(profile.crisisPlan.crisisLinePhone)}
+            className="inline-flex items-center justify-center rounded-pill bg-crisis-400 px-5 py-2.5 text-sm font-medium text-white hover:bg-crisis-500"
           >
-            {profile.crisisPlan.crisisLinePhone}
+            Call now
           </a>
-        </p>
+        </div>
         {profile.crisisPlan.whatHelps ? (
           <p className="mt-3 text-sm text-ink-muted">
             <span className="text-ink-faint">What helps: </span>

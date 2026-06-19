@@ -120,8 +120,24 @@ npm test           # vitest run (unit tests for the zone engine)
 | `/`            | Landing page — the three principles, calm entry point.                  | built |
 | `/onboarding`  | A few gentle steps, done **when well**: pick early-warning signs from a starter library and add custom ones, set a baseline + name the three zones in your own words, write staying-well actions, add a trusted circle, and a crisis line. Saves to the local store. | **built** |
 | `/checkin`     | A ~30-second daily check-in: sleep (good/okay/poor), mood (1–5), and a quick yes/no on your own early-warning signs. Saves a dated `CheckIn` to the store (re-checking the same day updates that day's record). | built |
-| `/dashboard`   | A calm **status card** (zone in your words + specific, gentle copy), a **7-day trend**, and a **"what I'm watching"** signal list — all pulled from the `computeZone` engine. Green reassures; amber is gentle and specific; red surfaces support. | built |
-| `/plan`        | The whole plan mirrored back, plus **export / erase my data** controls. | built |
+| `/dashboard`   | A calm **status card** (zone in your words + specific, gentle copy), a **7-day trend**, and a **"what I'm watching"** signal list — all pulled from the `computeZone` engine. In **amber/red** it leads with **"Reach a person"**: one-tap, consent-gated, pre-filled **Message** to your trusted circle + quick **Call** to your crisis line. | built |
+| `/plan`        | Your staying-well plan and crisis plan mirrored back — zones, signs, what helps, trusted circle (with one-tap Message/Call), crisis line — plus **export / erase my data**. | built |
+
+### Amber/red: connect to a human, fast
+
+Anchor's job in amber/red is to **connect the person to a real human — not to be
+the help itself**. The `ConnectActions` block (`src/components/ConnectActions.tsx`)
+surfaces, in one tap:
+
+- **Message [contact]** — opens the device's own SMS app with a warm, pre-filled
+  note (the person reads and sends it themselves; Anchor never sends anything).
+  **Consent-gated**: only contacts the person confirmed have agreed, and who have
+  a number saved, get a Message action (`src/lib/contact.ts` → `canMessage`).
+- **Call** the contact, and quick access to the **crisis line** (prominent in red,
+  gentle in amber).
+
+Contacts are filtered to those the person set to be reached **at this zone or
+sooner**. The same one-tap actions appear on `/plan` for any time.
 
 ### Onboarding flow
 
@@ -184,6 +200,8 @@ anchor/
     │   ├── Card.tsx            # soft rounded surface
     │   ├── Button.tsx          # calm pill action
     │   ├── WarmMessage.tsx     # amber/red only: fetches the LLM note, falls back to template copy
+    │   ├── ConnectActions.tsx  # amber/red "reach a person" block (circle + crisis line)
+    │   ├── ContactActions.tsx  # one-tap Message/Call for a contact (consent-gated)
     │   └── ZoneBadge.tsx       # green / amber / clay badge (no alarm-red variant exists)
     ├── design/
     │   └── tokens.ts           # per-zone style tokens + spacing/radius, in code
@@ -193,6 +211,7 @@ anchor/
         ├── zone.ts             # drift-over-window zone engine — pure, explainable, no LLM
         ├── zone.test.ts        # unit tests: steady / amber / red + windowing + drivers
         ├── dashboard.ts        # turns zone-engine output into calm copy + 7-day trend (no LLM)
+        ├── contact.ts          # tel:/sms: links, pre-filled message, consent gating (+ tests)
         ├── rules-engine.ts     # simpler count-based zone engine (kept for reference)
         ├── messaging.ts        # the ONLY place an LLM may touch — wording only
         ├── store.ts            # local (localStorage) store; swappable for Supabase later
