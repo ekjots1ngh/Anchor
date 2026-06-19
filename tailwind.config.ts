@@ -25,9 +25,11 @@ const config: Config = {
         canvas: "#f5f4ef", // warm off-white background
         surface: "#fffdf9", // raised card surface
         ink: {
-          DEFAULT: "#3a3a34", // primary text, soft near-black
-          muted: "#6f6e66", // secondary text
-          faint: "#9a988e", // captions / hints
+          // All three pass WCAG AA (>= 4.5:1) on the canvas, so even small
+          // captions stay readable while keeping the calm, low-contrast feel.
+          DEFAULT: "#33332e", // primary text, soft near-black (~11:1)
+          muted: "#5f5e56", // secondary text (~5.9:1)
+          faint: "#6f6e66", // captions / hints (~4.7:1)
         },
         line: "#e7e4db", // hairline borders
 

@@ -43,7 +43,7 @@ export default function CheckInPage() {
         <Card>
           <Link
             href="/onboarding"
-            className="inline-flex rounded-pill bg-steady-400 px-7 py-3 font-medium text-white hover:bg-steady-500"
+            className="inline-flex rounded-pill bg-steady-600 px-7 py-3 font-medium text-white hover:bg-steady-700"
           >
             Set up my Anchor
           </Link>
@@ -206,7 +206,7 @@ function CheckInForm({
         </ul>
       </Card>
 
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
         <span className="text-sm text-ink-faint">
           {presentCount === 0
             ? "Nothing showing today."
@@ -215,7 +215,7 @@ function CheckInForm({
         <button
           type="button"
           onClick={save}
-          className="rounded-pill bg-steady-400 px-7 py-3 font-medium text-white hover:bg-steady-500"
+          className="w-full rounded-pill bg-steady-600 px-7 py-3 font-medium text-white hover:bg-steady-700 sm:w-auto"
         >
           Save today&rsquo;s check-in
         </button>

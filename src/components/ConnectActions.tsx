@@ -66,9 +66,9 @@ export function ConnectActions({
           </span>
           <a
             href={telHref(crisisLinePhone)}
-            className={`inline-flex items-center justify-center rounded-pill px-5 py-2.5 text-sm font-medium ${
+            className={`inline-flex min-h-[2.75rem] items-center justify-center rounded-pill px-5 py-2.5 text-sm font-medium ${
               zone === "red"
-                ? "bg-crisis-400 text-white hover:bg-crisis-500"
+                ? "bg-crisis-500 text-white hover:bg-crisis-600"
                 : "border border-crisis-300 text-crisis-700 hover:bg-crisis-50"
             }`}
           >

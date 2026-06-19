@@ -6,14 +6,43 @@
   html {
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+    /* Honour iOS safe areas and never zoom-lock the layout. */
+    text-size-adjust: 100%;
   }
 
   body {
     @apply bg-canvas text-ink;
+    /* Comfortable default line length + rhythm for body copy. */
+    line-height: 1.6;
   }
 
-  /* Calm, predictable focus rings everywhere. */
-  :focus-visible {
-    outline: none;
+  /* One calm, visible focus ring for EVERY interactive element — keyboard
+     users always know where they are, even on buttons without ring utilities.
+     The ring follows the element's border-radius in modern browsers. */
+  a:focus-visible,
+  button:focus-visible,
+  [role="button"]:focus-visible,
+  [tabindex]:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible,
+  [contenteditable]:focus-visible {
+    outline: 2px solid theme("colors.steady.500");
+    outline-offset: 2px;
+  }
+
+  /* Respect "reduce motion": no transitions, animations, or smooth scroll. */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
   }
 }

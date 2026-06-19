@@ -36,13 +36,13 @@ export function ContactActions({ contact }: { contact: TrustedContact }) {
     <div className="flex flex-wrap gap-2">
       <a
         href={smsHref(phone, prefilledMessage(contact.name))}
-        className="inline-flex items-center justify-center rounded-pill bg-steady-400 px-5 py-2.5 text-sm font-medium text-white hover:bg-steady-500"
+        className="inline-flex min-h-[2.75rem] items-center justify-center rounded-pill bg-steady-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-steady-700"
       >
         Message {firstNameOf(contact.name)}
       </a>
       <a
         href={telHref(phone)}
-        className="inline-flex items-center justify-center rounded-pill border border-steady-300 px-5 py-2.5 text-sm font-medium text-steady-700 hover:bg-steady-50"
+        className="inline-flex min-h-[2.75rem] items-center justify-center rounded-pill border border-steady-300 px-5 py-2.5 text-sm font-medium text-steady-700 hover:bg-steady-50"
       >
         Call
       </a>

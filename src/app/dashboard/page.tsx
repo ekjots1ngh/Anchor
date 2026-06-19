@@ -25,7 +25,7 @@ export default function DashboardPage() {
         <Card>
           <Link
             href="/onboarding"
-            className="inline-flex rounded-pill bg-steady-400 px-7 py-3 font-medium text-white hover:bg-steady-500"
+            className="inline-flex rounded-pill bg-steady-600 px-7 py-3 font-medium text-white hover:bg-steady-700"
           >
             Set up my Anchor
           </Link>
@@ -45,7 +45,7 @@ export default function DashboardPage() {
         <Card>
           <Link
             href="/checkin"
-            className="inline-flex rounded-pill bg-steady-400 px-7 py-3 font-medium text-white hover:bg-steady-500"
+            className="inline-flex rounded-pill bg-steady-600 px-7 py-3 font-medium text-white hover:bg-steady-700"
           >
             Do my first check-in
           </Link>
@@ -113,7 +113,7 @@ export default function DashboardPage() {
           <h2 className="text-lg font-semibold">Your last 7 days</h2>
           <span className="text-sm text-ink-faint">A gentle trend, not a grade</span>
         </div>
-        <div className="mt-6 flex items-end justify-between gap-2 sm:gap-3">
+        <div className="mt-6 flex items-end justify-between gap-2 sm:gap-3" aria-hidden="true">
           {trend.map((day, i) => {
             const heightPct = day.zone ? Math.max(8, Math.round(day.score * 100)) : 0;
             return (

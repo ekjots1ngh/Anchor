@@ -29,7 +29,7 @@ export default function PlanPage() {
         <Card>
           <Link
             href="/onboarding"
-            className="rounded-pill bg-steady-400 px-7 py-3 font-medium text-white hover:bg-steady-500"
+            className="rounded-pill bg-steady-600 px-7 py-3 font-medium text-white hover:bg-steady-700"
           >
             Set up my Anchor
           </Link>
@@ -141,7 +141,7 @@ export default function PlanPage() {
           </span>
           <a
             href={telHref(profile.crisisPlan.crisisLinePhone)}
-            className="inline-flex items-center justify-center rounded-pill bg-crisis-400 px-5 py-2.5 text-sm font-medium text-white hover:bg-crisis-500"
+            className="inline-flex min-h-[2.75rem] items-center justify-center rounded-pill bg-crisis-500 px-5 py-2.5 text-sm font-medium text-white hover:bg-crisis-600"
           >
             Call now
           </a>

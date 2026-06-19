@@ -89,7 +89,7 @@ export function DemoPanel() {
         <button
           type="button"
           onClick={tip}
-          className="w-full rounded-pill bg-checkin-400 px-4 py-3 text-base font-semibold text-white hover:bg-checkin-500"
+          className="w-full rounded-pill bg-checkin-600 px-4 py-3 text-base font-semibold text-white hover:bg-checkin-700"
         >
           2 · Tip to amber ▸
         </button>

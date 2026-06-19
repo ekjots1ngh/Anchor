@@ -142,7 +142,7 @@ export default function OnboardingPage() {
             <button
               type="button"
               onClick={next}
-              className="rounded-pill bg-steady-400 px-7 py-3 font-medium text-white hover:bg-steady-500"
+              className="rounded-pill bg-steady-600 px-7 py-3 font-medium text-white hover:bg-steady-700"
             >
               {step === 0 ? "Begin" : "Continue"}
             </button>
@@ -150,7 +150,7 @@ export default function OnboardingPage() {
             <button
               type="button"
               onClick={finish}
-              className="rounded-pill bg-steady-400 px-7 py-3 font-medium text-white hover:bg-steady-500"
+              className="rounded-pill bg-steady-600 px-7 py-3 font-medium text-white hover:bg-steady-700"
             >
               Save my plan
             </button>
@@ -182,7 +182,7 @@ function ProgressDots({ step }: { step: number }) {
           <span
             key={label}
             className={`h-1.5 flex-1 rounded-pill ${
-              i <= step ? "bg-steady-400" : "bg-line"
+              i <= step ? "bg-steady-600" : "bg-line"
             }`}
           />
         ))}
@@ -307,7 +307,7 @@ function SignsStep({
                   <span
                     className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border ${
                       picked
-                        ? "border-steady-400 bg-steady-400 text-white"
+                        ? "border-steady-400 bg-steady-600 text-white"
                         : "border-line"
                     }`}
                     aria-hidden
@@ -615,7 +615,7 @@ function ActionsStep({
               add(text);
               setText("");
             }}
-            className="shrink-0 rounded-pill bg-steady-400 px-5 py-3 font-medium text-white hover:bg-steady-500"
+            className="shrink-0 rounded-pill bg-steady-600 px-5 py-3 font-medium text-white hover:bg-steady-700"
           >
             Add
           </button>
