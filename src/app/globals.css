@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply bg-canvas text-ink;
+  }
+
+  /* Calm, predictable focus rings everywhere. */
+  :focus-visible {
+    outline: none;
+  }
+}

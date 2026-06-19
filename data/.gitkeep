@@ -1,0 +1,6 @@
+# Local JSON data store lives here.
+#
+# A person's signs, check-ins, plan and notes are written to *.json files in
+# this folder by the local store (src/lib/store.ts). Those files are
+# gitignored on purpose — a person's data is theirs and never gets committed.
+# Only this .gitkeep is tracked, so the folder exists on a fresh clone.
