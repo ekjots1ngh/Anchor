@@ -44,6 +44,15 @@ export function PageShell({
         </div>
       </header>
 
+      {/* Calm, persistent disclaimer — visible on every screen, not buried. */}
+      <div className="border-b border-checkin-200/70 bg-checkin-50/60">
+        <p className="mx-auto max-w-content px-5 py-2 text-xs leading-relaxed text-ink-muted sm:px-6">
+          A staying-well <span className="font-medium text-ink">prototype</span> —
+          not a medical device or diagnostic tool. It supports your care, it never
+          replaces it.
+        </p>
+      </div>
+
       <main className="mx-auto max-w-content px-5 py-12 sm:px-6 sm:py-16">
         <div className="mb-10">
           <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">

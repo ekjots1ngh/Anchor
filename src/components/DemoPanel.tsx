@@ -141,10 +141,10 @@ export function DemoPanel() {
         <div className="mx-auto max-w-content px-3 pb-3 sm:px-6 sm:pb-4">
           <div className="rounded-card border border-line bg-surface/95 p-4 shadow-card backdrop-blur sm:p-5">
             <div className="flex items-center justify-between gap-3">
-              <span className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
+              <span className="min-w-0 truncate text-xs font-semibold uppercase tracking-wide text-ink-faint">
                 Presenter · {step + 1}/{SCRIPT.length} · {s.title}
               </span>
-              <span className="flex items-center gap-3">
+              <span className="flex shrink-0 items-center gap-3">
                 <span
                   className={`text-xs tabular-nums ${over ? "font-semibold text-checkin-700" : "text-ink-faint"}`}
                 >
@@ -167,15 +167,16 @@ export function DemoPanel() {
               {s.caption}
             </p>
 
-            <div className="mt-4 flex items-center gap-3">
-              <div className="flex flex-1 gap-1.5">
-                {SCRIPT.map((_, i) => (
-                  <span
-                    key={i}
-                    className={`h-1.5 flex-1 rounded-pill ${i <= step ? "bg-steady-500" : "bg-line"}`}
-                  />
-                ))}
-              </div>
+            <div className="mt-3 flex gap-1.5">
+              {SCRIPT.map((_, i) => (
+                <span
+                  key={i}
+                  className={`h-1.5 flex-1 rounded-pill ${i <= step ? "bg-steady-500" : "bg-line"}`}
+                />
+              ))}
+            </div>
+
+            <div className="mt-3 flex items-center justify-end gap-3">
               <button
                 type="button"
                 onClick={() => goToStep(Math.max(0, step - 1))}

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { addEntry } from "@/lib/waitlist-store";
 
 /**
  * POST /api/waitlist — capture interest from the public landing page.
@@ -46,8 +47,18 @@ export async function POST(request: Request) {
     source: "landing",
   };
 
-  // Fallback sink: always captured in the function logs.
+  // Always log (a fallback sink that can't fail).
   console.log("WAITLIST", JSON.stringify(entry));
+
+  // Persist durably (Vercel KV if connected, else a local file).
+  try {
+    await addEntry(entry);
+  } catch (error) {
+    console.error(
+      "WAITLIST_STORE_FAILED",
+      error instanceof Error ? error.message : "unknown error",
+    );
+  }
 
   const sink = process.env.WAITLIST_WEBHOOK_URL;
   if (sink) {

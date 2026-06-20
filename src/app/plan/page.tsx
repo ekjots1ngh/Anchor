@@ -15,7 +15,12 @@ const ZONE_ORDER: ZoneId[] = ["green", "amber", "red"];
 export default function PlanPage() {
   const { profile, loading } = useProfile();
 
-  if (loading) return <PageShell title="Your staying-well plan">{null}</PageShell>;
+  if (loading)
+    return (
+      <PageShell title="Your staying-well plan">
+        <p className="text-ink-muted">Loading…</p>
+      </PageShell>
+    );
 
   if (!profile?.onboardedAt) {
     return (

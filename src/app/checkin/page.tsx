@@ -33,7 +33,12 @@ export default function CheckInPage() {
   const router = useRouter();
   const { profile, loading } = useProfile();
 
-  if (loading) return <PageShell title="Your daily check-in">{null}</PageShell>;
+  if (loading)
+    return (
+      <PageShell title="Your daily check-in">
+        <p className="text-ink-muted">Loading…</p>
+      </PageShell>
+    );
 
   if (!profile?.onboardedAt) {
     return (

@@ -21,7 +21,12 @@ export default function DataPage() {
   const router = useRouter();
   const { profile, loading } = useProfile();
 
-  if (loading) return <PageShell title="Your data">{null}</PageShell>;
+  if (loading)
+    return (
+      <PageShell title="Your data">
+        <p className="text-ink-muted">Loading…</p>
+      </PageShell>
+    );
 
   if (!profile?.onboardedAt) {
     return (

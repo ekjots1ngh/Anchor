@@ -104,7 +104,11 @@ Copy `.env.example` → `.env.local`. All are optional — the app runs without 
 |---|---|
 | `ANTHROPIC_API_KEY` | Enables the warm LLM message in amber/red. **Server-side only — never exposed to the browser.** Without it, the dashboard uses deterministic copy. |
 | `NEXT_PUBLIC_DEMO_MODE` | Set to `1` to show the demo / **▶ 2-minute presenter walkthrough** panel on a deployed build (it always shows in local `npm run dev`). |
-| `WAITLIST_WEBHOOK_URL` | Optional sink for landing-page waitlist submissions (Google Sheet / Airtable / Formspree / Slack …). If unset, submissions are still captured in the server logs. |
+| `ADMIN_TOKEN` | Protects the `/admin` waitlist view and `npm run waitlist`. Open `/admin?key=<token>` to see sign-ups. |
+| `KV_REST_API_URL`, `KV_REST_API_TOKEN` | Durable waitlist storage. Connect a **Vercel KV** store (Storage → Create → KV) and these are injected automatically — sign-ups persist to Redis. Without them, sign-ups go to a local file (dev) + the server logs. |
+| `WAITLIST_WEBHOOK_URL` | Optional *extra* sink for waitlist submissions (Google Sheet / Airtable / Slack …), in addition to the durable store. |
+
+**Waitlist sign-ups are persisted durably** (`src/lib/waitlist-store.ts`) and retrievable two ways: the protected **`/admin?key=…`** page, or **`npm run waitlist`** (add `-- --json` for raw). For real signal on Vercel, connect a KV store (one click) — locally it uses a file.
 
 ### Deploy (Vercel, zero-config)
 
@@ -129,7 +133,8 @@ In `npm run dev` (or a build with `NEXT_PUBLIC_DEMO_MODE=1`), click **▶ Run 2-
 | `/data` | See / export / erase your data; control the consent-gated supporter view |
 | `/supporter?token=…` | The read-only summary a supporter sees (zones & trends only) |
 | `/api/message` | Server-side: phrases the warm note (LLM) — never decides the zone |
-| `/api/waitlist` | Server-side: captures landing-page interest |
+| `/api/waitlist` | Server-side: captures landing-page interest (durable store) |
+| `/admin?key=…` | Protected view of waitlist sign-ups (token = `ADMIN_TOKEN`) |
 
 ---
 

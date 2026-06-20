@@ -16,7 +16,12 @@ import { buildTrend, signalStatus, statusCopy, trendBar } from "@/lib/dashboard"
 export default function DashboardPage() {
   const { profile, loading } = useProfile();
 
-  if (loading) return <PageShell title="Your dashboard">{null}</PageShell>;
+  if (loading)
+    return (
+      <PageShell title="Your dashboard">
+        <p className="text-ink-muted">Loading your picture…</p>
+      </PageShell>
+    );
 
   if (!profile?.onboardedAt) {
     return (
