@@ -218,6 +218,32 @@ export interface ZoneCorrection {
 }
 
 /* ------------------------------------------------------------------ */
+/* Supporter access (consent-gated, read-only sharing)                 */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Optional, consent-gated supporter access. The person can let a family member
+ * or care coordinator see a READ-ONLY summary — zone history and trends only,
+ * never raw private notes. Off by default. The person turns it on, chooses what
+ * a supporter sees, and can revoke at any time — revoking rotates the `token`
+ * so any link already shared stops working.
+ */
+export interface SharingSettings {
+  enabled: boolean;
+  /** Who the person is sharing with, in their words (e.g. "Mum"). */
+  supporterName: string;
+  /** Their role (e.g. "Family", "Care coordinator"). */
+  supporterRole: string;
+  /** Opaque token in the supporter link; rotated on every grant/revoke. */
+  token: string;
+  /** Include the zone-history trend (vs current zone only). */
+  includeTrends: boolean;
+  /** Include which broad areas are drifting (generic category labels only). */
+  includeDriftAreas: boolean;
+  grantedAt: string | null;
+}
+
+/* ------------------------------------------------------------------ */
 /* The full profile                                                    */
 /* ------------------------------------------------------------------ */
 
@@ -241,6 +267,8 @@ export interface Profile {
   checkIns: CheckIn[];
   /** "I'm actually okay" corrections that gently tune the learned baseline. */
   corrections: ZoneCorrection[];
+  /** Consent-gated, read-only supporter access. Off by default. */
+  sharing: SharingSettings;
 }
 
 /* ------------------------------------------------------------------ */

@@ -117,6 +117,15 @@ function baseProfile(): Profile {
     },
     checkIns: [],
     corrections: [],
+    sharing: {
+      enabled: false,
+      supporterName: "",
+      supporterRole: "",
+      token: "demo-share-token",
+      includeTrends: true,
+      includeDriftAreas: true,
+      grantedAt: null,
+    },
   };
 }
 

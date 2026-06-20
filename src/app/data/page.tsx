@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { PageShell } from "@/components/PageShell";
 import { Card } from "@/components/Card";
+import { SupporterAccess } from "@/components/SupporterAccess";
 import { useProfile } from "@/lib/useProfile";
 import { clearProfile, saveProfile } from "@/lib/store";
 import {
@@ -138,6 +139,14 @@ export default function DataPage() {
             label={"“I'm actually okay” corrections"}
             value={`${(profile.corrections ?? []).length}`}
           />
+          <Row
+            label="Supporter access"
+            value={
+              profile.sharing?.enabled
+                ? `On — shared with ${profile.sharing.supporterName || "someone"}`
+                : "Off"
+            }
+          />
           <Row label="Where it lives" value="This device only — your browser's storage" />
         </dl>
 
@@ -240,6 +249,9 @@ export default function DataPage() {
           </ul>
         )}
       </Card>
+
+      {/* Consent-gated supporter access */}
+      <SupporterAccess profile={profile} />
 
       {/* Take it or delete it */}
       <Card>

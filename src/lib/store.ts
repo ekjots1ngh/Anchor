@@ -49,6 +49,15 @@ export function createEmptyProfile(): Profile {
     },
     checkIns: [],
     corrections: [],
+    sharing: {
+      enabled: false,
+      supporterName: "",
+      supporterRole: "",
+      token: crypto.randomUUID(),
+      includeTrends: true,
+      includeDriftAreas: true,
+      grantedAt: null,
+    },
   };
 }
 

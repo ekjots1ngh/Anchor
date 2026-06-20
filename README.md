@@ -165,6 +165,28 @@ feature that proves Anchor mirrors the person's own signs rather than an AI judg
   signs are showing). That `visibility` setting **drives exactly what a pre-filled message
   reveals** — so the control is real, not cosmetic. Nothing is shared unless you press send.
 
+### Supporter access — consent-gated, read-only (the care-team / NHS wedge)
+
+A family member or care coordinator can see a **read-only summary** — but only
+when the person explicitly grants it, and only **zone history + trends**, never
+raw private notes.
+
+- **One projection, auditable:** `src/lib/supporter.ts → supporterSummary()` is
+  the single source of truth for what a supporter sees: current zone, a 14-day
+  zone history, and generic drift-area categories (e.g. "Sleep", "Connection").
+  It **never** includes check-in notes, sign names/descriptions, baseline text,
+  mood/sleep specifics, contacts, or crisis-plan details — there's a test that
+  serialises the summary and asserts none of that private data can leak.
+- **Consent + revocation:** off by default. The person grants access in
+  `/data` (which generates a token) and can revoke any time — **revoking rotates
+  the token**, so any link already shared stops working. They also choose what's
+  included (trends, drift areas).
+- **The supporter view** lives at `/supporter?token=…` with its own minimal,
+  read-only shell (no app nav). Access is gated by `canSupporterAccess()`.
+- Prototype scope: the summary is read from the person's device (no backend
+  yet), so the link works same-device; the planned Supabase swap makes it
+  remotely shareable with the **same projection and the same user control**.
+
 ### Amber/red: connect to a human, fast
 
 Anchor's job in amber/red is to **connect the person to a real human — not to be
