@@ -7,7 +7,7 @@ const base =
   "inline-flex items-center justify-center rounded-pill px-6 py-3 text-base font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-steady-300 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas";
 
 const variants: Record<Variant, string> = {
-  primary: "bg-steady-400 text-white hover:bg-steady-500",
+  primary: "bg-steady-600 text-white hover:bg-steady-700",
   ghost: "bg-transparent text-ink-muted hover:bg-steady-50",
 };
 

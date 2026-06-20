@@ -36,3 +36,6 @@ next-env.d.ts
 # local JSON data store (the person owns their data — keep it off the repo)
 /data/*.json
 !/data/.gitkeep
+
+# local waitlist store (dev fallback)
+/.data

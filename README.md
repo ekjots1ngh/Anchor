@@ -1,160 +1,158 @@
 # Anchor
 
-**A calm staying-well companion for people managing psychosis or schizophrenia relapse.**
+**A calm, staying-well companion for people managing psychosis or schizophrenia relapse.**
 
-Anchor mirrors a person's *own* pre-agreed early-warning signs back to them and
-helps them reach real human support. It is a hackathon prototype.
+Anchor mirrors a person’s *own* pre-agreed early-warning signs back to them, and helps them reach real human support when those signs drift from their normal. It’s designed to feel calm on a hard day.
 
-> Anchor is **not** a diagnostic tool and makes **no** medical claims. It
-> supports clinical care — it never replaces it. If you are in crisis, contact
-> your care team or local emergency services.
+> ⚠️ **What Anchor is _not_.** Anchor is an **unvalidated prototype, not a medical device** and **not a diagnostic tool**. It makes no medical claims, doesn’t diagnose, and doesn’t predict episodes. It is built to **support clinical care, never to replace it**. If you are in crisis, contact your care team or local emergency services.
 
 ---
 
-## The three principles (baked into the architecture)
+## What it is
 
-These aren't aspirations in a doc — they're enforced by where code is allowed
-to live.
+Anchor is a small web app built around one idea: the person decides, while well, what *their* early-warning signs are — in their own words — and Anchor quietly watches for those, and only those.
 
-### 1. Not diagnostic. A mirror, not a verdict.
-
-Anchor never tells anyone they are unwell, scores how unwell they are, or makes
-any clinical judgement. It reflects back the early-warning signs **the person
-themselves chose** during onboarding, in their own words, and helps them reach
-the people on their plan.
-
-- The language throughout is gentle and non-alarming (see _Design_ below).
-- A standing reminder that Anchor supports — and never replaces — clinical care
-  sits in the footer of every screen (`src/components/PageShell.tsx`).
-- The domain types (`src/lib/types.ts`) deliberately model *the person's signs
-  and plan* — there is no "diagnosis" or "severity" concept anywhere.
-
-### 2. Zone decisions come from a transparent rules engine — NEVER from an LLM.
-
-Which zone a check-in falls into (`steady` vs `worth a check-in`) is decided by
-one small, deterministic, fully inspectable function:
-
-- **`src/lib/rules-engine.ts`** — `evaluateZone()`. Pure function, no I/O, no
-  network, no model. Same inputs → same zone, forever. It sums the weights of
-  the signs the person reported, compares against a threshold the person and
-  their care team agreed, and returns the zone **plus every reason behind it**.
-- The dashboard renders those reasons in full (`/dashboard`) — nothing about the
-  decision is hidden.
-- **`src/lib/messaging.ts`** — `phraseMessage()` is the **only** place an LLM is
-  ever permitted, and it may rephrase the human-facing `message` string **and
-  nothing else**. It contains a runtime guard that throws if the zone is ever
-  changed. Today it's a no-op pass-through (scaffold).
-
-> Rule of thumb: the **decision** is always code you can read. The **wording**
-> can be made warmer by a model. The two never mix.
-
-### 3. The person owns their data.
-
-- Data lives in a simple local store (`src/lib/store.ts`) behind a
-  storage-agnostic `ProfileStore` interface, so we can swap to Supabase later
-  without touching the rest of the app.
-- For now it's local JSON under `/data`, which is **gitignored** — a person's
-  signs and notes are never committed (`.gitignore`, `data/.gitkeep`).
-- The plan screen states the person can export or erase everything at any time.
+- **Set up on a good day.** With (ideally) their care team, the person chooses early-warning signs from five staying-well domains — sleep, social, thinking, function, mood — grounded in established relapse-prevention / staying-well-plan frameworks (e.g. WRAP). They rewrite them in their own words.
+- **A 30-second daily check-in.** How they slept, their mood, and whether any of *their* signs are around. When things are steady, the check-in shortens to a single tap.
+- **Mirrored back, with help nearby.** If their signs drift from their personal baseline, Anchor reflects that back calmly and helps them reach a real person — a friend, family member, or their care team.
 
 ---
 
-## Stack
+## Architecture: the rule decides, the model only phrases
 
-- **Next.js 14** (App Router) + **TypeScript**
-- **Tailwind CSS 3** for the design system
-- **Local JSON / in-memory store** for now (swappable for **Supabase** later)
-- Deploy target: **Vercel**
+This is the most important design decision in the project, and it exists for safety.
 
-## Getting started
+```
+ check-ins ─▶ ┌──────────────────────────────┐  zone + which signals drove it
+              │  TRANSPARENT RULES ENGINE     │ ───────────────────────────────▶  UI
+              │  src/lib/zone.ts (pure, tested)│
+              └──────────────────────────────┘
+                                                  the decided zone + drivers
+                                                          │
+                                                          ▼
+              ┌──────────────────────────────┐
+              │  LLM — ONLY phrases a message │   warm, non-alarming wording
+              │  src/app/api/message/route.ts │ ───────────────────────────────▶  UI
+              └──────────────────────────────┘   (amber/red only; falls back to
+                                                  deterministic copy if absent)
+```
+
+**The zone (green / amber / red) is _always_ decided by a transparent, inspectable rules engine — never by an LLM.** The engine (`src/lib/zone.ts`, `computeZone`) is pure and deterministic: same inputs → same output, no network, no randomness, no model. Per signal it:
+
+1. **Learns the person’s own baseline** — a personal mean and normal spread from their past check-ins (floored so a perfectly-steady history isn’t hair-trigger). Too little history → the signal is “warming up” and can’t drive a zone.
+2. **Scores drift with a personal z-score** — how far the recent window sits above *their* usual, in units of *their own* variation.
+3. **Confirms it’s a real shift, not noise, with a one-sided CUSUM change-point detector** over a rolling window. A single bad day can’t trip it; a sustained shift can.
+4. **Weights sleep and social withdrawal the most heavily** (strong early signs), then maps the weighted result to a zone.
+
+Every result is fully **explainable**: each driver reports its learned baseline, recent level, z-score, whether the CUSUM fired, whether it drove the zone, and its share. The dashboard’s “**Why this zone?**” view renders that in plain language.
+
+**The LLM is allowed exactly one job: rephrasing the human-facing message** (`/api/message`, model `claude-opus-4-8`, server-side only). It is handed the zone the engine already decided plus which signals drifted, and returns *only* a warm, non-alarming sentence or two. Its system prompt forbids diagnosing, predicting episodes, giving medical advice, or catastrophising. If there’s no API key, the dashboard falls back to deterministic template copy — the app still works.
+
+**Why the separation matters.** A person’s “are my early-warning signs showing?” decision must be auditable, reproducible, and owned by them and their clinicians — not delegated to a black box. So the **decision** is always code you can read; the **wording** can be made warmer by a model. The two never mix.
+
+---
+
+## Safety design
+
+Safety isn’t a banner — it’s built into the data model and the tests.
+
+- **You own your data.** Everything lives in the person’s browser (`localStorage`), never sent to a server. The `/data` panel lets them **see everything stored** (readable summary + raw JSON), **export** it, and **erase all of it** — no account, no copies kept.
+- **Consent-gated supporter view.** A family member or care coordinator can see a **read-only summary** at `/supporter?token=…` — but only when the person turns it on, and only **zone history + trends + generic drift-area labels**, *never raw private notes*. One auditable projection (`src/lib/supporter.ts`) is the single source of truth for what a supporter sees. Revoking rotates the token, so any link already shared stops working.
+- **The crisis path is always available.** A quiet “Call your crisis line” link is in the footer on **every page** once onboarded; in amber/red the dashboard leads with one-tap, consent-gated ways to reach a real person.
+- **Dismissals can’t silence a crisis.** An “**I’m actually okay**” correction gently tunes the baseline to reduce alert fatigue — but it can only *relax amber*. The engine re-checks the raw history and **forces red regardless of any correction** (a `crisisOverride`), so a genuine crisis is never dismissed away.
+
+### All of this is unit-tested — **32 tests, all passing**
+
+```
+src/lib/zone.test.ts        12   per-person engine: steady→green, sustained→amber, large→red,
+                                 single-day-noise resistance, personalisation, warming-up,
+                                 and the CRISIS SAFEGUARD (red stands under a pile of dismissals)
+src/lib/supporter.test.ts    6   access gating + the NO-PRIVATE-DATA-LEAK test (serialises the
+                                 supporter projection and asserts none of 14 planted secrets appear)
+src/lib/contact.test.ts      6   consent-gating + visibility-shaped pre-filled messages
+src/lib/checkin.test.ts      5   adaptive check-in: shortens only after a steady streak, reverts on a rough day
+src/lib/demo.test.ts         3   deterministic demo seed: green → amber, driven by sleep + social
+```
+
+Run them with `npm test`.
+
+---
+
+## Tech stack
+
+Next.js 14 (App Router) · TypeScript · Tailwind CSS · `localStorage` store (swappable for Supabase later) · `@anthropic-ai/sdk` (`claude-opus-4-8`, server-side only) · deployed on Vercel.
+
+---
+
+## Quickstart
 
 ```bash
 npm install
-npm run dev      # http://localhost:3000
-```
+npm run dev        # http://localhost:3000
 
-Other scripts:
-
-```bash
-npm run build      # production build
-npm run lint       # next lint
+npm test           # 32 unit tests (Vitest)
 npm run typecheck  # tsc --noEmit
+npm run lint       # next lint
+npm run build      # production build
 ```
 
-## Routes (scaffolded)
+### Environment variables
 
-| Route          | Purpose                                                                 |
-| -------------- | ----------------------------------------------------------------------- |
-| `/`            | Landing page — the three principles, calm entry point.                  |
-| `/onboarding`  | Where a person defines their own signs, weights, contacts and plan.     |
-| `/checkin`     | A quick "which of my signs are around today?" check-in.                 |
-| `/dashboard`   | The zone + **why** (full, inspectable reasons from the rules engine).   |
-| `/plan`        | The person's staying-well plan and support contacts, mirrored back.     |
+Copy `.env.example` → `.env.local`. All are optional — the app runs without them.
 
-> These are **placeholder scaffolds** — no features are wired up yet beyond a
-> live demonstration of the rules engine on `/dashboard`.
+| Variable | What it does |
+|---|---|
+| `ANTHROPIC_API_KEY` | Enables the warm LLM message in amber/red. **Server-side only — never exposed to the browser.** Without it, the dashboard uses deterministic copy. |
+| `NEXT_PUBLIC_DEMO_MODE` | Set to `1` to show the demo / **▶ 2-minute presenter walkthrough** panel on a deployed build (it always shows in local `npm run dev`). |
+| `ADMIN_TOKEN` | Protects the `/admin` waitlist view and `npm run waitlist`. Open `/admin?key=<token>` to see sign-ups. |
+| `KV_REST_API_URL`, `KV_REST_API_TOKEN` | Durable waitlist storage. Connect a **Vercel KV** store (Storage → Create → KV) and these are injected automatically — sign-ups persist to Redis. Without them, sign-ups go to a local file (dev) + the server logs. |
+| `WAITLIST_WEBHOOK_URL` | Optional *extra* sink for waitlist submissions (Google Sheet / Airtable / Slack …), in addition to the durable store. |
 
-## Design system
+**Waitlist sign-ups are persisted durably** (`src/lib/waitlist-store.ts`) and retrievable two ways: the protected **`/admin?key=…`** page, or **`npm run waitlist`** (add `-- --json` for raw). For real signal on Vercel, connect a KV store (one click) — locally it uses a file.
 
-Calm by design. The goal is that opening Anchor never raises a person's
-heart rate.
+### Deploy (Vercel, zero-config)
 
-- **Soft neutral canvas** (`canvas` / warm off-white) with raised `surface` cards.
-- **Two — and only two — zone colours:**
-  - `steady` → **muted sage-green** ("things look steady")
-  - `checkin` → **warm amber** ("might be worth a check-in")
-- **No red. No alarm colours.** There is deliberately no "danger" state in the
-  palette — Anchor does not shout at people about their own mental health.
-- **Generous spacing**, **rounded cards** (`rounded-card`), soft low-contrast
-  shadows.
+1. Import the repo at [vercel.com/new](https://vercel.com/new) — Next.js auto-detected.
+2. Add the env vars above (Production + Preview), then **Deploy**. Env changes need a redeploy.
 
-Tokens live in **`tailwind.config.ts`** (Tailwind theme) and
-**`src/design/tokens.ts`** (the same tokens in code, for non-CSS use).
+### See it in 2 minutes
 
-## Project structure
+In `npm run dev` (or a build with `NEXT_PUBLIC_DEMO_MODE=1`), click **▶ Run 2-min walkthrough** (bottom-right) and tap **Next** four times: **steady → drifting → the warm amber message → reaching a human**. The seed pre-loads, so nothing depends on live typing.
 
-```
-anchor/
-├── README.md
-├── package.json
-├── next.config.mjs
-├── tailwind.config.ts          # design tokens: sage = steady, amber = check-in, no red
-├── postcss.config.mjs
-├── tsconfig.json
-├── .eslintrc.json
-├── .gitignore                  # /data/*.json is ignored — the person's data stays theirs
-├── data/
-│   └── .gitkeep                # local JSON store lives here (gitignored content)
-└── src/
-    ├── app/
-    │   ├── layout.tsx          # root layout + fonts
-    │   ├── globals.css         # Tailwind layers + base styles
-    │   ├── page.tsx            # landing page
-    │   ├── onboarding/page.tsx # scaffold
-    │   ├── checkin/page.tsx    # scaffold
-    │   ├── dashboard/page.tsx  # scaffold — renders a live rules-engine result
-    │   └── plan/page.tsx       # scaffold
-    ├── components/
-    │   ├── PageShell.tsx       # page frame, nav, persistent care-not-replace footer
-    │   ├── Card.tsx            # soft rounded surface
-    │   ├── Button.tsx          # calm pill action
-    │   └── ZoneBadge.tsx       # sage / amber badge (no red variant exists)
-    ├── design/
-    │   └── tokens.ts           # zones + spacing/radius tokens in code
-    └── lib/
-        ├── types.ts            # domain types — note: no "diagnosis"/"severity"
-        ├── rules-engine.ts     # THE zone decision. Deterministic. No LLM. Ever.
-        ├── messaging.ts        # the ONLY place an LLM may touch — wording only
-        └── store.ts            # ProfileStore interface + local store (Supabase later)
-```
+---
 
-## Roadmap (post-scaffold)
+## Routes
 
-- Wire onboarding → store → check-in → dashboard end to end.
-- Persist to local JSON, then add a Supabase `ProfileStore` implementation.
-- Add the optional LLM rephrasing behind `phraseMessage()` (wording only).
-- Data export & erase controls on `/plan`.
+| Route | What it is |
+|---|---|
+| `/` | Public landing page — warm, honest explanation + waitlist/interest form |
+| `/onboarding` | Set up your own signs, baseline, what helps, trusted circle, crisis line |
+| `/checkin` | The ~30-second daily check-in (shortens to one tap when steady) |
+| `/dashboard` | Your zone (in your words) + “Why this zone?” + 7-day trend + reach a human |
+| `/plan` | Your staying-well & crisis plan, mirrored back |
+| `/data` | See / export / erase your data; control the consent-gated supporter view |
+| `/supporter?token=…` | The read-only summary a supporter sees (zones & trends only) |
+| `/api/message` | Server-side: phrases the warm note (LLM) — never decides the zone |
+| `/api/waitlist` | Server-side: captures landing-page interest (durable store) |
+| `/admin?key=…` | Protected view of waitlist sign-ups (token = `ADMIN_TOKEN`) |
+
+---
+
+## How it maps to the bounties
+
+Honest mappings — what Anchor actually does, and where the fit is looser.
+
+- **Vercel.** Built and deployed on Vercel: Next.js 14 App Router with serverless API routes (`/api/message`, `/api/waitlist`), zero-config deploy, and the LLM call kept strictly server-side so the key never reaches the browser.
+- **FLock (sovereign AI / data sovereignty).** A core theme, not a bolt-on: the person’s data lives on their device and is theirs to export or erase; the **AI never makes the decision** (a transparent rule does, the model only phrases); and any sharing is **consent-gated, read-only, and minimal**, via one auditable projection that’s tested to leak nothing private.
+- **Solvimon (billing / commercialisation).** Anchor’s go-to-market wedge is **care teams / the NHS as the buyer** — the consent-gated supporter view is the B2B entry point, which fits a per-seat / usage-based subscription that billing infrastructure like Solvimon serves. *(Honest scope: this is the monetisation model, not a built Solvimon integration.)*
+- **Bilt (rewards / loyalty).** The most tentative fit. Anchor already tracks a gentle “steady streak”, which a rewards layer could recognise — but in a mental-health context we’d deliberately keep any such mechanic low-key and non-coercive, so we have *not* gamified check-ins here.
+
+---
+
+## Status & honesty
+
+This is a hackathon prototype. The zone engine, safety guarantees, and data model are real and unit-tested; the data store is local (`localStorage`) and the supporter view is same-device until a backend (Supabase) is added — the read-only projection and the user’s control over it stay exactly the same. Anchor makes no clinical claims and is not for clinical use.
 
 ## License
 
-Prototype — not for clinical use.
+[MIT](./LICENSE).

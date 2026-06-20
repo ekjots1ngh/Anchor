@@ -1,10 +1,12 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { CrisisQuickLink } from "@/components/CrisisQuickLink";
 
 const NAV = [
   { href: "/checkin", label: "Check-in" },
   { href: "/dashboard", label: "Dashboard" },
   { href: "/plan", label: "My plan" },
+  { href: "/data", label: "Your data" },
 ];
 
 /**
@@ -24,16 +26,16 @@ export function PageShell({
   return (
     <div className="min-h-screen bg-canvas text-ink">
       <header className="border-b border-line/70">
-        <div className="mx-auto flex max-w-content items-center justify-between px-6 py-5">
+        <div className="mx-auto flex max-w-content flex-wrap items-center justify-between gap-x-4 gap-y-2 px-5 py-4 sm:px-6 sm:py-5">
           <Link href="/" className="text-lg font-semibold tracking-tight">
             Anchor
           </Link>
-          <nav className="flex gap-1 text-sm">
+          <nav aria-label="Primary" className="flex flex-wrap gap-1 text-sm">
             {NAV.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="rounded-pill px-3 py-1.5 text-ink-muted hover:bg-steady-50 hover:text-ink"
+                className="rounded-pill px-3 py-2 text-ink-muted hover:bg-steady-50 hover:text-ink"
               >
                 {item.label}
               </Link>
@@ -42,7 +44,16 @@ export function PageShell({
         </div>
       </header>
 
-      <main className="mx-auto max-w-content px-6 py-12 sm:py-16">
+      {/* Calm, persistent disclaimer — visible on every screen, not buried. */}
+      <div className="border-b border-checkin-200/70 bg-checkin-50/60">
+        <p className="mx-auto max-w-content px-5 py-2 text-xs leading-relaxed text-ink-muted sm:px-6">
+          A staying-well <span className="font-medium text-ink">prototype</span> —
+          not a medical device or diagnostic tool. It supports your care, it never
+          replaces it.
+        </p>
+      </div>
+
+      <main className="mx-auto max-w-content px-5 py-12 sm:px-6 sm:py-16">
         <div className="mb-10">
           <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
             {title}
@@ -59,12 +70,13 @@ export function PageShell({
 
       <footer className="mx-auto max-w-content px-6 pb-16">
         <p className="text-sm leading-relaxed text-ink-faint">
-          Anchor is not a diagnostic tool and makes no medical claims. It
-          reflects your own pre-agreed early-warning signs back to you and
-          helps you reach real human support. It supports clinical care — it
-          never replaces it. If you are in crisis, contact your care team or
-          local emergency services.
+          Anchor is an unvalidated prototype, not a medical device or a
+          diagnostic tool, and makes no medical claims. It reflects your own
+          pre-agreed early-warning signs back to you and helps you reach real
+          human support. It supports clinical care — it never replaces it. If you
+          are in crisis, contact your care team or local emergency services.
         </p>
+        <CrisisQuickLink />
       </footer>
     </div>
   );

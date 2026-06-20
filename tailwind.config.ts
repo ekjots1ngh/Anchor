@@ -3,17 +3,20 @@ import type { Config } from "tailwindcss";
 /**
  * Anchor design tokens.
  *
- * Calm by design. Two and only two "zone" colours:
- *   - steady  → muted sage-green  ("things look steady")
- *   - checkin → warm amber        ("might be worth a check-in")
+ * Calm by design. Three "zone" colours, none of them alarming:
+ *   - steady  → muted sage-green  (zone "green":  the person is anchored)
+ *   - checkin → warm amber        (zone "amber":  worth a check-in)
+ *   - crisis  → muted clay        (zone "red":    real support, now)
  *
- * There is deliberately NO red / alarm colour. Anchor never shouts at a
- * person about their own mental health. See README → "Design principles".
+ * The "red" zone is a dignified, muted clay/terracotta — deliberately NOT an
+ * emergency red. Anchor never shouts at a person about their own mental
+ * health. See README → "Design principles".
  */
 const config: Config = {
   content: [
-    "./src/app/**/*.{ts,tsx}",
-    "./src/components/**/*.{ts,tsx}",
+    // Scan all of src so class strings declared in design tokens and lib
+    // helpers (e.g. ZONE_STYLES) are not purged.
+    "./src/**/*.{ts,tsx}",
   ],
   theme: {
     extend: {
@@ -22,9 +25,11 @@ const config: Config = {
         canvas: "#f5f4ef", // warm off-white background
         surface: "#fffdf9", // raised card surface
         ink: {
-          DEFAULT: "#3a3a34", // primary text, soft near-black
-          muted: "#6f6e66", // secondary text
-          faint: "#9a988e", // captions / hints
+          // All three pass WCAG AA (>= 4.5:1) on the canvas, so even small
+          // captions stay readable while keeping the calm, low-contrast feel.
+          DEFAULT: "#33332e", // primary text, soft near-black (~11:1)
+          muted: "#5f5e56", // secondary text (~5.9:1)
+          faint: "#6f6e66", // captions / hints (~4.7:1)
         },
         line: "#e7e4db", // hairline borders
 
@@ -50,6 +55,19 @@ const config: Config = {
           500: "#bb8038",
           600: "#98662c",
           700: "#755024",
+        },
+
+        // Zone: CRISIS / RED — muted clay/terracotta. Serious and warm, NOT
+        // an alarm red. This is the "real support, now" zone, kept dignified.
+        crisis: {
+          50: "#f7efea",
+          100: "#ecdacf",
+          200: "#dcb8a6",
+          300: "#c9947c",
+          400: "#b5745a", // primary clay
+          500: "#9c5e47",
+          600: "#7e4b39",
+          700: "#613a2d",
         },
       },
       borderRadius: {
