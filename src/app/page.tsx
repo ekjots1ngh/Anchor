@@ -138,7 +138,7 @@ export default function HomePage() {
           <p className="mt-4 text-sm text-ink-faint">
             Already set up?{" "}
             <Link href="/dashboard" className="font-medium text-steady-700 underline">
-              Open your dashboard
+              go to your Anchor
             </Link>
             .
           </p>

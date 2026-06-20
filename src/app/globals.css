@@ -20,6 +20,25 @@
     line-height: 1.65;
   }
 
+  /* Gentle, consistent feedback on interactive elements. Colour-only so it
+     never shifts layout; fully disabled under prefers-reduced-motion below. */
+  a,
+  button,
+  select,
+  [role="button"] {
+    transition:
+      background-color 200ms ease,
+      border-color 200ms ease,
+      color 200ms ease,
+      box-shadow 200ms ease;
+  }
+
+  /* Headings keep clear of the top edge when focused via the skip link or
+     in-page anchors, so the person never lands mid-screen. */
+  :target {
+    scroll-margin-top: 1.5rem;
+  }
+
   /* One calm, visible focus ring for EVERY interactive element — keyboard
      users always know where they are, even on buttons without ring utilities.
      The ring follows the element's border-radius in modern browsers. */
@@ -33,6 +52,40 @@
   [contenteditable]:focus-visible {
     outline: 2px solid theme("colors.steady.500");
     outline-offset: 2px;
+  }
+
+  /* A keyboard-only "skip to content" link. Hidden until focused, then it
+     floats into the top-left so keyboard users can jump past the nav. */
+  .skip-link {
+    position: absolute;
+    left: 1rem;
+    top: -3.5rem;
+    z-index: 60;
+    border-radius: theme("borderRadius.pill");
+    background: theme("colors.surface");
+    border: 1px solid theme("colors.line");
+    padding: 0.625rem 1.25rem;
+    font-weight: 500;
+    box-shadow: theme("boxShadow.card");
+  }
+  .skip-link:focus {
+    top: 1rem;
+  }
+
+  /* A barely-there settle as a screen's content appears: a soft fade and a few
+     pixels of rise. Calm, never bouncy. Disabled under reduced-motion. */
+  @keyframes anchor-rise {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .anchor-rise {
+    animation: anchor-rise 320ms ease-out both;
   }
 
   /* Respect "reduce motion": no transitions, animations, or smooth scroll. */

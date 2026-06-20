@@ -18,7 +18,7 @@ export default function DashboardPage() {
 
   if (loading)
     return (
-      <PageShell title="Your dashboard">
+      <PageShell title="How you're doing">
         <p className="text-ink-muted">Loading your picture…</p>
       </PageShell>
     );
@@ -26,7 +26,7 @@ export default function DashboardPage() {
   if (!profile?.onboardedAt) {
     return (
       <PageShell
-        title="Your dashboard"
+        title="How you're doing"
         intro="Once your Anchor is set up, this is where your own picture lives."
       >
         <Card>
@@ -74,6 +74,22 @@ export default function DashboardPage() {
     .slice(0, 3)
     .map((d) => d.label);
 
+  // A plain-language version of the 7-day chart for screen readers (the bars
+  // themselves are decorative / aria-hidden).
+  const trendSummary = trend
+    .map((d) => {
+      const day = d.date.toLocaleDateString(undefined, { weekday: "long" });
+      const word = !d.zone
+        ? "no check-in"
+        : d.zone === "green"
+          ? "steady"
+          : d.zone === "amber"
+            ? "drifting a little"
+            : "worth support";
+      return `${day}, ${word}`;
+    })
+    .join("; ");
+
   // Show a brief acknowledgement right after an "I'm actually okay" correction
   // tips the dashboard back to green.
   const lastCorrection = (profile.corrections ?? []).slice(-1)[0];
@@ -83,7 +99,7 @@ export default function DashboardPage() {
     Date.now() - new Date(lastCorrection.createdAt).getTime() < 120_000;
 
   return (
-    <PageShell title="Your dashboard">
+    <PageShell title="How you're doing">
       {/* Calm status card */}
       <Card id="present-status" className={`${style.softBg} ring-1 ${style.ring}`}>
         <div className="flex items-center justify-between">
@@ -146,6 +162,7 @@ export default function DashboardPage() {
           <h2 className="text-lg font-semibold">Your last 7 days</h2>
           <span className="text-sm text-ink-faint">A gentle trend, not a grade</span>
         </div>
+        <p className="sr-only">Your last 7 days: {trendSummary}.</p>
         <div className="mt-6 flex items-end justify-between gap-2 sm:gap-3" aria-hidden="true">
           {trend.map((day, i) => {
             const heightPct = day.zone ? Math.max(8, Math.round(day.score * 100)) : 0;
@@ -185,11 +202,12 @@ export default function DashboardPage() {
         </div>
       </Card>
 
-      {/* What I'm watching */}
+      {/* The signs the person themselves chose to keep an eye on. */}
       <Card>
-        <h2 className="text-lg font-semibold">What I&rsquo;m watching</h2>
+        <h2 className="text-lg font-semibold">The signs you&rsquo;re watching</h2>
         <p className="mt-1 text-sm text-ink-faint">
-          Each signal and how far it&rsquo;s drifted from your baseline lately.
+          The signs you chose, and how far each one has drifted from your usual
+          lately.
         </p>
         <ul className="mt-5 space-y-3">
           {watching.map((d) => {

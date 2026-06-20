@@ -103,8 +103,8 @@ export function statusCopy(
   const named = movers.slice(0, 3);
   const detail = named.length ? `, including ${joinNames(named)}` : "";
   return {
-    headline: "Quite a lot has drifted from your baseline.",
-    body: `Several of your signals have moved away from steady${detail}. This is the kind of moment you told us you'd want real support. Your circle and crisis line are right here.`,
+    headline: "This looks like a harder stretch right now.",
+    body: `A few of your signs have moved away from your usual${detail}. This is the kind of moment you told us you'd want a real person nearby. Your circle and crisis line are right here, whenever you're ready.`,
   };
 }
 

@@ -126,6 +126,22 @@ function Summary({ view }: { view: SupporterView }) {
           <p className="mt-1 text-sm text-ink-faint">
             The last 14 days, zones only, no details.
           </p>
+          <p className="sr-only">
+            {view.trend
+              .map((p) => {
+                const day = new Date(p.date).toLocaleDateString();
+                const word = !p.zone
+                  ? "no check-in"
+                  : p.zone === "green"
+                    ? "steady"
+                    : p.zone === "amber"
+                      ? "drifting a little"
+                      : "worth support";
+                return `${day}, ${word}`;
+              })
+              .join("; ")}
+            .
+          </p>
           <div className="mt-5 flex items-end gap-1.5" aria-hidden>
             {view.trend.map((p, i) => (
               <div
@@ -149,7 +165,7 @@ function Summary({ view }: { view: SupporterView }) {
       {/* Drift areas (generic) */}
       {view.includeDriftAreas && view.driftAreas.length > 0 && (
         <div className="rounded-card border border-line bg-surface p-6 shadow-card sm:p-8">
-          <h2 className="text-lg font-semibold">Areas being watched</h2>
+          <h2 className="text-lg font-semibold">Areas they&rsquo;re keeping an eye on</h2>
           <p className="mt-1 text-sm text-ink-faint">
             Broad areas only, not the specific, personal details.
           </p>

@@ -1,13 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { CrisisQuickLink } from "@/components/CrisisQuickLink";
-
-const NAV = [
-  { href: "/checkin", label: "Check-in" },
-  { href: "/dashboard", label: "Dashboard" },
-  { href: "/plan", label: "My plan" },
-  { href: "/data", label: "Your data" },
-];
+import { PrimaryNav } from "@/components/PrimaryNav";
 
 /**
  * Page frame: centred, generous whitespace, soft neutral canvas. Holds the
@@ -25,22 +19,18 @@ export function PageShell({
 }) {
   return (
     <div className="min-h-screen bg-canvas text-ink">
+      <a href="#main-content" className="skip-link">
+        Skip to main content
+      </a>
       <header className="border-b border-line/70">
         <div className="mx-auto flex max-w-content flex-wrap items-center justify-between gap-x-4 gap-y-2 px-5 py-4 sm:px-6 sm:py-5">
-          <Link href="/" className="text-lg font-semibold tracking-tight">
+          <Link
+            href="/"
+            className="inline-flex min-h-[2.75rem] items-center rounded-pill px-2 text-lg font-semibold tracking-tight"
+          >
             Anchor
           </Link>
-          <nav aria-label="Primary" className="flex flex-wrap gap-1 text-sm">
-            {NAV.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="rounded-pill px-3 py-2 text-ink-muted hover:bg-steady-50 hover:text-ink"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
+          <PrimaryNav />
         </div>
       </header>
 
@@ -53,7 +43,11 @@ export function PageShell({
         </p>
       </div>
 
-      <main className="mx-auto max-w-content px-5 py-12 sm:px-6 sm:py-16">
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="anchor-rise mx-auto max-w-content px-5 py-12 focus:outline-none sm:px-6 sm:py-16"
+      >
         <div className="mb-10">
           <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
             {title}
