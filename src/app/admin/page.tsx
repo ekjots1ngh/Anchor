@@ -75,8 +75,8 @@ export default async function AdminPage({
                     {new Date(e.createdAt).toLocaleString()}
                   </Td>
                   <Td className="font-medium text-ink">{e.email}</Td>
-                  <Td className="text-ink-muted">{e.role || "—"}</Td>
-                  <Td className="text-ink-muted">{e.note || "—"}</Td>
+                  <Td className="text-ink-muted">{e.role || "(none)"}</Td>
+                  <Td className="text-ink-muted">{e.note || "(none)"}</Td>
                 </tr>
               ))}
             </tbody>

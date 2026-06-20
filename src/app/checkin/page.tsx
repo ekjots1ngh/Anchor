@@ -156,7 +156,7 @@ function QuickCheckIn({
             onClick={onFull}
             className="inline-flex min-h-[2.75rem] items-center justify-center rounded-pill px-5 py-3 text-ink-muted hover:bg-steady-50"
           >
-            Something feels different — full check-in
+            Something feels different. Full check-in
           </button>
         </div>
       </Card>
@@ -213,11 +213,11 @@ function CheckInForm({
   return (
     <PageShell
       title={`Your 30-second check-in${profile.displayName ? `, ${profile.displayName}` : ""}`}
-      intro="Just a quick snapshot of today. There are no right answers, and nothing is scored against you — Anchor only reflects your own picture back."
+      intro="Just a quick snapshot of today. There are no right answers, and nothing is scored against you. Anchor only reflects your own picture back."
     >
       {existing ? (
         <p className="-mt-2 text-sm text-ink-faint">
-          You already checked in today — this will gently update it.
+          You already checked in today, so this will gently update it.
         </p>
       ) : null}
 
@@ -290,7 +290,7 @@ function CheckInForm({
       <Card>
         <h2 className="text-lg font-semibold">Any of your signs showing today?</h2>
         <p className="mt-1 text-sm text-ink-faint">
-          Tap any that are around. Leave the rest — most days, that&rsquo;s none.
+          Tap any that are around. Leave the rest. Most days, that&rsquo;s none.
         </p>
         <ul className="mt-4 space-y-2">
           {profile.signs.map((s) => {
@@ -340,7 +340,7 @@ function CheckInForm({
       </div>
 
       <p className="text-sm leading-relaxed text-ink-faint">
-        Your answers run through a transparent rules engine — never an AI — to
+        Your answers run through a transparent rules engine, never an AI, to
         reflect a zone back to you on your dashboard.
       </p>
     </PageShell>

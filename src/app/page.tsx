@@ -24,14 +24,14 @@ export default function HomePage() {
             A calm staying-well companion
           </span>
           <h1 className="mt-6 text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
-            Notice your early signs — in your own words — and reach the people who
+            Notice your early signs, in your own words, and reach the people who
             can help.
           </h1>
           <p className="mt-6 max-w-prose text-lg leading-relaxed text-ink-muted">
             Anchor helps people living with psychosis or schizophrenia keep an eye
             on their <em>own</em> pre-agreed early-warning signs, and reach real
             human support when those signs drift from their normal. It&rsquo;s
-            built to feel calm on a hard day. It supports your care — it never
+            built to feel calm on a hard day. It supports your care, it never
             replaces it.
           </p>
           <div className="mt-9 flex flex-wrap gap-3">
@@ -62,17 +62,17 @@ export default function HomePage() {
             <Step
               n="1"
               title="Set it up on a good day"
-              body="While you're well — ideally with your care team — you choose the early-warning signs you want to watch for, in your own words, and who you'd want to reach."
+              body="While you're well, ideally with your care team, you choose the early-warning signs you want to watch for, in your own words, and who you'd want to reach."
             />
             <Step
               n="2"
               title="A 30-second check-in"
-              body="A gentle daily check-in — how you slept, your mood, and any of your own signs. When things are steady, it shortens to a single tap."
+              body="A gentle daily check-in: how you slept, your mood, and any of your own signs. When things are steady, it shortens to a single tap."
             />
             <Step
               n="3"
               title="Mirrored back, with help nearby"
-              body="If your signs drift from your normal, Anchor reflects that back calmly and helps you reach a real person — a friend, family member, or your care team."
+              body="If your signs drift from your normal, Anchor reflects that back calmly and helps you reach a real person: a friend, family member, or your care team."
             />
           </div>
         </section>
@@ -85,15 +85,15 @@ export default function HomePage() {
           <div className="mt-8 grid gap-6 sm:grid-cols-3">
             <Principle
               title="Not diagnostic"
-              body="Anchor makes no medical claims and doesn't judge you. It mirrors the signs you chose — nothing more."
+              body="Anchor makes no medical claims and doesn't judge you. It mirrors the signs you chose, nothing more."
             />
             <Principle
               title="Transparent, not a black box"
-              body="Every zone comes from a simple, inspectable rule you can read — learned from your own check-ins, never decided by an AI."
+              body="Every zone comes from a simple, inspectable rule you can read, learned from your own check-ins, never decided by an AI."
             />
             <Principle
               title="Your data is yours"
-              body="Your signs, notes and plan live on your device. You can read, export, or erase all of it — and control exactly what anyone else sees."
+              body="Your signs, notes and plan live on your device. You can read, export, or erase all of it, and control exactly what anyone else sees."
             />
           </div>
         </section>
@@ -103,7 +103,7 @@ export default function HomePage() {
           <h2 className="text-2xl font-semibold tracking-tight">Who it&rsquo;s for</h2>
           <p className="mt-4 max-w-prose text-lg leading-relaxed text-ink-muted">
             For people managing psychosis or schizophrenia who want a calmer way
-            to stay well between appointments — and for the families, friends and
+            to stay well between appointments, and for the families, friends and
             care teams around them. If you&rsquo;re a clinician, researcher or
             commissioner, we&rsquo;d genuinely love to hear what would make this
             useful and safe in real care.
@@ -118,8 +118,8 @@ export default function HomePage() {
             </h2>
             <p className="mt-3 max-w-prose leading-relaxed text-ink-muted">
               We&rsquo;re early, and building this carefully and in the open. If
-              this resonates — for yourself, someone you support, or the people
-              you care for — leave your email and we&rsquo;ll keep you posted.
+              this resonates, whether for yourself, someone you support, or the
+              people you care for, leave your email and we&rsquo;ll keep you posted.
             </p>
             <div className="mt-8 max-w-xl">
               <WaitlistForm />
@@ -132,7 +132,7 @@ export default function HomePage() {
           <p className="text-sm leading-relaxed text-ink-faint">
             Anchor is an unvalidated prototype, not a medical device or a
             diagnostic tool, and makes no medical claims. It supports clinical
-            care — it never replaces it. If you are in crisis, contact your care
+            care, it never replaces it. If you are in crisis, contact your care
             team or local emergency services.
           </p>
           <p className="mt-4 text-sm text-ink-faint">

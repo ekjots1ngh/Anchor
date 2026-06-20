@@ -52,7 +52,7 @@ export function WhyThisZone({
                   <div className="flex items-start justify-between gap-3">
                     <span className="text-ink">
                       <span className="font-medium">{s.label}</span> {s.phrase}
-                      {s.sharePhrase ? ` — ${s.sharePhrase}` : ""}.
+                      {s.sharePhrase ? `, ${s.sharePhrase}` : ""}.
                     </span>
                     <span
                       className={`mt-0.5 shrink-0 rounded-pill px-3 py-1 text-xs font-medium ${status.pill}`}

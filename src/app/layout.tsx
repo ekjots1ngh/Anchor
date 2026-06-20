@@ -10,7 +10,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Anchor — a calm staying-well companion",
+  title: "Anchor: a calm staying-well companion",
   description:
     "Anchor mirrors your own pre-agreed early-warning signs back to you and helps you reach real human support. Not a diagnostic tool.",
 };

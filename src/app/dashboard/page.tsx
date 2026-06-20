@@ -99,7 +99,7 @@ export default function DashboardPage() {
             <p className="mt-3 text-lg leading-relaxed text-ink-muted">{copy.body}</p>
             {justCorrected && (
               <p className="mt-3 rounded-2xl bg-steady-50 px-4 py-3 text-sm text-steady-700">
-                Thanks for telling me — I&rsquo;ve noted this as normal for you and
+                Thanks for telling me. I&rsquo;ve noted this as normal for you and
                 nudged your baseline, so I won&rsquo;t flag it at this level again.
               </p>
             )}

@@ -61,7 +61,7 @@ export function SupporterAccess({ profile }: { profile: Profile }) {
 
       <p className="mt-2 text-sm leading-relaxed text-ink-muted">
         Optionally let a family member or care coordinator see a <strong>read-only</strong>{" "}
-        summary — your <strong>zones and trends only</strong>. They never see your
+        summary, your <strong>zones and trends only</strong>. They never see your
         private notes, your check-in details, your contacts, or your crisis plan.
         You&rsquo;re in control, and you can turn it off any time.
       </p>
@@ -108,7 +108,7 @@ export function SupporterAccess({ profile }: { profile: Profile }) {
             />
             <span className="text-sm text-ink-muted">
               Which broad areas are drifting (e.g. &ldquo;Sleep&rdquo;,
-              &ldquo;Connection&rdquo;) — generic labels only, never your wording.
+              &ldquo;Connection&rdquo;), generic labels only, never your wording.
             </span>
           </label>
         </fieldset>
@@ -148,7 +148,7 @@ export function SupporterAccess({ profile }: { profile: Profile }) {
             </button>
           </div>
           <p className="text-xs leading-relaxed text-ink-faint">
-            Turning off access also invalidates the link above — anyone you sent it
+            Turning off access also invalidates the link above, so anyone you sent it
             to can no longer open it.
           </p>
         </div>
@@ -165,7 +165,7 @@ export function SupporterAccess({ profile }: { profile: Profile }) {
       <p className="mt-5 text-xs leading-relaxed text-ink-faint">
         Prototype note: the summary is read from this device, so the preview link
         works in this browser. A hosted version (the planned Supabase backend)
-        would let your supporter open it from anywhere — the read-only projection
+        would let your supporter open it from anywhere, and the read-only projection
         and your control over it stay exactly the same.
       </p>
     </Card>

@@ -48,10 +48,11 @@ ALWAYS:
 - Reassure plainly that some drift from baseline is normal and does NOT mean anything is wrong or that an episode is coming.
 - Gently name what has drifted, in everyday words, using the signals you are given.
 - If staying-well actions are provided, point the person back to one or two of those things that have helped them before.
-- Warmly encourage reaching out to a real person they trust — a friend, family member, or someone on their care team.
+- Warmly encourage reaching out to a real person they trust, such as a friend, family member, or someone on their care team.
 
 STYLE:
 - 2 to 4 short sentences. Second person ("you"). Calm, kind, grounded, human.
+- Do NOT use em-dashes (—) or en-dashes (–) anywhere in the note. Use commas, full stops, colons, or parentheses instead.
 - Output ONLY the note text. No preamble, no quotation marks, no markdown, no sign-off.`;
 
 function magnitude(drift: number): string {
@@ -72,7 +73,7 @@ function buildUserPrompt(req: MessageRequest): string {
     : "(none recorded)";
 
   const zonePhrase = req.zoneLabel
-    ? `${req.zone} — the person calls this zone "${req.zoneLabel}"`
+    ? `${req.zone}, which the person calls "${req.zoneLabel}"`
     : req.zone;
 
   return [

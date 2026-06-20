@@ -32,7 +32,7 @@ export default function DataPage() {
     return (
       <PageShell
         title="Your data"
-        intro="Once you've set up your Anchor, everything stored about you lives here — yours to read, export, or erase."
+        intro="Once you've set up your Anchor, everything stored about you lives here, yours to read, export, or erase."
       >
         <Card>
           <Link
@@ -54,7 +54,7 @@ export default function DataPage() {
       ? "none yet"
       : saved.length === 1
         ? saved[0].toLocaleDateString()
-        : `${saved[0].toLocaleDateString()} – ${saved[saved.length - 1].toLocaleDateString()}`;
+        : `${saved[0].toLocaleDateString()} to ${saved[saved.length - 1].toLocaleDateString()}`;
 
   const updateContact = (id: string, patch: Partial<TrustedContact>) =>
     saveProfile({
@@ -96,7 +96,7 @@ export default function DataPage() {
   return (
     <PageShell
       title="Your data"
-      intro="Everything Anchor knows about you lives on this device, in your browser — it is never sent to a server. Read all of it below, take a copy, or erase it for good. And you decide exactly what each person in your circle can see."
+      intro="Everything Anchor knows about you lives on this device, in your browser, and is never sent to a server. Read all of it below, take a copy, or erase it for good. And you decide exactly what each person in your circle can see."
     >
       {/* What's stored */}
       <Card>
@@ -148,11 +148,11 @@ export default function DataPage() {
             label="Supporter access"
             value={
               profile.sharing?.enabled
-                ? `On — shared with ${profile.sharing.supporterName || "someone"}`
+                ? `On, shared with ${profile.sharing.supporterName || "someone"}`
                 : "Off"
             }
           />
-          <Row label="Where it lives" value="This device only — your browser's storage" />
+          <Row label="Where it lives" value="This device only, in your browser's storage" />
         </dl>
 
         <details className="mt-5">
@@ -170,8 +170,8 @@ export default function DataPage() {
         <h2 className="text-xl font-semibold">Who can see what</h2>
         <p className="mt-1 text-sm leading-relaxed text-ink-muted">
           You control, per person, when they&rsquo;re reached and exactly how much
-          they see. These settings shape what a pre-filled message reveals —
-          nothing more is ever shared, and only when you press send.
+          they see. These settings shape what a pre-filled message reveals.
+          Nothing more is ever shared, and only when you press send.
         </p>
 
         {profile.trustedContacts.length === 0 ? (
@@ -209,9 +209,9 @@ export default function DataPage() {
                         updateContact(c.id, { alertAtZone: e.target.value as ZoneId })
                       }
                     >
-                      <option value="green">Green — anytime</option>
-                      <option value="amber">Amber — when a few signs show</option>
-                      <option value="red">Red — only when I really need support</option>
+                      <option value="green">Green, anytime</option>
+                      <option value="amber">Amber, when a few signs show</option>
+                      <option value="red">Red, only when I really need support</option>
                     </select>
                   </label>
 
@@ -263,7 +263,7 @@ export default function DataPage() {
         <h2 className="text-xl font-semibold">Take it or delete it</h2>
         <p className="mt-2 text-sm leading-relaxed text-ink-muted">
           It&rsquo;s your data. Download a full copy any time, or erase every
-          trace of it from this device — no account, no questions, no copies kept
+          trace of it from this device, with no account, no questions, no copies kept
           anywhere else.
         </p>
         <div className="mt-5 flex flex-wrap gap-3">

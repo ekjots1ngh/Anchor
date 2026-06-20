@@ -47,7 +47,7 @@ export function PageShell({
       {/* Calm, persistent disclaimer — visible on every screen, not buried. */}
       <div className="border-b border-checkin-200/70 bg-checkin-50/60">
         <p className="mx-auto max-w-content px-5 py-2 text-xs leading-relaxed text-ink-muted sm:px-6">
-          A staying-well <span className="font-medium text-ink">prototype</span> —
+          A staying-well <span className="font-medium text-ink">prototype</span>,
           not a medical device or diagnostic tool. It supports your care, it never
           replaces it.
         </p>
@@ -73,7 +73,7 @@ export function PageShell({
           Anchor is an unvalidated prototype, not a medical device or a
           diagnostic tool, and makes no medical claims. It reflects your own
           pre-agreed early-warning signs back to you and helps you reach real
-          human support. It supports clinical care — it never replaces it. If you
+          human support. It supports clinical care, it never replaces it. If you
           are in crisis, contact your care team or local emergency services.
         </p>
         <CrisisQuickLink />

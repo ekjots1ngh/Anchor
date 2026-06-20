@@ -44,7 +44,7 @@ export function WaitlistForm() {
         className="rounded-card border border-steady-200 bg-steady-50 p-6 sm:p-8"
         aria-live="polite"
       >
-        <h3 className="text-xl font-semibold text-ink">Thank you — you&rsquo;re on the list.</h3>
+        <h3 className="text-xl font-semibold text-ink">Thank you, you&rsquo;re on the list.</h3>
         <p className="mt-2 leading-relaxed text-ink-muted">
           We&rsquo;ll only be in touch about Anchor, and only now and then. Your
           email stays private, and you can ask us to remove it any time.
@@ -121,7 +121,7 @@ export function WaitlistForm() {
 
       {status === "error" ? (
         <p className="text-sm text-crisis-700" aria-live="polite">
-          Something went wrong — please check your email and try again.
+          Something went wrong. Please check your email and try again.
         </p>
       ) : null}
 
@@ -135,7 +135,7 @@ export function WaitlistForm() {
 
       <p className="text-sm leading-relaxed text-ink-faint">
         We&rsquo;ll only use your email to tell you about Anchor. We won&rsquo;t
-        share it, and you can ask us to delete it any time. No spam — promise.
+        share it, and you can ask us to delete it any time. No spam, promise.
       </p>
     </form>
   );

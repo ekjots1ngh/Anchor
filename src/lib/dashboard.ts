@@ -87,16 +87,16 @@ export function statusCopy(
     return {
       headline: `You're ${zoneLabel.toLowerCase()}${who}.`,
       body:
-        "Nothing's drifting from your baseline right now. This is just your own picture, reflected back — keep leaning on what works for you.",
+        "Nothing's drifting from your baseline right now. This is just your own picture, reflected back, so keep leaning on what works for you.",
     };
   }
 
   if (result.zone === "amber") {
     const named = movers.slice(0, 2);
-    const detail = named.length ? ` — mostly ${joinNames(named)}` : "";
+    const detail = named.length ? `, mostly ${joinNames(named)}` : "";
     return {
       headline: `A few signs have drifted a little${who}.`,
-      body: `Some things have nudged away from your baseline this week${detail}. Nothing's wrong — it might just be a good moment to slow down and lean on what helps.`,
+      body: `Some things have nudged away from your baseline this week${detail}. Nothing's wrong. It might just be a good moment to slow down and lean on what helps.`,
     };
   }
 
@@ -104,7 +104,7 @@ export function statusCopy(
   const detail = named.length ? `, including ${joinNames(named)}` : "";
   return {
     headline: "Quite a lot has drifted from your baseline.",
-    body: `Several of your signals have moved away from steady${detail}. This is the kind of moment you told us you'd want real support — your circle and crisis line are right here.`,
+    body: `Several of your signals have moved away from steady${detail}. This is the kind of moment you told us you'd want real support. Your circle and crisis line are right here.`,
   };
 }
 

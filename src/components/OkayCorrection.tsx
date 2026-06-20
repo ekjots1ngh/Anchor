@@ -39,7 +39,7 @@ export function OkayCorrection({
       <h2 className="text-lg font-semibold">Does this not match how you are?</h2>
       <p className="mt-1 text-sm leading-relaxed text-ink-muted">
         If this nudge is a false alarm, tell Anchor. It&rsquo;ll treat this as
-        normal for you and stop flagging it at this level — so it learns your real
+        normal for you and stop flagging it at this level, so it learns your real
         normal instead of nagging. Your circle and crisis line stay available
         either way.
       </p>

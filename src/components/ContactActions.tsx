@@ -24,7 +24,7 @@ export function ContactActions({
   if (!contact.consent) {
     return (
       <p className="text-sm text-ink-faint">
-        Consent not confirmed — add {firstNameOf(contact.name)} again in your plan to enable messaging.
+        Consent not confirmed. Add {firstNameOf(contact.name)} again in your plan to enable messaging.
       </p>
     );
   }
@@ -32,7 +32,7 @@ export function ContactActions({
   if (!canMessage(contact)) {
     return (
       <p className="text-sm text-ink-faint">
-        No number saved for {firstNameOf(contact.name)} — add one in your plan.
+        No number saved for {firstNameOf(contact.name)}. Add one in your plan.
       </p>
     );
   }

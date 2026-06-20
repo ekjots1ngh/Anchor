@@ -43,7 +43,7 @@ export default function PlanPage() {
   return (
     <PageShell
       title="Your staying-well plan"
-      intro="This is your plan, in your words. Anchor only ever mirrors it back — it never decides anything about your care."
+      intro="This is your plan, in your words. Anchor only ever mirrors it back. It never decides anything about your care."
     >
       <Card>
         <h2 className="text-xl font-semibold">Your zones</h2>
@@ -87,7 +87,7 @@ export default function PlanPage() {
       <Card>
         <h2 className="text-xl font-semibold">Your trusted circle</h2>
         <p className="mt-1 text-sm text-ink-faint">
-          Reach any of them in one tap — the message comes pre-filled, and you
+          Reach any of them in one tap. The message comes pre-filled, and you
           send it from your own phone.
         </p>
         <ul className="mt-4 space-y-3">
@@ -153,7 +153,7 @@ export default function PlanPage() {
         <p className="mt-2 text-sm leading-relaxed text-ink-muted">
           Everything here belongs to you and lives only on this device. See
           exactly what&rsquo;s stored, take a copy, erase it all, or change what
-          each person can see — in one place.
+          each person can see, all in one place.
         </p>
         <div className="mt-5">
           <Link

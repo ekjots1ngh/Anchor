@@ -47,7 +47,7 @@ export const STARTER_SIGNS: StarterSign[] = [
   // Everyday function
   { id: "skip-meds", name: "Missing or changing my medication", category: "function", example: "I've skipped doses or stopped taking it." },
   { id: "eating", name: "Skipping meals or not eating well", category: "function", example: "I'm forgetting to eat or not bothering with food." },
-  { id: "basics", name: "Letting hygiene or basics slide", category: "function", example: "Showering, tidying, daylight — it's all slipping." },
+  { id: "basics", name: "Letting hygiene or basics slide", category: "function", example: "Showering, tidying, daylight: it's all slipping." },
   { id: "tasks", name: "Struggling to keep up", category: "function", example: "Work, study, or chores are piling up and I can't keep on top of them." },
 
   // Mood & feelings

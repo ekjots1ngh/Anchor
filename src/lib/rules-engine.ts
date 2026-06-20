@@ -77,7 +77,7 @@ export function evaluateZone({
  */
 function defaultMessage(zone: ZoneId, reasons: ZoneReason[]): string {
   if (zone === "green") {
-    return "Things look steady today. Nothing here needs action — this is just your own picture, reflected back.";
+    return "Things look steady today. Nothing here needs action. This is just your own picture, reflected back.";
   }
 
   const present = reasons.filter((r) => r.present).map((r) => r.signName);
@@ -87,7 +87,7 @@ function defaultMessage(zone: ZoneId, reasons: ZoneReason[]): string {
       : `${present.slice(0, -1).join(", ")} and ${present[present.length - 1]}`;
 
   if (zone === "amber") {
-    return `A few of the signs you chose to watch for are showing right now (${list}). That doesn't mean anything is wrong — it might just be worth a check-in, and reaching out to someone in your circle.`;
+    return `A few of the signs you chose to watch for are showing right now (${list}). That doesn't mean anything is wrong. It might just be worth a check-in, and reaching out to someone in your circle.`;
   }
 
   return `Several of your signs are showing at once (${list}). This is the moment you told us you'd want real support. Your plan and the people on it are one tap away.`;

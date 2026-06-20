@@ -43,7 +43,7 @@ const SCRIPT: ScriptStep[] = [
   {
     title: "Steady",
     caption:
-      "Meet Alex — they set Anchor up on a good day: their own early-warning signs, in their own words. Right now, they're steady.",
+      "Meet Alex, who set Anchor up on a good day: their own early-warning signs, in their own words. Right now, they're steady.",
     run: (r) => {
       saveProfile(seededProfile());
       r.push("/dashboard");
@@ -52,7 +52,7 @@ const SCRIPT: ScriptStep[] = [
   {
     title: "Drifting",
     caption:
-      "A few rough days — sleep slips and Alex pulls back from people. Anchor has learned their personal baseline, and notices the drift from their own normal.",
+      "A few rough days: sleep slips and Alex pulls back from people. Anchor has learned their personal baseline, and notices the drift from their own normal.",
     run: (r) => {
       saveProfile(dippedProfile());
       r.push("/dashboard");
@@ -61,7 +61,7 @@ const SCRIPT: ScriptStep[] = [
   {
     title: "A warm, honest nudge",
     caption:
-      "The zone comes from a transparent rule — never an AI. A model only phrases a calm, non-alarming note: it names what's drifting and points back to what helps.",
+      "The zone comes from a transparent rule, never an AI. A model only phrases a calm, non-alarming note: it names what's drifting and points back to what helps.",
     run: (r) => {
       r.push("/dashboard");
       focusCard("present-status");
@@ -70,7 +70,7 @@ const SCRIPT: ScriptStep[] = [
   {
     title: "Reach a real person",
     caption:
-      "Anchor's job now is to connect Alex to a human — one tap, pre-filled, consent-gated. It's the nudge, not the help itself.",
+      "Anchor's job now is to connect Alex to a human: one tap, pre-filled, consent-gated. It's the nudge, not the help itself.",
     run: (r) => {
       r.push("/dashboard");
       focusCard("present-reach");
@@ -248,7 +248,7 @@ export function DemoPanel() {
       </button>
       <p className="mt-2 text-xs leading-relaxed text-ink-faint">
         Scripted: steady → drifting → warm message → reach a human. Seed loads on
-        start — no typing needed.
+        start, no typing needed.
       </p>
 
       <div className="my-3 border-t border-line" />

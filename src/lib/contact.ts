@@ -53,10 +53,10 @@ export function prefilledMessage(opts: {
     extras.push(`Right now I'd say I'm in a "${opts.zoneLabel}" patch.`);
   }
   if (visibility === "signals" && opts.signalLabels && opts.signalLabels.length) {
-    extras.push(`A few of my signs are showing — ${joinList(opts.signalLabels)}.`);
+    extras.push(`A few of my signs are showing: ${joinList(opts.signalLabels)}.`);
   }
 
-  const opener = `${greeting} — I'm checking in with my Anchor and I could use a bit of support.`;
+  const opener = `${greeting}, I'm checking in with my Anchor and I could use a bit of support.`;
   const closer = "Are you free to talk soon?";
   return extras.length
     ? `${opener} ${extras.join(" ")} ${closer}`

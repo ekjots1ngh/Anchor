@@ -14,9 +14,9 @@ import {
 import type { ZoneId } from "@/lib/types";
 
 const ZONE_BLURB: Record<ZoneId, string> = {
-  green: "Doing steadily — their own signs are in their usual range.",
-  amber: "A few of their signs have been drifting — a good time for a gentle, supportive check-in.",
-  red: "Several signs have drifted and stayed there — they may need real support now. If you're worried, reach out to them or their care team.",
+  green: "Doing steadily. Their own signs are in their usual range.",
+  amber: "A few of their signs have been drifting. A good time for a gentle, supportive check-in.",
+  red: "Several signs have drifted and stayed there, so they may need real support now. If you're worried, reach out to them or their care team.",
 };
 
 const LEVEL_PILL: Record<DriftLevel, string> = {
@@ -95,7 +95,7 @@ function Summary({ view }: { view: SupporterView }) {
       <div className="rounded-card border border-line bg-surface p-4 text-sm leading-relaxed text-ink-muted">
         <strong className="text-ink">{view.firstName}</strong> has chosen to share
         a read-only summary with you. You&rsquo;re seeing their zones and trends
-        only — never their private notes — and they can turn this off at any time.
+        only, never their private notes, and they can turn this off at any time.
       </div>
 
       {/* Current zone */}
@@ -110,7 +110,7 @@ function Summary({ view }: { view: SupporterView }) {
         </div>
         <p className="mt-4 text-lg leading-relaxed text-ink">
           {view.warmingUp
-            ? `Anchor is still learning ${view.firstName}'s usual range — there isn't enough history yet for a reliable picture.`
+            ? `Anchor is still learning ${view.firstName}'s usual range. There isn't enough history yet for a reliable picture.`
             : ZONE_BLURB[view.currentZone]}
         </p>
         <p className="mt-3 text-sm text-ink-faint">
@@ -124,7 +124,7 @@ function Summary({ view }: { view: SupporterView }) {
         <div className="rounded-card border border-line bg-surface p-6 shadow-card sm:p-8">
           <h2 className="text-lg font-semibold">Recent zones</h2>
           <p className="mt-1 text-sm text-ink-faint">
-            The last 14 days — zones only, no details.
+            The last 14 days, zones only, no details.
           </p>
           <div className="mt-5 flex items-end gap-1.5" aria-hidden>
             {view.trend.map((p, i) => (
@@ -151,7 +151,7 @@ function Summary({ view }: { view: SupporterView }) {
         <div className="rounded-card border border-line bg-surface p-6 shadow-card sm:p-8">
           <h2 className="text-lg font-semibold">Areas being watched</h2>
           <p className="mt-1 text-sm text-ink-faint">
-            Broad areas only — not the specific, personal details.
+            Broad areas only, not the specific, personal details.
           </p>
           <ul className="mt-5 space-y-2">
             {view.driftAreas.map((a) => (
@@ -172,7 +172,7 @@ function Summary({ view }: { view: SupporterView }) {
       <p className="text-sm leading-relaxed text-ink-faint">
         This is a summary {view.firstName} chose to share with you. It is not a
         medical record and makes no clinical claims. It mirrors their own
-        pre-agreed early-warning signs — it does not diagnose. If you&rsquo;re
+        pre-agreed early-warning signs. It does not diagnose. If you&rsquo;re
         concerned, the most helpful thing is to talk with them, or contact their
         care team.
       </p>

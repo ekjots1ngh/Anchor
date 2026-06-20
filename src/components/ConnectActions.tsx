@@ -36,7 +36,7 @@ export function ConnectActions({
       <h2 className="text-xl font-semibold">Reach a person</h2>
       <p className="mt-1 text-sm leading-relaxed text-ink-muted">
         The most helpful thing right now is talking to someone real. Anchor is
-        just the nudge — these reach a human in one tap.
+        just the nudge, and these reach a human in one tap.
       </p>
 
       {reachable.length > 0 ? (

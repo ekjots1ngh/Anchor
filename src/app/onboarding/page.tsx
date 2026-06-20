@@ -69,7 +69,7 @@ function Stepper({
         className="h-9 w-9 rounded-pill border border-line text-ink-muted hover:bg-steady-50"
         aria-label="Fewer"
       >
-        –
+        -
       </button>
       <span className="w-6 text-center text-lg font-medium tabular-nums">{value}</span>
       <button
@@ -162,7 +162,7 @@ export default function OnboardingPage() {
         </div>
 
         <p className="mt-12 text-sm leading-relaxed text-ink-faint">
-          Take your time — you can stop and come back. Anchor is not a
+          Take your time, you can stop and come back. Anchor is not a
           diagnostic tool and makes no medical claims. It supports your care, it
           never replaces it. Everything you write stays on your device.
         </p>
@@ -216,7 +216,7 @@ function Welcome({
           Let&rsquo;s set up your Anchor while you&rsquo;re feeling steady.
         </h1>
         <p className="mt-5 max-w-prose text-lg leading-relaxed text-ink-muted">
-          This works best done now — calm, unhurried, ideally alongside someone
+          This works best done now: calm, unhurried, ideally alongside someone
           on your care team. You&rsquo;re writing a note to your future self: the
           signs you want to watch for, what helps, and who to reach. Nothing
           here is decided for you, and you can change any of it later.
@@ -226,7 +226,7 @@ function Welcome({
       <Card>
         <Field
           label="What should Anchor call you?"
-          hint="Optional — just so the app feels like yours."
+          hint="Optional, just so the app feels like yours."
         >
           <input
             className={inputBase}
@@ -449,7 +449,7 @@ function AddCustomSign({ onAdd }: { onAdd: (s: EarlyWarningSign) => void }) {
             ))}
           </select>
         </Field>
-        <Field label="In your words" hint="Optional — how does it show up for you?">
+        <Field label="In your words" hint="Optional, how does it show up for you?">
           <textarea
             className={`${inputBase} min-h-[3.5rem]`}
             value={description}
@@ -494,7 +494,7 @@ function BaselineStep({
     <>
       <StepHeader
         title="What does steady look like for you?"
-        intro="This is your baseline — the version of you Anchor will gently compare against. Then put the three zones into your own words."
+        intro="This is your baseline, the version of you Anchor will gently compare against. Then put the three zones into your own words."
       />
 
       <Card>
@@ -705,7 +705,7 @@ function CircleStep({
     <>
       <StepHeader
         title="Who's in your trusted circle?"
-        intro="The real people you'd want reached, and at which zone. Only add someone who's agreed to it — reaching a human is always the point."
+        intro="The real people you'd want reached, and at which zone. Only add someone who's agreed to it; reaching a human is always the point."
       />
 
       {draft.trustedContacts.length > 0 && (
@@ -809,9 +809,9 @@ function AddContact({ onAdd }: { onAdd: (c: TrustedContact) => void }) {
             value={alertAtZone}
             onChange={(e) => setAlertAtZone(e.target.value as ZoneId)}
           >
-            <option value="green">Green — keep them in the loop anytime</option>
-            <option value="amber">Amber — when a few signs show</option>
-            <option value="red">Red — only when I really need support</option>
+            <option value="green">Green, keep them in the loop anytime</option>
+            <option value="amber">Amber, when a few signs show</option>
+            <option value="red">Red, only when I really need support</option>
           </select>
         </Field>
         <Field
@@ -872,7 +872,7 @@ function CrisisStep({
     <>
       <StepHeader
         title="Your crisis line"
-        intro="One real service you'd call if things reach red. We've prefilled a suggestion — change it to whoever you trust."
+        intro="One real service you'd call if things reach red. We've prefilled a suggestion; change it to whoever you trust."
       />
 
       <Card>
@@ -899,7 +899,7 @@ function CrisisStep({
           What you&rsquo;d want others to know
         </h2>
         <p className="mt-1 text-sm text-ink-faint">
-          Optional — a note to the people helping you, written by you now.
+          Optional: a note to the people helping you, written by you now.
         </p>
         <div className="mt-4 space-y-4">
           <Field label="What helps me in a crisis">
@@ -941,7 +941,7 @@ function ReviewStep({ draft }: { draft: Profile }) {
     <>
       <StepHeader
         title="Here's your plan"
-        intro="Take a look. When this feels right, save it — it stays on your device, and you can change anything whenever you like."
+        intro="Take a look. When this feels right, save it. It stays on your device, and you can change anything whenever you like."
       />
 
       <Card>

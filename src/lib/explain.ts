@@ -27,7 +27,7 @@ export interface ZoneExplanation {
 
 /** Plain-language description of how far a signal has drifted, from its z-score. */
 function driftPhrase(d: ZoneDriver): string {
-  if (!d.haveBaseline) return "is still being learned — not enough history yet";
+  if (!d.haveBaseline) return "is still being learned, not enough history yet";
   if (d.z < 0.5) return "is sitting in your usual range";
 
   const howFar =
@@ -63,13 +63,13 @@ export function explainZone(
   let lead: string;
   if (result.warmingUp) {
     lead =
-      "Anchor is still learning your usual range — it needs a few more check-ins before it can tell drift from an ordinary off-day. For now, nothing here stands out.";
+      "Anchor is still learning your usual range. It needs a few more check-ins before it can tell drift from an ordinary off-day. For now, nothing here stands out.";
   } else if (result.zone === "green") {
-    lead = `Every one of your signs is sitting in its usual range for you — that's why you're ${label}.`;
+    lead = `Every one of your signs is sitting in its usual range for you, which is why you're ${label}.`;
   } else {
     lead = `You're ${label} because ${
       movers.length === 1 ? "one of your signs has" : "a few of your signs have"
-    } drifted above what's normal for you and stayed there across your last ${checkIns} — not just a single off-day.`;
+    } drifted above what's normal for you and stayed there across your last ${checkIns}, not just a single off-day.`;
   }
 
   const signals: ExplainedSignal[] = result.drivers.map((d) => ({
@@ -81,11 +81,11 @@ export function explainZone(
   }));
 
   const ruleLine =
-    "Anchor learned your own baseline and normal range from your past check-ins, then looked for signs that drifted above it and stayed there over several days (a change-point detector, so a single noisy day doesn't count). Sleep and connection are weighted the most. It's your own numbers, compared only to your own past — never an AI deciding how you are.";
+    "Anchor learned your own baseline and normal range from your past check-ins, then looked for signs that drifted above it and stayed there over several days (a change-point detector, so a single noisy day doesn't count). Sleep and connection are weighted the most. It's your own numbers, compared only to your own past, never an AI deciding how you are.";
 
   const reassurance = movers.length
     ? "None of this is a judgement about you. These are the early-warning signs you picked while well, measured against your own baseline by a fixed rule."
-    : "This is only your own signs, compared to your own usual — reflected back, never judged.";
+    : "This is only your own signs, compared to your own usual, reflected back, never judged.";
 
   return { lead, signals, ruleLine, reassurance };
 }
