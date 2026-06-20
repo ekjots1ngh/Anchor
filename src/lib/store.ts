@@ -31,6 +31,7 @@ export function createEmptyProfile(): Profile {
     createdAt: now,
     onboardedAt: null,
     signs: [],
+    setupTogether: false,
     zones: {
       green: { id: "green", ...DEFAULT_ZONE_WORDS.green },
       amber: { id: "amber", ...DEFAULT_ZONE_WORDS.amber },

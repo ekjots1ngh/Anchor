@@ -236,6 +236,28 @@ function Welcome({
           />
         </Field>
       </Card>
+
+      <Card className="bg-steady-50/50">
+        <h2 className="text-lg font-semibold">Setting this up with someone?</h2>
+        <p className="mt-2 leading-relaxed text-ink-muted">
+          Many people find it helpful to do this alongside someone they trust, a
+          clinician, family member, or friend. They can help you choose the signs
+          that fit you and talk through your plan. It stays your plan, in your
+          words, and you can change anything later.
+        </p>
+        <label className="mt-4 flex items-start gap-3">
+          <input
+            type="checkbox"
+            checked={!!draft.setupTogether}
+            onChange={(e) => update({ setupTogether: e.target.checked })}
+            className="mt-1 h-5 w-5 rounded border-line text-steady-600 focus:ring-steady-300"
+          />
+          <span className="text-ink-muted">
+            I&rsquo;m setting this up with someone I trust. (Just a note for
+            yourself, it changes nothing else.)
+          </span>
+        </label>
+      </Card>
     </>
   );
 }

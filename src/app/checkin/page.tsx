@@ -75,7 +75,6 @@ function CheckInFlow({
     return (
       <QuickCheckIn
         profile={profile}
-        streak={steady.streak}
         onDone={onDone}
         onFull={() => setMode("full")}
       />
@@ -115,18 +114,17 @@ function saveCheckIn(
 }
 
 /**
- * The shortened, one-tap check-in offered once someone has been steady for a
- * while. A single big "Still steady" affirms a good day; an escape hatch always
- * lets them do the full check-in instead.
+ * The shortened, one-tap check-in offered when things have felt steady. A single
+ * big "Still steady" affirms a good day; an escape hatch always lets them do the
+ * full check-in instead. There is deliberately no day-count or streak shown —
+ * nothing here is a score to keep up.
  */
 function QuickCheckIn({
   profile,
-  streak,
   onDone,
   onFull,
 }: {
   profile: Profile;
-  streak: number;
   onDone: () => void;
   onFull: () => void;
 }) {
@@ -140,9 +138,10 @@ function QuickCheckIn({
     <PageShell title={`Quick check-in${name}`}>
       <Card className="bg-steady-50/50">
         <p className="text-lg leading-relaxed text-ink">
-          You&rsquo;ve been steady for {streak} days, so today can be quick.
+          Things have felt steady lately, so today can be just one tap if you
+          like.
         </p>
-        <p className="mt-2 text-ink-muted">Are you still doing okay?</p>
+        <p className="mt-2 text-ink-muted">Are you doing okay today?</p>
         <div className="mt-6 flex flex-col gap-3">
           <button
             type="button"
@@ -161,8 +160,9 @@ function QuickCheckIn({
         </div>
       </Card>
       <p className="text-sm leading-relaxed text-ink-faint">
-        Anchor keeps the daily check-in short while you&rsquo;re steady, and asks
-        more only when something shifts.
+        There&rsquo;s no streak to keep and no penalty for days you skip. Anchor
+        keeps this short while things feel steady, and asks a little more only
+        when something shifts.
       </p>
     </PageShell>
   );

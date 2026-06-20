@@ -84,7 +84,7 @@ export default function PlanPage() {
         </ul>
       </Card>
 
-      <Card>
+      <Card id="circle">
         <h2 className="text-xl font-semibold">Your trusted circle</h2>
         <p className="mt-1 text-sm text-ink-faint">
           Reach any of them in one tap. The message comes pre-filled, and you

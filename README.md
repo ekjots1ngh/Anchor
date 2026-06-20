@@ -131,6 +131,7 @@ In `npm run dev` (or a build with `NEXT_PUBLIC_DEMO_MODE=1`), click **▶ Run 2-
 | `/dashboard` | Your zone (in your words) + “Why this zone?” + 7-day trend + reach a human |
 | `/plan` | Your staying-well & crisis plan, mirrored back |
 | `/data` | See / export / erase your data; control the consent-gated supporter view |
+| `/summary` | A plain-language, printable summary to talk through at an appointment |
 | `/supporter?token=…` | The read-only summary a supporter sees (zones & trends only) |
 | `/api/message` | Server-side: phrases the warm note (LLM) — never decides the zone |
 | `/api/waitlist` | Server-side: captures landing-page interest (durable store) |
@@ -145,7 +146,7 @@ Honest mappings — what Anchor actually does, and where the fit is looser.
 - **Vercel.** Built and deployed on Vercel: Next.js 14 App Router with serverless API routes (`/api/message`, `/api/waitlist`), zero-config deploy, and the LLM call kept strictly server-side so the key never reaches the browser.
 - **FLock (sovereign AI / data sovereignty).** A core theme, not a bolt-on: the person’s data lives on their device and is theirs to export or erase; the **AI never makes the decision** (a transparent rule does, the model only phrases); and any sharing is **consent-gated, read-only, and minimal**, via one auditable projection that’s tested to leak nothing private.
 - **Solvimon (billing / commercialisation).** Anchor’s go-to-market wedge is **care teams / the NHS as the buyer** — the consent-gated supporter view is the B2B entry point, which fits a per-seat / usage-based subscription that billing infrastructure like Solvimon serves. *(Honest scope: this is the monetisation model, not a built Solvimon integration.)*
-- **Bilt (rewards / loyalty).** The most tentative fit. Anchor already tracks a gentle “steady streak”, which a rewards layer could recognise — but in a mental-health context we’d deliberately keep any such mechanic low-key and non-coercive, so we have *not* gamified check-ins here.
+- **Bilt (rewards / loyalty).** The most tentative fit, and a deliberate non-goal. For vulnerable users, engagement mechanics are a risk, not a feature: Anchor shows **no streaks, no day-counts, no nagging**, and missing days is met with warmth, never penalty. We would not bolt a rewards loop onto a mental-health check-in, so there is nothing gamified here to reward.
 
 ---
 

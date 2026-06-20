@@ -267,6 +267,12 @@ export interface Profile {
   /** Set when onboarding is completed; null while in progress. */
   onboardedAt: string | null;
   signs: EarlyWarningSign[];
+  /**
+   * Whether the person set Anchor up alongside someone they trust (a clinician,
+   * family member, or friend). Optional and purely informational — it gently
+   * personalises tone and is noted on the clinician summary. Never required.
+   */
+  setupTogether?: boolean;
   /** The three zones, in the person's own words. */
   zones: Record<ZoneId, Zone>;
   baseline: Baseline;

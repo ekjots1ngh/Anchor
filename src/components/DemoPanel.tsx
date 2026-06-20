@@ -137,7 +137,7 @@ export function DemoPanel() {
     const ss = String(elapsed % 60).padStart(2, "0");
     const over = elapsed > 120;
     return (
-      <div className="fixed inset-x-0 bottom-0 z-50">
+      <div className="fixed inset-x-0 bottom-0 z-50 print:hidden">
         <div className="mx-auto max-w-content px-3 pb-3 sm:px-6 sm:pb-4">
           <div className="rounded-card border border-line bg-surface/95 p-4 shadow-card backdrop-blur sm:p-5">
             <div className="flex items-center justify-between gap-3">
@@ -215,7 +215,7 @@ export function DemoPanel() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="fixed bottom-4 right-4 z-50 rounded-pill border border-line bg-surface/95 px-4 py-2 text-sm font-medium text-ink-muted shadow-card backdrop-blur"
+        className="fixed bottom-4 right-4 z-50 rounded-pill border border-line bg-surface/95 px-4 py-2 text-sm font-medium text-ink-muted shadow-card backdrop-blur print:hidden"
       >
         Demo
       </button>
@@ -224,7 +224,7 @@ export function DemoPanel() {
 
   /* ---------------- Manual panel ---------------- */
   return (
-    <div className="fixed bottom-4 right-4 z-50 w-64 rounded-card border border-line bg-surface/95 p-4 shadow-card backdrop-blur">
+    <div className="fixed bottom-4 right-4 z-50 w-64 rounded-card border border-line bg-surface/95 p-4 shadow-card backdrop-blur print:hidden">
       <div className="flex items-center justify-between">
         <span className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
           Demo mode · dev only

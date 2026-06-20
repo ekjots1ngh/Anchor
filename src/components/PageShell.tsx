@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { CrisisQuickLink } from "@/components/CrisisQuickLink";
+import { ReachSupport, ReachSupportLink } from "@/components/ReachSupport";
 import { PrimaryNav } from "@/components/PrimaryNav";
 
 /**
@@ -30,7 +30,10 @@ export function PageShell({
           >
             Anchor
           </Link>
-          <PrimaryNav />
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <PrimaryNav />
+            <ReachSupportLink />
+          </div>
         </div>
       </header>
 
@@ -70,7 +73,7 @@ export function PageShell({
           human support. It supports clinical care, it never replaces it. If you
           are in crisis, contact your care team or local emergency services.
         </p>
-        <CrisisQuickLink />
+        <ReachSupport />
       </footer>
     </div>
   );

@@ -258,6 +258,25 @@ export default function DataPage() {
       {/* Consent-gated supporter access */}
       <SupporterAccess profile={profile} />
 
+      {/* Plain-language summary for an appointment */}
+      <Card>
+        <h2 className="text-xl font-semibold">A summary for an appointment</h2>
+        <p className="mt-2 text-sm leading-relaxed text-ink-muted">
+          A calm, plain-language summary of your signs, zones, what helps, and a
+          gentle overview of recent check-ins, ready to print or save as a PDF
+          and talk through with a clinician or someone you trust. It supports
+          your care, it never replaces it.
+        </p>
+        <div className="mt-5">
+          <Link
+            href="/summary"
+            className="inline-flex min-h-[2.75rem] items-center rounded-pill border border-steady-300 px-5 py-2.5 font-medium text-steady-700 hover:bg-steady-50"
+          >
+            Open my summary
+          </Link>
+        </div>
+      </Card>
+
       {/* Take it or delete it */}
       <Card>
         <h2 className="text-xl font-semibold">Take it or delete it</h2>
