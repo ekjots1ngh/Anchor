@@ -48,6 +48,16 @@ one small, deterministic, fully inspectable function:
   - Fully transparent: every `driver` reports its learned `baselineMean`,
     `recentMean`, `sigma`, `z`, `cusum`, whether it `fired`/`drove`, and its
     `share`. No LLM, no clock, no randomness.
+  - **"I'm actually okay"**: dismissing an amber nudge records a `ZoneCorrection`
+    that folds the affirmed recent levels *gently* into the learned baseline
+    (weighted pseudo-observations) — so Anchor stops nagging at that level and
+    learns the person's real normal (less alert fatigue). It only ever **relaxes
+    amber**: an escalation beyond the affirmed level still flags, and the
+    **crisis safeguard** re-checks the raw history and forces red regardless of
+    any corrections (`crisisOverride`). The crisis routing is always available —
+    "I'm actually okay" appears only in amber (never red), the reach-a-person
+    block sits above it, and a quiet "Call your crisis line" link is on every
+    page (`CrisisQuickLink`).
   - Tests (`src/lib/zone.test.ts`): steady→green, moderate-sustained→amber,
     large-multi-signal→red, **single-day-noise resisted**, **personalisation**
     (a chronically-poor sleeper isn't flagged for being themselves, while the

@@ -7,6 +7,7 @@ import { ZoneBadge } from "@/components/ZoneBadge";
 import { WarmMessage } from "@/components/WarmMessage";
 import { WhyThisZone } from "@/components/WhyThisZone";
 import { ConnectActions } from "@/components/ConnectActions";
+import { OkayCorrection } from "@/components/OkayCorrection";
 import { ZONE_STYLES } from "@/design/tokens";
 import { useProfile } from "@/lib/useProfile";
 import { computeZoneForProfile } from "@/lib/zone";
@@ -68,6 +69,14 @@ export default function DashboardPage() {
     .slice(0, 3)
     .map((d) => d.label);
 
+  // Show a brief acknowledgement right after an "I'm actually okay" correction
+  // tips the dashboard back to green.
+  const lastCorrection = (profile.corrections ?? []).slice(-1)[0];
+  const justCorrected =
+    result.zone === "green" &&
+    !!lastCorrection &&
+    Date.now() - new Date(lastCorrection.createdAt).getTime() < 120_000;
+
   return (
     <PageShell title="Your dashboard">
       {/* Calm status card */}
@@ -81,7 +90,15 @@ export default function DashboardPage() {
         </div>
         <h2 className="mt-5 text-2xl font-semibold tracking-tight">{copy.headline}</h2>
         {result.zone === "green" ? (
-          <p className="mt-3 text-lg leading-relaxed text-ink-muted">{copy.body}</p>
+          <>
+            <p className="mt-3 text-lg leading-relaxed text-ink-muted">{copy.body}</p>
+            {justCorrected && (
+              <p className="mt-3 rounded-2xl bg-steady-50 px-4 py-3 text-sm text-steady-700">
+                Thanks for telling me — I&rsquo;ve noted this as normal for you and
+                nudged your baseline, so I won&rsquo;t flag it at this level again.
+              </p>
+            )}
+          </>
         ) : (
           // Amber/red only: a warm, LLM-phrased note (server-side; falls back to
           // the deterministic copy if messaging isn't available).
@@ -108,6 +125,13 @@ export default function DashboardPage() {
           zoneLabel={zoneWord.label}
           signalLabels={topWhy}
         />
+      )}
+
+      {/* Amber only (never red): let the person correct a false alarm. The
+          crisis/connect path above is unaffected, and the engine still forces
+          red on a genuine crisis regardless of corrections. */}
+      {result.zone === "amber" && (
+        <OkayCorrection profile={profile} drivers={result.drivers} />
       )}
 
       {/* 7-day trend */}

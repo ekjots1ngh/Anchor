@@ -116,6 +116,7 @@ function baseProfile(): Profile {
       crisisLinePhone: "116 123",
     },
     checkIns: [],
+    corrections: [],
   };
 }
 

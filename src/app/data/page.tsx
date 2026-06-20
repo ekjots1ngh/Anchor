@@ -134,6 +134,10 @@ export default function DataPage() {
             label="Check-ins saved"
             value={`${profile.checkIns.length} (${range})`}
           />
+          <Row
+            label={"“I'm actually okay” corrections"}
+            value={`${(profile.corrections ?? []).length}`}
+          />
           <Row label="Where it lives" value="This device only — your browser's storage" />
         </dl>
 

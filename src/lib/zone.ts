@@ -4,6 +4,7 @@ import type {
   Profile,
   SignCategory,
   SleepQuality,
+  ZoneCorrection,
   ZoneId,
 } from "@/lib/types";
 
@@ -87,6 +88,8 @@ export interface ZoneOptions {
   /** Normalised score at/above which the zone is amber / red. */
   amberAt: number;
   redAt: number;
+  /** Pseudo-baseline-samples added per "I'm actually okay" correction. */
+  correctionWeight: number;
   /** Per-signal weights — sleep & social are the heaviest by design. */
   weights: ZoneWeights;
 }
@@ -102,6 +105,7 @@ export const DEFAULT_ZONE_OPTIONS: ZoneOptions = {
   zForFullSeverity: 3.0,
   amberAt: 0.15,
   redAt: 0.45,
+  correctionWeight: 3,
   weights: {
     sleep: 3, // strong early sign — weighted heavily
     social: 3, // social withdrawal — strong early sign — weighted heavily
@@ -154,6 +158,11 @@ export interface ZoneComputation {
   baselineReady: boolean;
   /** True while Anchor is still learning the person's baseline. */
   warmingUp: boolean;
+  /**
+   * True when "I'm actually okay" corrections would have relaxed the zone, but
+   * the person's raw history is red, so red is enforced. The crisis safeguard.
+   */
+  crisisOverride: boolean;
   /** Every signal considered, most influential first. Fully explainable. */
   drivers: ZoneDriver[];
 }
@@ -161,6 +170,8 @@ export interface ZoneComputation {
 export interface ComputeZoneInput {
   signs: EarlyWarningSign[];
   checkIns: CheckIn[];
+  /** Recorded "I'm actually okay" corrections that gently tune the baseline. */
+  corrections?: ZoneCorrection[];
   options?: Partial<ZoneOptions>;
 }
 
@@ -197,6 +208,7 @@ export function computeZone(input: ComputeZoneInput): ZoneComputation {
     ...input.options,
     weights: { ...DEFAULT_ZONE_OPTIONS.weights, ...input.options?.weights },
   };
+  const corrections = input.corrections ?? [];
 
   // Group the person's sign ids by category.
   const idsByCategory = {} as Record<SignalKey, string[]>;
@@ -243,81 +255,110 @@ export function computeZone(input: ComputeZoneInput): ZoneComputation {
     return categoryFraction(checkIn, key);
   };
 
-  const rawDrivers = activeSignals.map((signal) => {
-    const recentVals = recentSlice.map((c) => signalValue(c, signal));
-    const baseVals = baselineSlice.map((c) => signalValue(c, signal));
+  // Assess the zone, optionally folding "I'm actually okay" corrections into
+  // each signal's learned baseline (gentle pseudo-observations). Baseline
+  // readiness still depends on REAL history, so corrections can't fake a baseline.
+  const assess = (folded: ZoneCorrection[]) => {
+    const rawDrivers = activeSignals.map((signal) => {
+      const recentVals = recentSlice.map((c) => signalValue(c, signal));
+      const realBaseVals = baselineSlice.map((c) => signalValue(c, signal));
 
-    const haveBaseline = baseVals.length >= opts.minBaselineSamples;
-    const mu = haveBaseline ? mean(baseVals) : opts.priorMean;
-    const sigma = Math.max(
-      haveBaseline ? sampleStd(baseVals) : 0,
-      opts.sigmaFloor,
-    );
-    const recentMean = mean(recentVals);
-    const z = (recentMean - mu) / sigma;
+      const correctionVals: number[] = [];
+      for (const corr of folded) {
+        const match = corr.signals.find((s) => s.category === signal);
+        if (match) {
+          for (let i = 0; i < opts.correctionWeight; i++) {
+            correctionVals.push(match.value);
+          }
+        }
+      }
+      const baseVals = [...realBaseVals, ...correctionVals];
 
-    // One-sided upper CUSUM over the recent window's standardized residuals.
-    let s = 0;
-    let cusum = 0;
-    for (const v of recentVals) {
-      const e = (v - mu) / sigma;
-      s = Math.max(0, s + e - opts.cusumSlack);
-      cusum = Math.max(cusum, s);
+      const haveBaseline = realBaseVals.length >= opts.minBaselineSamples;
+      const mu = haveBaseline ? mean(baseVals) : opts.priorMean;
+      const sigma = Math.max(haveBaseline ? sampleStd(baseVals) : 0, opts.sigmaFloor);
+      const recentMean = mean(recentVals);
+      const z = (recentMean - mu) / sigma;
+
+      // One-sided upper CUSUM over the recent window's standardized residuals.
+      let s = 0;
+      let cusum = 0;
+      for (const v of recentVals) {
+        const e = (v - mu) / sigma;
+        s = Math.max(0, s + e - opts.cusumSlack);
+        cusum = Math.max(cusum, s);
+      }
+      const fired = cusum >= opts.cusumThreshold;
+
+      const drove = haveBaseline && fired && z > 0;
+      const severity = drove ? clamp(z / opts.zForFullSeverity, 0, 1) : 0;
+      const weight = opts.weights[signal];
+
+      return {
+        signal,
+        weight,
+        baselineMean: mu,
+        recentMean,
+        sigma,
+        z: Math.max(0, z),
+        cusum,
+        fired,
+        haveBaseline,
+        drove,
+        severity,
+        contribution: weight * severity,
+      };
+    });
+
+    const totalContribution = rawDrivers.reduce((sum, d) => sum + d.contribution, 0);
+    const totalWeight = rawDrivers.reduce((sum, d) => sum + d.weight, 0);
+    const score = totalWeight > 0 ? totalContribution / totalWeight : 0;
+
+    const drivers: ZoneDriver[] = rawDrivers
+      .map((d) => ({
+        ...d,
+        label: SIGNAL_LABELS[d.signal],
+        drift: d.severity,
+        share: totalContribution > 0 ? d.contribution / totalContribution : 0,
+      }))
+      .sort(
+        (a, b) =>
+          b.contribution - a.contribution ||
+          b.weight - a.weight ||
+          a.signal.localeCompare(b.signal),
+      );
+
+    const baselineReady =
+      activeSignals.length > 0 && rawDrivers.every((d) => d.haveBaseline);
+    const zone: ZoneId =
+      score >= opts.redAt ? "red" : score >= opts.amberAt ? "amber" : "green";
+
+    return { zone, score, drivers, baselineReady };
+  };
+
+  const tuned = assess(corrections);
+  let chosen = tuned;
+  let crisisOverride = false;
+  if (corrections.length > 0) {
+    // CRISIS SAFEGUARD: a dismissal can relax amber, but it must never hide a
+    // genuine red. If the person's actual history (ignoring every correction)
+    // is red, red stands — and the crisis routing stays available.
+    const raw = assess([]);
+    if (raw.zone === "red" && tuned.zone !== "red") {
+      chosen = raw;
+      crisisOverride = true;
     }
-    const fired = cusum >= opts.cusumThreshold;
-
-    const drove = haveBaseline && fired && z > 0;
-    const severity = drove ? clamp(z / opts.zForFullSeverity, 0, 1) : 0;
-    const weight = opts.weights[signal];
-
-    return {
-      signal,
-      weight,
-      baselineMean: mu,
-      recentMean,
-      sigma,
-      z: Math.max(0, z),
-      cusum,
-      fired,
-      haveBaseline,
-      drove,
-      severity,
-      contribution: weight * severity,
-    };
-  });
-
-  const totalContribution = rawDrivers.reduce((s, d) => s + d.contribution, 0);
-  const totalWeight = rawDrivers.reduce((s, d) => s + d.weight, 0);
-  const score = totalWeight > 0 ? totalContribution / totalWeight : 0;
-
-  const drivers: ZoneDriver[] = rawDrivers
-    .map((d) => ({
-      ...d,
-      label: SIGNAL_LABELS[d.signal],
-      drift: d.severity,
-      share: totalContribution > 0 ? d.contribution / totalContribution : 0,
-    }))
-    .sort(
-      (a, b) =>
-        b.contribution - a.contribution ||
-        b.weight - a.weight ||
-        a.signal.localeCompare(b.signal),
-    );
-
-  const baselineReady =
-    activeSignals.length > 0 && rawDrivers.every((d) => d.haveBaseline);
-
-  const zone: ZoneId =
-    score >= opts.redAt ? "red" : score >= opts.amberAt ? "amber" : "green";
+  }
 
   return {
-    zone,
-    score,
+    zone: chosen.zone,
+    score: chosen.score,
     thresholds: { amber: opts.amberAt, red: opts.redAt },
     windowSize: recentCount,
-    baselineReady,
-    warmingUp: !baselineReady,
-    drivers,
+    baselineReady: chosen.baselineReady,
+    warmingUp: !chosen.baselineReady,
+    crisisOverride,
+    drivers: chosen.drivers,
   };
 }
 
@@ -329,6 +370,7 @@ export function computeZoneForProfile(
   return computeZone({
     signs: profile.signs,
     checkIns: profile.checkIns,
+    corrections: profile.corrections ?? [],
     options,
   });
 }

@@ -48,6 +48,7 @@ export function createEmptyProfile(): Profile {
       crisisLinePhone: DEFAULT_CRISIS_LINE.phone,
     },
     checkIns: [],
+    corrections: [],
   };
 }
 

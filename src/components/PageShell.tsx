@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { CrisisQuickLink } from "@/components/CrisisQuickLink";
 
 const NAV = [
   { href: "/checkin", label: "Check-in" },
@@ -66,6 +67,7 @@ export function PageShell({
           never replaces it. If you are in crisis, contact your care team or
           local emergency services.
         </p>
+        <CrisisQuickLink />
       </footer>
     </div>
   );

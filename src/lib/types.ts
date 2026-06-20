@@ -194,6 +194,30 @@ export interface CheckIn {
 }
 
 /* ------------------------------------------------------------------ */
+/* Corrections ("I'm actually okay")                                   */
+/* ------------------------------------------------------------------ */
+
+/**
+ * A recorded "I'm actually okay" correction. When the person dismisses an amber
+ * nudge as a false alarm, Anchor stores the recent per-signal levels they
+ * affirmed as normal and folds them GENTLY into their learned baseline — so it
+ * adapts to their real normal and stops nagging at that level (less alert
+ * fatigue).
+ *
+ * Corrections can only ever RELAX an amber reading. They never suppress a
+ * genuine red: the engine re-checks the person's raw history and forces red
+ * regardless of any corrections, and the crisis routing is always available.
+ */
+export interface ZoneCorrection {
+  id: string;
+  createdAt: string; // ISO timestamp
+  /** The zone shown when the person said they were okay (always amber). */
+  zoneAtCorrection: ZoneId;
+  /** The recent per-signal levels (0..1) the person affirmed as normal. */
+  signals: { category: SignCategory; value: number }[];
+}
+
+/* ------------------------------------------------------------------ */
 /* The full profile                                                    */
 /* ------------------------------------------------------------------ */
 
@@ -215,6 +239,8 @@ export interface Profile {
   trustedContacts: TrustedContact[];
   crisisPlan: CrisisPlan;
   checkIns: CheckIn[];
+  /** "I'm actually okay" corrections that gently tune the learned baseline. */
+  corrections: ZoneCorrection[];
 }
 
 /* ------------------------------------------------------------------ */

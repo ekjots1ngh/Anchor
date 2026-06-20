@@ -5,7 +5,7 @@ import {
   type SignalKey,
   type ZoneComputation,
 } from "@/lib/zone";
-import type { CheckIn, EarlyWarningSign } from "@/lib/types";
+import type { CheckIn, EarlyWarningSign, ZoneCorrection } from "@/lib/types";
 
 /* ------------------------------------------------------------------ */
 /* Fixtures                                                            */
@@ -201,5 +201,66 @@ describe("warming up", () => {
     expect(r.baselineReady).toBe(false);
     expect(r.zone).toBe("green");
     expect(driver(r, "sleep").drove).toBe(false);
+  });
+});
+
+/* ------------------------------------------------------------------ */
+/* "I'm actually okay" corrections — tuning + crisis safeguard          */
+/* ------------------------------------------------------------------ */
+
+const correctionFrom = (r: ZoneComputation): ZoneCorrection => ({
+  id: "corr",
+  createdAt: new Date().toISOString(),
+  zoneAtCorrection: "amber",
+  signals: r.drivers.map((d) => ({ category: d.signal, value: d.recentMean })),
+});
+
+describe("'I'm actually okay' corrections", () => {
+  // The amber scenario from above.
+  const checkIns = series(8, [3, 2, 1, 0].map((n) => day(n, "okay", 4, ["soc1"])));
+
+  it("relaxes a dismissed amber to green by tuning the baseline", () => {
+    const before = computeZone({ signs: SIGNS, checkIns });
+    expect(before.zone).toBe("amber");
+
+    const after = computeZone({
+      signs: SIGNS,
+      checkIns,
+      corrections: [correctionFrom(before)],
+    });
+    expect(after.zone).toBe("green");
+    expect(after.crisisOverride).toBe(false);
+    expect(driver(after, "sleep").drove).toBe(false);
+  });
+
+  it("still flags an ESCALATION beyond the level the person affirmed", () => {
+    const amber = computeZone({ signs: SIGNS, checkIns });
+    const correction = correctionFrom(amber); // affirms "okay" sleep as normal
+
+    // Now sleep gets worse than what was affirmed — poor, sustained.
+    const escalated = series(8, [3, 2, 1, 0].map((n) => day(n, "poor", 4, ["soc1", "soc2"])));
+    const r = computeZone({ signs: SIGNS, checkIns: escalated, corrections: [correction] });
+    expect(r.zone).not.toBe("green");
+    expect(driver(r, "sleep").drove).toBe(true);
+  });
+
+  it("NEVER lets dismissals silence a genuine red — crisis safeguard", () => {
+    // A real red scenario.
+    const redCheckIns = series(8, [3, 2, 1, 0].map((n) =>
+      day(n, "poor", 1, ["slp", "soc1", "soc2", "tho"]),
+    ));
+    const red = computeZone({ signs: SIGNS, checkIns: redCheckIns });
+    expect(red.zone).toBe("red");
+
+    // Pile on corrections affirming those high levels as "normal".
+    const heavy: ZoneCorrection[] = Array.from({ length: 6 }, (_, i) => ({
+      ...correctionFrom(red),
+      id: `corr-${i}`,
+    }));
+    const r = computeZone({ signs: SIGNS, checkIns: redCheckIns, corrections: heavy });
+
+    // Red stands, and the override flag makes the safeguard visible.
+    expect(r.zone).toBe("red");
+    expect(r.crisisOverride).toBe(true);
   });
 });
