@@ -16,6 +16,7 @@ export function ConnectActions({
   zone,
   zoneLabel,
   signalLabels,
+  id,
 }: {
   profile: Profile;
   zone: Extract<ZoneId, "amber" | "red">;
@@ -23,6 +24,7 @@ export function ConnectActions({
    *  pre-fill messages, filtered per contact by their visibility setting. */
   zoneLabel?: string;
   signalLabels?: string[];
+  id?: string;
 }) {
   const reachable = profile.trustedContacts.filter(
     (c) => c.consent && zoneRank(c.alertAtZone) <= zoneRank(zone),
@@ -30,7 +32,7 @@ export function ConnectActions({
   const { crisisLineName, crisisLinePhone } = profile.crisisPlan;
 
   return (
-    <Card className={`${ZONE_STYLES[zone].softBg} ring-1 ${ZONE_STYLES[zone].ring}`}>
+    <Card id={id} className={`${ZONE_STYLES[zone].softBg} ring-1 ${ZONE_STYLES[zone].ring}`}>
       <h2 className="text-xl font-semibold">Reach a person</h2>
       <p className="mt-1 text-sm leading-relaxed text-ink-muted">
         The most helpful thing right now is talking to someone real. Anchor is

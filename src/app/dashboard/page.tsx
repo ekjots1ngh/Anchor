@@ -80,7 +80,7 @@ export default function DashboardPage() {
   return (
     <PageShell title="Your dashboard">
       {/* Calm status card */}
-      <Card className={`${style.softBg} ring-1 ${style.ring}`}>
+      <Card id="present-status" className={`${style.softBg} ring-1 ${style.ring}`}>
         <div className="flex items-center justify-between">
           <ZoneBadge zone={result.zone} label={zoneWord.label} />
           <span className="text-sm text-ink-faint">
@@ -120,6 +120,7 @@ export default function DashboardPage() {
       {/* Amber/red: connect to a real person, fast. Anchor is the nudge. */}
       {result.zone !== "green" && (
         <ConnectActions
+          id="present-reach"
           profile={profile}
           zone={result.zone}
           zoneLabel={zoneWord.label}
