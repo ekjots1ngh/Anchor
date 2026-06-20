@@ -157,7 +157,7 @@ npm test           # vitest run (unit tests for the zone engine)
 
 | Route          | Purpose                                                                 | State |
 | -------------- | ----------------------------------------------------------------------- | ----- |
-| `/`            | Landing page — the three principles, calm entry point.                  | built |
+| `/`            | **Public landing page** — warm, honest explanation (how it works, the three promises, who it's for) + a simple **waitlist/interest form** (`/api/waitlist`). Also links into the prototype and to the dashboard. | built |
 | `/onboarding`  | A few gentle steps, done **when well**: pick early-warning signs from a starter library and add custom ones, set a baseline + name the three zones in your own words, write staying-well actions, add a trusted circle, and a crisis line. Saves to the local store. | **built** |
 | `/checkin`     | A ~30-second daily check-in: sleep (good/okay/poor), mood (1–5), and a quick yes/no on your own early-warning signs. Saves a dated `CheckIn` to the store (re-checking the same day updates that day's record). | built |
 | `/dashboard`   | A calm **status card** (zone in your words + specific, gentle copy), a **7-day trend**, and a **"what I'm watching"** signal list — all pulled from the `computeZone` engine. In **amber/red** it leads with **"Reach a person"**: one-tap, consent-gated, pre-filled **Message** to your trusted circle + quick **Call** to your crisis line. | built |
@@ -240,11 +240,15 @@ Next.js App Router deploys to Vercel with **zero config** (no `vercel.json` need
 
 1. **Import** `ekjots1ngh/Anchor` at [vercel.com/new](https://vercel.com/new) — the
    framework auto-detects as Next.js.
-2. **Set the env var** (Settings → Environment Variables, for Production + Preview):
-   `ANTHROPIC_API_KEY = <your key>`. The `/api/message` route reads it **server-side
-   only** (it runs as a Node serverless function — `runtime = "nodejs"`), so the key
-   is never exposed to the browser. Optionally set `NEXT_PUBLIC_DEMO_MODE=1` to keep
-   the demo panel on the deployed build.
+2. **Set the env vars** (Settings → Environment Variables, for Production + Preview):
+   - `ANTHROPIC_API_KEY = <your key>` — the `/api/message` route reads it
+     **server-side only** (`runtime = "nodejs"`), so the key is never exposed to
+     the browser.
+   - `WAITLIST_WEBHOOK_URL = <your sink>` *(optional)* — where landing-page
+     waitlist submissions are forwarded (Google Sheet via Apps Script, Airtable,
+     Formspree, Slack/Discord webhook, Zapier/Make, …). If unset, submissions are
+     still captured in the function logs.
+   - `NEXT_PUBLIC_DEMO_MODE = 1` *(optional)* — keep the demo panel on the build.
 3. **Pick the production branch** (Settings → Git) — either set it to the working
    branch, or merge to `main` and deploy that. Then **Deploy**.
 4. **Env var changes require a redeploy** to take effect.
