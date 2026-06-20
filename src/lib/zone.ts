@@ -1,7 +1,6 @@
 import type {
   CheckIn,
   EarlyWarningSign,
-  MoodRating,
   Profile,
   SignCategory,
   SleepQuality,
@@ -9,36 +8,43 @@ import type {
 } from "@/lib/types";
 
 /**
- * ANCHOR ZONE ENGINE
- * ==================
+ * ANCHOR ZONE ENGINE — per-person statistical drift detection
+ * ===========================================================
  *
- * A PURE, deterministic, fully explainable function that turns a person's
- * baseline + recent check-ins into a zone (green / amber / red).
+ * A PURE, deterministic, fully explainable function. It LEARNS each person's
+ * own baseline and normal day-to-day variation for every signal, then flags
+ * drift relative to THAT — not a one-size-fits-all threshold.
  *
  * Non-negotiables (see README → "Design principles"):
- *   - No LLM, no network, no randomness, no clock. Same inputs → same output,
- *     forever. Everything below can be read and reasoned about by a person or
- *     a clinician.
- *   - The result explains ITSELF: it returns which signals drove the decision
- *     and by how much (`drivers`), so nothing about the zone is a black box.
+ *   - No LLM, no network, no randomness, no clock. Same inputs → same output.
+ *   - The result explains ITSELF: every signal reports its learned baseline,
+ *     its recent level, how far it has drifted (a personal z-score), whether
+ *     the drift was *sustained* (CUSUM), and how much it drove the zone.
+ *   - Prototype only. No clinical claims, no diagnosis.
  *
- * How it works
- * ------------
- * For each *signal* we measure how far the person's recent check-ins have
- * DRIFTED from their steady baseline, averaged over a rolling window of their
- * most recent check-ins. Each signal's drift is a number in [0, 1] (0 = at
- * baseline, 1 = maximally drifted). We multiply by a weight and sum.
+ * How it works, per signal
+ * ------------------------
+ * 1. Each check-in yields a value in [0, 1] (0 = at the well end, 1 = fully
+ *    showing) — from sleep quality, mood, and how many of the person's signs
+ *    in that category were present.
+ * 2. BASELINE: from the person's older check-ins we learn a personal mean (mu)
+ *    and spread (sigma = std, floored so a perfectly-steady history doesn't make
+ *    the detector hair-trigger). Until there are enough baseline points the
+ *    signal is "warming up" and cannot drive a zone.
+ * 3. Z-SCORE: how far the recent window's average sits above the personal mean,
+ *    in units of the person's own spread:  z = (recentMean - mu) / sigma.
+ * 4. CHANGE-POINT (one-sided CUSUM): over the recent window we accumulate
+ *    standardized day-over-day excess above a small slack k, resetting at zero.
+ *    A single noisy day can't push the cumulative sum past the threshold h; a
+ *    sustained shift can. This is what makes the engine resist single-day noise.
+ * 5. A signal "drove" the zone only if it has a learned baseline, the CUSUM
+ *    fired (sustained), and z > 0 (worse than usual). Its severity scales with
+ *    z; sleep and social withdrawal are weighted most heavily.
  *
- * Sleep and social withdrawal are weighted the most heavily, because they are
- * strong, early indicators of drift for many people. Mood is next, then the
- * remaining sign categories.
- *
- * The weighted total is normalised to a 0..1 `score` and compared against two
- * thresholds to pick the zone. The signals, weights, window and thresholds
- * are all explicit and configurable — there is no hidden state.
+ * The weighted severities are normalised to a 0..1 score and mapped to a zone.
+ * Every parameter is explicit and tunable.
  */
 
-/** The signals the engine reasons about. One per sign category. */
 export type SignalKey = SignCategory;
 
 const SIGNAL_ORDER: SignalKey[] = [
@@ -50,7 +56,6 @@ const SIGNAL_ORDER: SignalKey[] = [
   "self-care",
 ];
 
-/** Human-friendly labels for each signal, used in the explainable output. */
 export const SIGNAL_LABELS: Record<SignalKey, string> = {
   sleep: "Sleep",
   social: "Social withdrawal",
@@ -60,38 +65,43 @@ export const SIGNAL_LABELS: Record<SignalKey, string> = {
   "self-care": "Daily routine & self-care",
 };
 
-/**
- * The person's steady reference point. Note this is the engine's own notion
- * of baseline (the "well" version of these signals); it is distinct from the
- * domain `Baseline` type, which holds the simpler count thresholds used by the
- * legacy rules engine.
- */
-export interface ZoneBaseline {
-  /** How the person usually sleeps when well. */
-  sleep: SleepQuality;
-  /** The person's usual mood when well (1–5). */
-  mood: MoodRating;
-}
-
-export const DEFAULT_ZONE_BASELINE: ZoneBaseline = { sleep: "good", mood: 4 };
-
 export type ZoneWeights = Record<SignalKey, number>;
 
 export interface ZoneOptions {
-  /** How many of the most recent check-ins to average over. */
-  windowSize: number;
-  /** Normalised score (0..1) at or above which the zone is amber. */
+  /** How many of the most recent check-ins form the "now" window. */
+  recentWindow: number;
+  /** Cap on how far back the baseline reaches. */
+  baselineMaxHistory: number;
+  /** Minimum baseline check-ins before a signal can be assessed at all. */
+  minBaselineSamples: number;
+  /** Floor on personal spread, so a flat history isn't hair-trigger. */
+  sigmaFloor: number;
+  /** Assumed value before any baseline exists (the "well" end). */
+  priorMean: number;
+  /** CUSUM slack (allowance) in sigma units — small noise below this is ignored. */
+  cusumSlack: number;
+  /** CUSUM decision threshold — sustained drift must exceed this to fire. */
+  cusumThreshold: number;
+  /** z that maps to full severity (1.0). */
+  zForFullSeverity: number;
+  /** Normalised score at/above which the zone is amber / red. */
   amberAt: number;
-  /** Normalised score (0..1) at or above which the zone is red. */
   redAt: number;
-  /** Per-signal weights. Sleep & social are the heaviest by design. */
+  /** Per-signal weights — sleep & social are the heaviest by design. */
   weights: ZoneWeights;
 }
 
 export const DEFAULT_ZONE_OPTIONS: ZoneOptions = {
-  windowSize: 7,
-  amberAt: 0.25,
-  redAt: 0.5,
+  recentWindow: 4,
+  baselineMaxHistory: 30,
+  minBaselineSamples: 4,
+  sigmaFloor: 0.5,
+  priorMean: 0,
+  cusumSlack: 0.5,
+  cusumThreshold: 2.0,
+  zForFullSeverity: 3.0,
+  amberAt: 0.15,
+  redAt: 0.45,
   weights: {
     sleep: 3, // strong early sign — weighted heavily
     social: 3, // social withdrawal — strong early sign — weighted heavily
@@ -102,14 +112,32 @@ export const DEFAULT_ZONE_OPTIONS: ZoneOptions = {
   },
 };
 
-/** One signal's contribution to the decision — the "why". */
+/** One signal's full, inspectable contribution to the decision — the "why". */
 export interface ZoneDriver {
   signal: SignalKey;
   label: string;
   weight: number;
-  /** Mean drift from baseline over the window, in [0, 1]. */
+  /** The person's learned typical level for this signal, in [0, 1]. */
+  baselineMean: number;
+  /** The recent-window average, in [0, 1]. */
+  recentMean: number;
+  /** The person's learned spread (std, floored). */
+  sigma: number;
+  /** Personal z-score: how many of their own sigmas above baseline (>=0 shown). */
+  z: number;
+  /** Peak CUSUM statistic over the recent window. */
+  cusum: number;
+  /** Whether the CUSUM detector fired (a sustained shift, not a one-off). */
+  fired: boolean;
+  /** Whether a personal baseline has been learned yet for this signal. */
+  haveBaseline: boolean;
+  /** Did this signal actually drive the zone? (baseline + fired + z>0) */
+  drove: boolean;
+  /** 0..1, scales with z. */
+  severity: number;
+  /** Alias of severity, kept for UI bars. */
   drift: number;
-  /** weight × drift — the raw push toward a higher zone. */
+  /** weight × severity. */
   contribution: number;
   /** This signal's share of the total contribution, in [0, 1]. */
   share: number;
@@ -117,11 +145,15 @@ export interface ZoneDriver {
 
 export interface ZoneComputation {
   zone: ZoneId;
-  /** Normalised weighted drift, in [0, 1]. */
+  /** Normalised weighted severity, in [0, 1]. */
   score: number;
   thresholds: { amber: number; red: number };
-  /** Number of check-ins actually considered (after applying the window). */
+  /** Number of check-ins in the recent window actually considered. */
   windowSize: number;
+  /** True once every active signal has a learned baseline. */
+  baselineReady: boolean;
+  /** True while Anchor is still learning the person's baseline. */
+  warmingUp: boolean;
   /** Every signal considered, most influential first. Fully explainable. */
   drivers: ZoneDriver[];
 }
@@ -129,7 +161,6 @@ export interface ZoneComputation {
 export interface ComputeZoneInput {
   signs: EarlyWarningSign[];
   checkIns: CheckIn[];
-  baseline: ZoneBaseline;
   options?: Partial<ZoneOptions>;
 }
 
@@ -140,22 +171,26 @@ export interface ComputeZoneInput {
 const clamp = (x: number, lo: number, hi: number): number =>
   Math.max(lo, Math.min(hi, x));
 
-/** Sleep "badness" in [0, 1]: good = 0, okay = 0.5, poor = 1. */
+const mean = (xs: number[]): number =>
+  xs.length ? xs.reduce((s, x) => s + x, 0) / xs.length : 0;
+
+/** Sample standard deviation (n-1). 0 for fewer than 2 points. */
+const sampleStd = (xs: number[]): number => {
+  if (xs.length < 2) return 0;
+  const m = mean(xs);
+  const variance = xs.reduce((s, x) => s + (x - m) ** 2, 0) / (xs.length - 1);
+  return Math.sqrt(variance);
+};
+
 const sleepBadness = (q: SleepQuality): number =>
   q === "good" ? 0 : q === "okay" ? 0.5 : 1;
 
-/** Mood "badness" in [0, 1]: 5 = 0 … 1 = 1. */
 const moodBadness = (m: number): number => clamp((5 - m) / 4, 0, 1);
 
 /* ------------------------------------------------------------------ */
 /* The engine                                                          */
 /* ------------------------------------------------------------------ */
 
-/**
- * Compute the current zone from a baseline and recent check-ins.
- *
- * Pure: no side effects, no I/O, no clock, no randomness.
- */
 export function computeZone(input: ComputeZoneInput): ZoneComputation {
   const opts: ZoneOptions = {
     ...DEFAULT_ZONE_OPTIONS,
@@ -163,83 +198,114 @@ export function computeZone(input: ComputeZoneInput): ZoneComputation {
     weights: { ...DEFAULT_ZONE_OPTIONS.weights, ...input.options?.weights },
   };
 
-  // Group the person's sign ids by category so we can measure category drift.
+  // Group the person's sign ids by category.
   const idsByCategory = {} as Record<SignalKey, string[]>;
   for (const key of SIGNAL_ORDER) idsByCategory[key] = [];
   for (const sign of input.signs) idsByCategory[sign.category].push(sign.id);
 
-  // Rolling window: the most recent `windowSize` check-ins, newest first.
-  const window = [...input.checkIns]
-    .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
-    .slice(0, Math.max(0, opts.windowSize));
-
-  const baseSleep = sleepBadness(input.baseline.sleep);
-  const baseMood = moodBadness(input.baseline.mood);
-
-  // Which signals are in play. Sleep & mood always (every check-in records
+  // Which signals are in play: sleep & mood always (every check-in records
   // them); the others only if the person tracks signs in that category.
   const activeSignals = SIGNAL_ORDER.filter(
-    (key) =>
-      key === "sleep" || key === "mood" || idsByCategory[key].length > 0,
+    (key) => key === "sleep" || key === "mood" || idsByCategory[key].length > 0,
   );
 
-  // Fraction of a category's signs marked present in a single check-in.
+  // Chronological order, oldest first.
+  const sorted = [...input.checkIns].sort(
+    (a, b) => Date.parse(a.createdAt) - Date.parse(b.createdAt),
+  );
+  const n = sorted.length;
+  const recentCount = Math.min(opts.recentWindow, n);
+  const recentSlice = sorted.slice(n - recentCount);
+  const baselineFull = sorted.slice(0, n - recentCount);
+  const baselineSlice = baselineFull.slice(
+    Math.max(0, baselineFull.length - opts.baselineMaxHistory),
+  );
+
+  // Fraction of a category's signs marked present in one check-in.
   const categoryFraction = (checkIn: CheckIn, key: SignalKey): number => {
     const ids = idsByCategory[key];
     if (ids.length === 0) return 0;
     const present = new Set(
       checkIn.answers.filter((a) => a.present).map((a) => a.signId),
     );
-    const hit = ids.reduce((n, id) => n + (present.has(id) ? 1 : 0), 0);
+    const hit = ids.reduce((acc, id) => acc + (present.has(id) ? 1 : 0), 0);
     return hit / ids.length;
   };
 
-  // Per-check-in drift for a signal, in [0, 1].
-  const driftFor = (checkIn: CheckIn, key: SignalKey): number => {
+  // Per-check-in value for a signal, in [0, 1].
+  const signalValue = (checkIn: CheckIn, key: SignalKey): number => {
     if (key === "sleep") {
-      const quality = clamp(sleepBadness(checkIn.sleep) - baseSleep, 0, 1);
-      return Math.max(quality, categoryFraction(checkIn, "sleep"));
+      return Math.max(sleepBadness(checkIn.sleep), categoryFraction(checkIn, "sleep"));
     }
     if (key === "mood") {
-      const rating = clamp(moodBadness(checkIn.mood) - baseMood, 0, 1);
-      return Math.max(rating, categoryFraction(checkIn, "mood"));
+      return Math.max(moodBadness(checkIn.mood), categoryFraction(checkIn, "mood"));
     }
     return categoryFraction(checkIn, key);
   };
 
-  // Mean drift over the window for each active signal.
-  const meanDrift = (key: SignalKey): number => {
-    if (window.length === 0) return 0;
-    const total = window.reduce((sum, c) => sum + driftFor(c, key), 0);
-    return total / window.length;
-  };
+  const rawDrivers = activeSignals.map((signal) => {
+    const recentVals = recentSlice.map((c) => signalValue(c, signal));
+    const baseVals = baselineSlice.map((c) => signalValue(c, signal));
 
-  const raw = activeSignals.map((signal) => {
-    const drift = meanDrift(signal);
+    const haveBaseline = baseVals.length >= opts.minBaselineSamples;
+    const mu = haveBaseline ? mean(baseVals) : opts.priorMean;
+    const sigma = Math.max(
+      haveBaseline ? sampleStd(baseVals) : 0,
+      opts.sigmaFloor,
+    );
+    const recentMean = mean(recentVals);
+    const z = (recentMean - mu) / sigma;
+
+    // One-sided upper CUSUM over the recent window's standardized residuals.
+    let s = 0;
+    let cusum = 0;
+    for (const v of recentVals) {
+      const e = (v - mu) / sigma;
+      s = Math.max(0, s + e - opts.cusumSlack);
+      cusum = Math.max(cusum, s);
+    }
+    const fired = cusum >= opts.cusumThreshold;
+
+    const drove = haveBaseline && fired && z > 0;
+    const severity = drove ? clamp(z / opts.zForFullSeverity, 0, 1) : 0;
     const weight = opts.weights[signal];
-    return { signal, weight, drift, contribution: weight * drift };
+
+    return {
+      signal,
+      weight,
+      baselineMean: mu,
+      recentMean,
+      sigma,
+      z: Math.max(0, z),
+      cusum,
+      fired,
+      haveBaseline,
+      drove,
+      severity,
+      contribution: weight * severity,
+    };
   });
 
-  const totalContribution = raw.reduce((s, r) => s + r.contribution, 0);
-  const maxContribution = raw.reduce((s, r) => s + r.weight, 0); // drift ≤ 1
-  const score = maxContribution > 0 ? totalContribution / maxContribution : 0;
+  const totalContribution = rawDrivers.reduce((s, d) => s + d.contribution, 0);
+  const totalWeight = rawDrivers.reduce((s, d) => s + d.weight, 0);
+  const score = totalWeight > 0 ? totalContribution / totalWeight : 0;
 
-  const drivers: ZoneDriver[] = raw
-    .map((r) => ({
-      signal: r.signal,
-      label: SIGNAL_LABELS[r.signal],
-      weight: r.weight,
-      drift: r.drift,
-      contribution: r.contribution,
-      share: totalContribution > 0 ? r.contribution / totalContribution : 0,
+  const drivers: ZoneDriver[] = rawDrivers
+    .map((d) => ({
+      ...d,
+      label: SIGNAL_LABELS[d.signal],
+      drift: d.severity,
+      share: totalContribution > 0 ? d.contribution / totalContribution : 0,
     }))
-    // Most influential first; stable tie-breaks for deterministic output.
     .sort(
       (a, b) =>
         b.contribution - a.contribution ||
         b.weight - a.weight ||
         a.signal.localeCompare(b.signal),
     );
+
+  const baselineReady =
+    activeSignals.length > 0 && rawDrivers.every((d) => d.haveBaseline);
 
   const zone: ZoneId =
     score >= opts.redAt ? "red" : score >= opts.amberAt ? "amber" : "green";
@@ -248,16 +314,14 @@ export function computeZone(input: ComputeZoneInput): ZoneComputation {
     zone,
     score,
     thresholds: { amber: opts.amberAt, red: opts.redAt },
-    windowSize: window.length,
+    windowSize: recentCount,
+    baselineReady,
+    warmingUp: !baselineReady,
     drivers,
   };
 }
 
-/**
- * Convenience adapter for the app: derive the engine inputs from a Profile.
- * The steady baseline defaults to good sleep / mood 4 until onboarding starts
- * capturing it explicitly.
- */
+/** Convenience adapter for the app: derive engine inputs from a Profile. */
 export function computeZoneForProfile(
   profile: Profile,
   options?: Partial<ZoneOptions>,
@@ -265,7 +329,6 @@ export function computeZoneForProfile(
   return computeZone({
     signs: profile.signs,
     checkIns: profile.checkIns,
-    baseline: DEFAULT_ZONE_BASELINE,
     options,
   });
 }

@@ -1,9 +1,5 @@
 import type { Profile, ZoneId } from "@/lib/types";
-import {
-  computeZone,
-  DEFAULT_ZONE_BASELINE,
-  type ZoneComputation,
-} from "@/lib/zone";
+import { computeZone, type ZoneComputation } from "@/lib/zone";
 
 /**
  * Presentation helpers for the dashboard. Everything here is deterministic and
@@ -26,8 +22,10 @@ export interface TrendDay {
 }
 
 /**
- * The last 7 days, each given a standalone reading from the zone engine
- * (a one-day window) so the row reads as a day-to-day trajectory.
+ * The last 7 days. The drift engine learns from history, so each day is read by
+ * running the engine over every check-in up to and including that day — i.e. the
+ * zone "as Anchor saw it" that day. The row then reads as a real trajectory, and
+ * early days correctly show as steady while the baseline is still being learned.
  */
 export function buildTrend(profile: Profile, today = new Date()): TrendDay[] {
   const byDay = new Map(profile.checkIns.map((c) => [dayKey(new Date(c.createdAt)), c]));
@@ -37,19 +35,21 @@ export function buildTrend(profile: Profile, today = new Date()): TrendDay[] {
   for (let i = 6; i >= 0; i--) {
     const date = new Date(today);
     date.setDate(today.getDate() - i);
-    const checkIn = byDay.get(dayKey(date));
+    const hasCheckIn = byDay.has(dayKey(date));
+
     let zone: ZoneId | null = null;
     let score = 0;
-    if (checkIn) {
-      const reading = computeZone({
-        signs: profile.signs,
-        checkIns: [checkIn],
-        baseline: DEFAULT_ZONE_BASELINE,
-        options: { windowSize: 1 },
-      });
+    if (hasCheckIn) {
+      const endOfDay = new Date(date);
+      endOfDay.setHours(23, 59, 59, 999);
+      const upToDay = profile.checkIns.filter(
+        (c) => new Date(c.createdAt).getTime() <= endOfDay.getTime(),
+      );
+      const reading = computeZone({ signs: profile.signs, checkIns: upToDay });
       zone = reading.zone;
       score = reading.score;
     }
+
     days.push({
       date,
       weekday: date.toLocaleDateString(undefined, { weekday: "short" }).charAt(0),

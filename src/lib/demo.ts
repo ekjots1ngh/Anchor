@@ -4,19 +4,18 @@ import { DEFAULT_ZONE_WORDS } from "@/lib/starter-library";
 /**
  * Demo-mode data (dev/stage only).
  *
- * Produces a deterministic profile so a presenter can show the dashboard sitting
- * steady (green), then tip it to amber on cue:
- *   - seededProfile()  → 7 calm days, every signal at baseline → green
- *   - dippedProfile()  → 4 calm days + 3 days of dipping sleep + social
- *                        withdrawal → the 7-day window tips to amber (~0.32,
- *                        comfortably between the 0.25 amber and 0.5 red lines)
+ * The drift engine learns a personal baseline, so the demo first establishes a
+ * steady history, then injects a *moderate, sustained* dip:
+ *   - seededProfile()  → 12 calm days → a learned baseline of "well" → green
+ *   - dippedProfile()  → 8 calm days + 4 days of slightly-worse sleep and some
+ *                        social withdrawal → a sustained ~1σ shift on the two
+ *                        heavily-weighted signals → tips to amber (not red,
+ *                        which a full-blown swing would trigger).
  *
- * The profile carries only a sleep sign and a social sign, so the zone engine's
- * heavily-weighted Sleep and Social signals are exactly what drives the tip —
- * which is also what the LLM note names.
+ * The profile carries a sleep sign and two social signs, so the dip can be a
+ * partial (~half) withdrawal rather than an all-or-nothing one.
  */
 
-/** ISO timestamp for N days ago, pinned to local noon to avoid TZ edges. */
 function daysAgo(n: number): string {
   const d = new Date();
   d.setHours(12, 0, 0, 0);
@@ -25,7 +24,8 @@ function daysAgo(n: number): string {
 }
 
 const SLEEP_SIGN = "demo-sleep";
-const SOCIAL_SIGN = "demo-social";
+const SOCIAL_SIGN_A = "demo-social-a";
+const SOCIAL_SIGN_B = "demo-social-b";
 
 function steadyDay(n: number): CheckIn {
   return {
@@ -35,7 +35,8 @@ function steadyDay(n: number): CheckIn {
     mood: 4,
     answers: [
       { signId: SLEEP_SIGN, present: false },
-      { signId: SOCIAL_SIGN, present: false },
+      { signId: SOCIAL_SIGN_A, present: false },
+      { signId: SOCIAL_SIGN_B, present: false },
     ],
   };
 }
@@ -44,22 +45,23 @@ function dipDay(n: number): CheckIn {
   return {
     id: `demo-dip-${n}`,
     createdAt: daysAgo(n),
-    sleep: "poor",
+    // Moderately worse than baseline: "okay" sleep and one of two social signs.
+    sleep: "okay",
     mood: 4,
     answers: [
-      { signId: SLEEP_SIGN, present: true },
-      { signId: SOCIAL_SIGN, present: true },
+      { signId: SLEEP_SIGN, present: false },
+      { signId: SOCIAL_SIGN_A, present: true },
+      { signId: SOCIAL_SIGN_B, present: false },
     ],
   };
 }
 
-/** Everything except the check-ins — identical across seed and dip. */
 function baseProfile(): Profile {
   return {
     id: "demo",
     displayName: "Alex",
-    createdAt: daysAgo(14),
-    onboardedAt: daysAgo(14),
+    createdAt: daysAgo(30),
+    onboardedAt: daysAgo(30),
     signs: [
       {
         id: SLEEP_SIGN,
@@ -69,10 +71,17 @@ function baseProfile(): Profile {
         source: "library",
       },
       {
-        id: SOCIAL_SIGN,
+        id: SOCIAL_SIGN_A,
         name: "Pulling away from people",
         category: "social",
-        description: "I leave messages unread and start cancelling plans.",
+        description: "I start cancelling plans and going quiet.",
+        source: "library",
+      },
+      {
+        id: SOCIAL_SIGN_B,
+        name: "Not replying to messages",
+        category: "social",
+        description: "I leave texts unread for days.",
         source: "library",
       },
     ],
@@ -110,21 +119,19 @@ function baseProfile(): Profile {
   };
 }
 
-/** 7 steady days → green. */
+/** 12 steady days → a learned baseline of "well" → green. */
 export function seededProfile(): Profile {
-  return {
-    ...baseProfile(),
-    checkIns: [6, 5, 4, 3, 2, 1, 0].map(steadyDay),
-  };
+  const days = [11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0];
+  return { ...baseProfile(), checkIns: days.map(steadyDay) };
 }
 
-/** 4 steady days + 3 dipping days → tips the 7-day window to amber. */
+/** 8 steady days + 4 moderately-dipping days → tips to amber. */
 export function dippedProfile(): Profile {
   return {
     ...baseProfile(),
     checkIns: [
-      ...[6, 5, 4, 3].map(steadyDay),
-      ...[2, 1, 0].map(dipDay),
+      ...[11, 10, 9, 8, 7, 6, 5, 4].map(steadyDay),
+      ...[3, 2, 1, 0].map(dipDay),
     ],
   };
 }

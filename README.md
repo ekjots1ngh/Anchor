@@ -34,17 +34,27 @@ the people on their plan.
 Which zone a check-in falls into (`steady` vs `worth a check-in`) is decided by
 one small, deterministic, fully inspectable function:
 
-- **`src/lib/zone.ts`** — `computeZone()`. The richer, pure, well-tested engine.
-  Given the person's baseline and recent check-ins, it measures how far each
-  *signal* has **drifted** from baseline over a rolling window, weights **sleep
-  and social withdrawal the most heavily** (strong early signs), and returns the
-  zone **plus `drivers`** — exactly which signals drove the decision and by how
-  much (`contribution` and `share`). No LLM, no clock, no randomness. Covered by
-  unit tests (`src/lib/zone.test.ts`): steady, drifting-to-amber, and red cases,
-  plus windowing and explainability. Run with `npm test`. **`/dashboard` renders
-  this engine** — the status card, 7-day trend and "what I'm watching" list all
-  come from its output (`src/lib/dashboard.ts` turns that output into calm,
-  template-based copy — still no LLM).
+- **`src/lib/zone.ts`** — `computeZone()`. The pure, well-tested engine, using
+  **per-person statistical drift detection** (prototype; no clinical claims):
+  - It **learns each person's own baseline** — a personal mean and normal spread
+    per signal — from their past check-ins, rather than using fixed thresholds.
+  - It flags drift with a **personal z-score** (how far the recent window sits
+    above *their* usual, in units of *their* own variation), combined with a
+    one-sided **CUSUM change-point detector** over a rolling window — so a
+    sustained shift is caught but a single noisy day is not.
+  - **Sleep and social withdrawal are weighted the most heavily** (strong early
+    signs). Until enough history exists, signals are "warming up" and can't drive
+    a zone (`warmingUp` / `baselineReady`).
+  - Fully transparent: every `driver` reports its learned `baselineMean`,
+    `recentMean`, `sigma`, `z`, `cusum`, whether it `fired`/`drove`, and its
+    `share`. No LLM, no clock, no randomness.
+  - Tests (`src/lib/zone.test.ts`): steady→green, moderate-sustained→amber,
+    large-multi-signal→red, **single-day-noise resisted**, **personalisation**
+    (a chronically-poor sleeper isn't flagged for being themselves, while the
+    same recent values flag someone whose baseline is good), and cold-start
+    warming-up. Run with `npm test`. **`/dashboard` renders this engine** — the
+    status card, 7-day trend (now read cumulatively per day) and "what I'm
+    watching" list all come from its output.
 - **`src/lib/rules-engine.ts`** — `evaluateZone()`. The simpler, original engine:
   count how many signs are present, compare against `baseline.amberAt/redAt`.
   Still pure and inspectable; kept for reference.
