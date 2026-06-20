@@ -7,6 +7,7 @@ import { PageShell } from "@/components/PageShell";
 import { Card } from "@/components/Card";
 import { useProfile } from "@/lib/useProfile";
 import { saveProfile } from "@/lib/store";
+import { steadyState } from "@/lib/checkin";
 import type {
   CheckIn,
   MoodRating,
@@ -52,15 +53,131 @@ export default function CheckInPage() {
     );
   }
 
-  return <CheckInForm profile={profile} onDone={() => router.push("/dashboard")} />;
+  return <CheckInFlow profile={profile} onDone={() => router.push("/dashboard")} />;
 }
 
-function CheckInForm({
+function CheckInFlow({
   profile,
   onDone,
 }: {
   profile: Profile;
   onDone: () => void;
+}) {
+  const steady = steadyState(profile);
+  const [mode, setMode] = useState<"quick" | "full">(steady.quick ? "quick" : "full");
+
+  if (mode === "quick") {
+    return (
+      <QuickCheckIn
+        profile={profile}
+        streak={steady.streak}
+        onDone={onDone}
+        onFull={() => setMode("full")}
+      />
+    );
+  }
+  return (
+    <CheckInForm
+      profile={profile}
+      onDone={onDone}
+      canShorten={steady.quick}
+      onQuick={() => setMode("quick")}
+    />
+  );
+}
+
+/** Save (or update today's) check-in with the given values. */
+function saveCheckIn(
+  profile: Profile,
+  values: { sleep: SleepQuality; mood: MoodRating; present: Record<string, boolean> },
+): Profile {
+  const todayKey = dayKey(new Date().toISOString());
+  const existing = profile.checkIns.find((c) => dayKey(c.createdAt) === todayKey);
+  const record: CheckIn = {
+    id: existing?.id ?? crypto.randomUUID(),
+    createdAt: new Date().toISOString(),
+    sleep: values.sleep,
+    mood: values.mood,
+    answers: profile.signs.map((s) => ({
+      signId: s.id,
+      present: !!values.present[s.id],
+    })),
+  };
+  const checkIns = existing
+    ? profile.checkIns.map((c) => (c.id === existing.id ? record : c))
+    : [...profile.checkIns, record];
+  return { ...profile, checkIns };
+}
+
+/**
+ * The shortened, one-tap check-in offered once someone has been steady for a
+ * while. A single big "Still steady" affirms a good day; an escape hatch always
+ * lets them do the full check-in instead.
+ */
+function QuickCheckIn({
+  profile,
+  streak,
+  onDone,
+  onFull,
+}: {
+  profile: Profile;
+  streak: number;
+  onDone: () => void;
+  onFull: () => void;
+}) {
+  const name = profile.displayName ? `, ${profile.displayName.trim().split(" ")[0]}` : "";
+  const confirm = () => {
+    // A steady day: good sleep, a settled mood, nothing showing.
+    saveProfileAndDone(saveCheckIn(profile, { sleep: "good", mood: 4, present: {} }), onDone);
+  };
+
+  return (
+    <PageShell title={`Quick check-in${name}`}>
+      <Card className="bg-steady-50/50">
+        <p className="text-lg leading-relaxed text-ink">
+          You&rsquo;ve been steady for {streak} days, so today can be quick.
+        </p>
+        <p className="mt-2 text-ink-muted">Are you still doing okay?</p>
+        <div className="mt-6 flex flex-col gap-3">
+          <button
+            type="button"
+            onClick={confirm}
+            className="inline-flex min-h-[3.25rem] items-center justify-center rounded-pill bg-steady-600 px-7 py-3 text-lg font-medium text-white hover:bg-steady-700"
+          >
+            Yes, still steady
+          </button>
+          <button
+            type="button"
+            onClick={onFull}
+            className="inline-flex min-h-[2.75rem] items-center justify-center rounded-pill px-5 py-3 text-ink-muted hover:bg-steady-50"
+          >
+            Something feels different — full check-in
+          </button>
+        </div>
+      </Card>
+      <p className="text-sm leading-relaxed text-ink-faint">
+        Anchor keeps the daily check-in short while you&rsquo;re steady, and asks
+        more only when something shifts.
+      </p>
+    </PageShell>
+  );
+}
+
+function saveProfileAndDone(next: Profile, onDone: () => void) {
+  saveProfile(next);
+  onDone();
+}
+
+function CheckInForm({
+  profile,
+  onDone,
+  canShorten,
+  onQuick,
+}: {
+  profile: Profile;
+  onDone: () => void;
+  canShorten?: boolean;
+  onQuick?: () => void;
 }) {
   const todayKey = dayKey(new Date().toISOString());
   // If they already checked in today, pre-load it so a second visit edits
@@ -82,21 +199,7 @@ function CheckInForm({
     setPresent((p) => ({ ...p, [id]: !p[id] }));
 
   const save = () => {
-    const now = new Date().toISOString();
-    const record: CheckIn = {
-      id: existing?.id ?? crypto.randomUUID(),
-      createdAt: now,
-      sleep,
-      mood,
-      answers: profile.signs.map((s) => ({
-        signId: s.id,
-        present: !!present[s.id],
-      })),
-    };
-    const checkIns = existing
-      ? profile.checkIns.map((c) => (c.id === existing.id ? record : c))
-      : [...profile.checkIns, record];
-    saveProfile({ ...profile, checkIns });
+    saveProfile(saveCheckIn(profile, { sleep, mood, present }));
     onDone();
   };
 
@@ -111,6 +214,16 @@ function CheckInForm({
         <p className="-mt-2 text-sm text-ink-faint">
           You already checked in today — this will gently update it.
         </p>
+      ) : null}
+
+      {canShorten && onQuick ? (
+        <button
+          type="button"
+          onClick={onQuick}
+          className="-mt-2 self-start rounded-pill px-3 py-2 text-sm font-medium text-steady-700 hover:bg-steady-50"
+        >
+          ← Back to the quick check-in
+        </button>
       ) : null}
 
       {/* Sleep */}

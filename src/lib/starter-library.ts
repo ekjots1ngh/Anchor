@@ -5,10 +5,15 @@ import type {
 } from "@/lib/types";
 
 /**
- * A SMALL starter library of early-warning signs, offered as gentle
- * suggestions during onboarding. The person picks the ones that ring true,
- * edits the wording into their own words, and adds their own. Nothing here
- * is prescriptive or clinical — they're conversation starters.
+ * A small starter library of early-warning signs, offered as gentle
+ * suggestions during onboarding, organised by the five staying-well domains.
+ *
+ * The wording is drawn from common, well-established relapse-prevention and
+ * early-warning-signs / staying-well-plan frameworks (e.g. WRAP — Wellness
+ * Recovery Action Plan, and relapse early-signs work such as the Early Signs
+ * Scale). It is generic and non-clinical on purpose: the person picks what
+ * rings true, rewrites it in their own words, and adds their own. These are
+ * conversation starters — NOT a checklist, screening tool, or diagnosis.
  */
 
 export interface StarterSign {
@@ -22,29 +27,34 @@ export interface StarterSign {
 
 export const STARTER_SIGNS: StarterSign[] = [
   // Sleep & energy
-  { id: "sleep-less", name: "Sleeping less", category: "sleep", example: "I'm getting fewer than 5 hours, or not feeling tired at night." },
-  { id: "sleep-more", name: "Sleeping much more", category: "sleep", example: "I'm in bed most of the day and still exhausted." },
+  { id: "sleep-less", name: "Sleeping less than usual", category: "sleep", example: "I'm getting fewer hours, or not feeling tired at night." },
+  { id: "sleep-more", name: "Sleeping much more than usual", category: "sleep", example: "I'm in bed most of the day and still exhausted." },
+  { id: "sleep-pattern", name: "Day and night getting mixed up", category: "sleep", example: "I'm up through the night and asleep in the day." },
+  { id: "restless", name: "Feeling wired or restless", category: "sleep", example: "I can't settle or slow down, even when I'm tired." },
 
   // People & connection
-  { id: "withdraw", name: "Pulling away from people", category: "social", example: "I'm leaving messages unread and cancelling plans." },
-  { id: "conflict", name: "Snapping at people", category: "social", example: "Small things make me irritable or suspicious of others." },
+  { id: "withdraw", name: "Pulling away from people", category: "social", example: "I'm cancelling plans and going quiet with the people I usually see." },
+  { id: "unreachable", name: "Not answering messages or calls", category: "social", example: "I'm leaving texts unread for days." },
+  { id: "guarded", name: "Feeling on guard around others", category: "social", example: "I feel suspicious, watched, or like I can't trust people." },
+  { id: "alone", name: "Wanting to be completely alone", category: "social", example: "I'd rather shut everyone out right now." },
 
-  // Thinking & focus
-  { id: "racing", name: "Thoughts racing", category: "thought", example: "My mind won't slow down and ideas feel connected in big ways." },
-  { id: "focus", name: "Can't focus", category: "thought", example: "I start things and can't follow them through." },
-  { id: "meaning", name: "Reading meaning into things", category: "thought", example: "Ordinary events feel like they're about me or a message for me." },
+  // Thinking & perception
+  { id: "racing", name: "Thoughts racing or jumping", category: "thinking", example: "My mind won't slow down and ideas feel connected in big ways." },
+  { id: "focus", name: "Hard to concentrate", category: "thinking", example: "I start things and can't follow them through." },
+  { id: "meaning", name: "Reading special meaning into things", category: "thinking", example: "Ordinary events feel like they're about me or a message for me." },
+  { id: "sensing", name: "Hearing or sensing things others don't", category: "thinking", example: "I'm noticing sounds, voices, or things that others don't seem to." },
+
+  // Everyday function
+  { id: "skip-meds", name: "Missing or changing my medication", category: "function", example: "I've skipped doses or stopped taking it." },
+  { id: "eating", name: "Skipping meals or not eating well", category: "function", example: "I'm forgetting to eat or not bothering with food." },
+  { id: "basics", name: "Letting hygiene or basics slide", category: "function", example: "Showering, tidying, daylight — it's all slipping." },
+  { id: "tasks", name: "Struggling to keep up", category: "function", example: "Work, study, or chores are piling up and I can't keep on top of them." },
 
   // Mood & feelings
-  { id: "low", name: "Feeling flat or low", category: "mood", example: "Things I usually enjoy feel grey or pointless." },
-  { id: "wired", name: "Feeling wired or speeded up", category: "mood", example: "I feel unusually energetic, important, or unstoppable." },
-
-  // Senses & perception
-  { id: "noises", name: "Background noise feels meaningful", category: "perception", example: "The radio or traffic seems to be talking about me." },
-  { id: "hearing", name: "Hearing things others don't", category: "perception", example: "I'm hearing voices or sounds when no one's there." },
-
-  // Daily routine & self-care
-  { id: "skip-meds", name: "Skipping medication", category: "self-care", example: "I've missed doses or stopped taking them." },
-  { id: "self-care", name: "Letting basics slide", category: "self-care", example: "I'm skipping meals, showers, or daylight." },
+  { id: "low", name: "Feeling unusually low or flat", category: "mood", example: "Things I usually enjoy feel grey or pointless." },
+  { id: "high", name: "Feeling sped-up or invincible", category: "mood", example: "I feel unusually energetic, important, or unstoppable." },
+  { id: "irritable", name: "More irritable or quick to anger", category: "mood", example: "Small things set me off more than usual." },
+  { id: "anxious", name: "Anxious, tense or frightened", category: "mood", example: "I feel on edge or scared a lot of the time." },
 ];
 
 /**

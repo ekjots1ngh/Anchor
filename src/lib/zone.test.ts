@@ -19,7 +19,7 @@ const SIGNS: EarlyWarningSign[] = [
   { id: "slp", name: "Sleeping less", category: "sleep", description: "", source: "library" },
   { id: "soc1", name: "Pulling away", category: "social", description: "", source: "library" },
   { id: "soc2", name: "Not replying", category: "social", description: "", source: "library" },
-  { id: "tho", name: "Racing thoughts", category: "thought", description: "", source: "library" },
+  { id: "tho", name: "Racing thoughts", category: "thinking", description: "", source: "library" },
 ];
 
 type SleepQ = CheckIn["sleep"];
@@ -64,7 +64,7 @@ describe("weighting", () => {
     const w = DEFAULT_ZONE_OPTIONS.weights;
     expect(w.sleep).toBe(3);
     expect(w.social).toBe(3);
-    for (const k of ["mood", "thought", "perception", "self-care"] as SignalKey[]) {
+    for (const k of ["mood", "thinking", "function"] as SignalKey[]) {
       expect(w.sleep).toBeGreaterThan(w[k]);
     }
   });
@@ -114,7 +114,7 @@ describe("a moderate sustained shift → amber", () => {
     expect(social.recentMean).toBeCloseTo(0.5, 5); // one of two social signs
 
     expect(driver(r, "mood").drove).toBe(false);
-    expect(driver(r, "thought").drove).toBe(false);
+    expect(driver(r, "thinking").drove).toBe(false);
 
     // Shares are reported and sum to 1 across the drivers.
     expect(r.drivers.reduce((s, d) => s + d.share, 0)).toBeCloseTo(1, 5);

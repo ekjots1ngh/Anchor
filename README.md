@@ -5,11 +5,31 @@
 Anchor mirrors a person's *own* pre-agreed early-warning signs back to them and
 helps them reach real human support. It is a hackathon prototype.
 
-> Anchor is **not** a diagnostic tool and makes **no** medical claims. It
-> supports clinical care — it never replaces it. If you are in crisis, contact
-> your care team or local emergency services.
+> Anchor is an **unvalidated prototype, not a medical device** or a diagnostic
+> tool, and makes **no** medical claims. It supports clinical care — it never
+> replaces it. If you are in crisis, contact your care team or local emergency
+> services.
 
 ---
+
+## Signs library & accessibility
+
+- **Framework-grounded signs.** The starter early-warning signs
+  (`src/lib/starter-library.ts`) are organised by the five staying-well
+  **domains** — Sleep & energy, People & connection, Thinking & perception,
+  Everyday function, Mood & feelings — with wording drawn from established
+  relapse-prevention and early-warning-signs / staying-well-plan frameworks
+  (e.g. WRAP and relapse early-signs work). They're generic starting points the
+  person rewrites in their own words. A visible **"prototype — not a medical
+  device"** note (`PrototypeNotice`) appears wherever signs are presented, and
+  the disclaimer is reinforced in the persistent footer.
+- **Accessibility / low cognitive load.** Larger base text (rem-scaled so the
+  whole layout stays generous), plain language, AA-contrast tokens, visible
+  keyboard focus, reduced-motion support, and minimal choices per screen —
+  onboarding picks signs **one domain at a time** (an accordion). The check-in
+  also **shortens over time when things are stable**: after a clean streak the
+  daily check-in becomes a single tap ("Yes, still steady"), reverting to the
+  full check-in the moment anything looks off (`src/lib/checkin.ts`, tested).
 
 ## The three principles (baked into the architecture)
 

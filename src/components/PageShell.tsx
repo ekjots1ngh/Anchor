@@ -61,11 +61,11 @@ export function PageShell({
 
       <footer className="mx-auto max-w-content px-6 pb-16">
         <p className="text-sm leading-relaxed text-ink-faint">
-          Anchor is not a diagnostic tool and makes no medical claims. It
-          reflects your own pre-agreed early-warning signs back to you and
-          helps you reach real human support. It supports clinical care — it
-          never replaces it. If you are in crisis, contact your care team or
-          local emergency services.
+          Anchor is an unvalidated prototype, not a medical device or a
+          diagnostic tool, and makes no medical claims. It reflects your own
+          pre-agreed early-warning signs back to you and helps you reach real
+          human support. It supports clinical care — it never replaces it. If you
+          are in crisis, contact your care team or local emergency services.
         </p>
         <CrisisQuickLink />
       </footer>

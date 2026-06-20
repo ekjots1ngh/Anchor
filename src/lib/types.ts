@@ -40,24 +40,33 @@ export interface Zone {
 /* ------------------------------------------------------------------ */
 
 /**
- * Loose grouping so signs can be shown in gentle, relatable clusters during
- * onboarding. Not a clinical taxonomy.
+ * The five staying-well domains, grounded in established relapse-prevention and
+ * early-warning-signs frameworks (e.g. WRAP — Wellness Recovery Action Plan, and
+ * relapse early-signs work). A gentle grouping for the person, not a clinical
+ * taxonomy or diagnostic instrument.
  */
 export type SignCategory =
   | "sleep"
   | "social"
-  | "thought"
-  | "mood"
-  | "perception"
-  | "self-care";
+  | "thinking"
+  | "function"
+  | "mood";
 
 export const SIGN_CATEGORY_LABELS: Record<SignCategory, string> = {
   sleep: "Sleep & energy",
   social: "People & connection",
-  thought: "Thinking & focus",
+  thinking: "Thinking & perception",
+  function: "Everyday function",
   mood: "Mood & feelings",
-  perception: "Senses & perception",
-  "self-care": "Daily routine & self-care",
+};
+
+/** One-line, plain descriptions shown under each domain heading. */
+export const SIGN_CATEGORY_BLURBS: Record<SignCategory, string> = {
+  sleep: "How you're sleeping and your energy.",
+  social: "How connected you feel to other people.",
+  thinking: "How your thoughts feel, and how you're making sense of things.",
+  function: "Keeping up with everyday basics and routine.",
+  mood: "How you've been feeling in yourself.",
 };
 
 /**

@@ -52,18 +52,16 @@ const SIGNAL_ORDER: SignalKey[] = [
   "sleep",
   "social",
   "mood",
-  "thought",
-  "perception",
-  "self-care",
+  "thinking",
+  "function",
 ];
 
 export const SIGNAL_LABELS: Record<SignalKey, string> = {
   sleep: "Sleep",
   social: "Social withdrawal",
   mood: "Mood",
-  thought: "Thinking & focus",
-  perception: "Senses & perception",
-  "self-care": "Daily routine & self-care",
+  thinking: "Thinking & perception",
+  function: "Everyday function",
 };
 
 export type ZoneWeights = Record<SignalKey, number>;
@@ -110,9 +108,8 @@ export const DEFAULT_ZONE_OPTIONS: ZoneOptions = {
     sleep: 3, // strong early sign — weighted heavily
     social: 3, // social withdrawal — strong early sign — weighted heavily
     mood: 2,
-    thought: 1.5,
-    perception: 1.5,
-    "self-care": 1,
+    thinking: 2,
+    function: 1.5,
   },
 };
 

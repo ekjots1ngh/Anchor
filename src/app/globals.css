@@ -7,14 +7,17 @@
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     scroll-behavior: smooth;
-    /* Honour iOS safe areas and never zoom-lock the layout. */
+    /* Never zoom-lock the layout, and respect the user's own text scaling. */
     text-size-adjust: 100%;
+    /* Larger, more readable base — assume the person may be tired or struggling.
+       rem-based spacing scales with it, so the whole layout stays generous. */
+    font-size: 106.25%; /* ~17px */
   }
 
   body {
     @apply bg-canvas text-ink;
-    /* Comfortable default line length + rhythm for body copy. */
-    line-height: 1.6;
+    /* Comfortable line height for body copy. */
+    line-height: 1.65;
   }
 
   /* One calm, visible focus ring for EVERY interactive element — keyboard

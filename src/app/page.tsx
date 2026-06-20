@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/Button";
+import { PrototypeNotice } from "@/components/PrototypeNotice";
 
 export default function HomePage() {
   return (
@@ -42,9 +43,13 @@ export default function HomePage() {
           />
         </div>
 
-        <p className="mt-20 text-sm leading-relaxed text-ink-faint">
-          Anchor is a prototype and is not a diagnostic tool. If you are in
-          crisis, please contact your care team or local emergency services.{" "}
+        <div className="mt-20">
+          <PrototypeNotice />
+        </div>
+
+        <p className="mt-8 text-sm leading-relaxed text-ink-faint">
+          If you are in crisis, please contact your care team or local emergency
+          services.{" "}
           <Link href="/plan" className="underline hover:text-ink-muted">
             See your plan
           </Link>

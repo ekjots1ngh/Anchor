@@ -11,8 +11,10 @@ import {
   starterToSign,
   type StarterSign,
 } from "@/lib/starter-library";
+import { PrototypeNotice } from "@/components/PrototypeNotice";
 import {
   CONTACT_VISIBILITY_LABELS,
+  SIGN_CATEGORY_BLURBS,
   SIGN_CATEGORY_LABELS,
   type ContactVisibility,
   type EarlyWarningSign,
@@ -250,6 +252,8 @@ function SignsStep({
   update: (p: Partial<Profile>) => void;
 }) {
   const selectedIds = new Set(draft.signs.map((s) => s.id));
+  // One domain open at a time, to keep the number of choices on screen small.
+  const [openCategory, setOpenCategory] = useState<SignCategory | null>("sleep");
 
   const grouped = useMemo(() => {
     const map = new Map<SignCategory, StarterSign[]>();
@@ -283,51 +287,82 @@ function SignsStep({
   return (
     <>
       <StepHeader
-        title="Which early-warning signs do you want to watch for?"
-        intro="Pick the ones that ring true and make the words your own. These are yours — there are no right answers, and you can add anything that's missing."
+        title="What do you want to watch for?"
+        intro="Take it one area at a time. Open an area, tap anything that rings true, and make the words your own. There are no right answers."
       />
 
-      {grouped.map(([category, signs]) => (
-        <Card key={category}>
-          <h2 className="text-base font-semibold">
-            {SIGN_CATEGORY_LABELS[category]}
-          </h2>
-          <div className="mt-4 space-y-2">
-            {signs.map((s) => {
-              const picked = selectedIds.has(s.id);
-              return (
-                <button
-                  key={s.id}
-                  type="button"
-                  onClick={() => toggle(s)}
-                  className={`flex w-full items-start gap-3 rounded-2xl border px-4 py-3 text-left transition-colors ${
-                    picked
-                      ? "border-steady-300 bg-steady-50"
-                      : "border-line bg-surface hover:bg-steady-50/40"
-                  }`}
-                >
-                  <span
-                    className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border ${
-                      picked
-                        ? "border-steady-400 bg-steady-600 text-white"
-                        : "border-line"
-                    }`}
-                    aria-hidden
-                  >
-                    {picked ? "✓" : ""}
+      <PrototypeNotice />
+
+      {grouped.map(([category, signs]) => {
+        const isOpen = openCategory === category;
+        const count = signs.filter((s) => selectedIds.has(s.id)).length;
+        return (
+          <Card key={category} className="p-0">
+            <button
+              type="button"
+              onClick={() => setOpenCategory(isOpen ? null : category)}
+              aria-expanded={isOpen}
+              className="flex w-full items-center justify-between gap-3 rounded-card px-6 py-5 text-left hover:bg-steady-50/40 sm:px-8"
+            >
+              <span>
+                <span className="block text-lg font-semibold text-ink">
+                  {SIGN_CATEGORY_LABELS[category]}
+                </span>
+                <span className="mt-1 block text-sm text-ink-faint">
+                  {SIGN_CATEGORY_BLURBS[category]}
+                </span>
+              </span>
+              <span className="flex shrink-0 items-center gap-3">
+                {count > 0 ? (
+                  <span className="rounded-pill bg-steady-100 px-3 py-1 text-sm font-medium text-steady-700">
+                    {count}
                   </span>
-                  <span>
-                    <span className="block font-medium text-ink">{s.name}</span>
-                    <span className="block text-sm text-ink-faint">
-                      {s.example}
-                    </span>
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </Card>
-      ))}
+                ) : null}
+                <span aria-hidden className={`text-ink-faint transition-transform ${isOpen ? "rotate-90" : ""}`}>
+                  ›
+                </span>
+              </span>
+            </button>
+            {isOpen && (
+              <div className="space-y-2 px-6 pb-6 sm:px-8">
+                {signs.map((s) => {
+                  const picked = selectedIds.has(s.id);
+                  return (
+                    <button
+                      key={s.id}
+                      type="button"
+                      onClick={() => toggle(s)}
+                      aria-pressed={picked}
+                      className={`flex w-full items-start gap-3 rounded-2xl border px-4 py-4 text-left transition-colors ${
+                        picked
+                          ? "border-steady-300 bg-steady-50"
+                          : "border-line bg-surface hover:bg-steady-50/40"
+                      }`}
+                    >
+                      <span
+                        className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md border ${
+                          picked
+                            ? "border-steady-600 bg-steady-600 text-white"
+                            : "border-line"
+                        }`}
+                        aria-hidden
+                      >
+                        {picked ? "✓" : ""}
+                      </span>
+                      <span>
+                        <span className="block font-medium text-ink">{s.name}</span>
+                        <span className="mt-0.5 block text-sm text-ink-muted">
+                          {s.example}
+                        </span>
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </Card>
+        );
+      })}
 
       {draft.signs.length > 0 && (
         <Card className="bg-steady-50/40">
@@ -368,7 +403,7 @@ function SignsStep({
 
 function AddCustomSign({ onAdd }: { onAdd: (s: EarlyWarningSign) => void }) {
   const [name, setName] = useState("");
-  const [category, setCategory] = useState<SignCategory>("thought");
+  const [category, setCategory] = useState<SignCategory>("thinking");
   const [description, setDescription] = useState("");
 
   const canAdd = name.trim().length > 0;
