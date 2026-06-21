@@ -26,7 +26,7 @@ export function WhyThisZone({
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
         aria-controls="why-this-zone"
-        className="-mx-3 inline-flex min-h-[2.75rem] items-center gap-2 rounded-pill px-3 py-2 text-sm font-medium text-ink-muted hover:bg-steady-50"
+        className="-mx-3 inline-flex min-h-[2.75rem] items-center gap-2 rounded-pill px-3 py-2 text-sm font-medium text-ink-muted hover:bg-accent-soft"
       >
         <span>Why this zone?</span>
         <span
@@ -61,7 +61,7 @@ export function WhyThisZone({
                     </span>
                   </div>
                   <div
-                    className="mt-2 h-1.5 w-full overflow-hidden rounded-pill bg-canvas"
+                    className="mt-2 h-1.5 w-full overflow-hidden rounded-pill bg-raised"
                     aria-hidden
                   >
                     <div

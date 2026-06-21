@@ -76,8 +76,8 @@ export function ConnectActions({
             href={telHref(crisisLinePhone)}
             className={`inline-flex min-h-[2.75rem] items-center justify-center rounded-pill px-5 py-2.5 text-sm font-medium ${
               zone === "red"
-                ? "bg-crisis-500 text-white hover:bg-crisis-600"
-                : "border border-crisis-300 text-crisis-700 hover:bg-crisis-50"
+                ? "bg-crisis-strong text-crisis-foreground hover:bg-crisis-strong"
+                : "border border-crisis-border text-crisis-text hover:bg-crisis-soft"
             }`}
           >
             Call now

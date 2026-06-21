@@ -46,7 +46,7 @@ export function OkayCorrection({
       <button
         type="button"
         onClick={record}
-        className="mt-4 inline-flex min-h-[2.75rem] items-center rounded-pill border border-steady-300 px-5 py-2.5 text-sm font-medium text-steady-700 hover:bg-steady-50"
+        className="mt-4 inline-flex min-h-[2.75rem] items-center rounded-pill border border-accent/40 px-5 py-2.5 text-sm font-medium text-accent-text hover:bg-accent-soft"
       >
         I&rsquo;m actually okay
       </button>

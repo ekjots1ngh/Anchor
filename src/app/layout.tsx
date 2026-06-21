@@ -1,11 +1,19 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Source_Serif_4 } from "next/font/google";
 import "./globals.css";
 import { DemoPanel } from "@/components/DemoPanel";
 
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
+  display: "swap",
+});
+
+// The companion voice: a warm serif, reserved for the moments Anchor speaks
+// directly to a person (the warm message, status headline, welcome).
+const sourceSerif = Source_Serif_4({
+  subsets: ["latin"],
+  variable: "--font-serif",
   display: "swap",
 });
 
@@ -18,8 +26,11 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  // Matches the canvas token so mobile browser chrome blends in.
-  themeColor: "#f5f4ef",
+  // Match the canvas token in each theme so mobile browser chrome blends in.
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f6f4ef" },
+    { media: "(prefers-color-scheme: dark)", color: "#1b1a17" },
+  ],
 };
 
 export default function RootLayout({
@@ -28,7 +39,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en" className={`${inter.variable} ${sourceSerif.variable}`}>
       <body>
         {children}
         <DemoPanel />

@@ -115,20 +115,20 @@ export function signalStatus(drift: number): {
   bar: string;
 } {
   if (drift <= 0) {
-    return { label: "Steady", pill: "bg-steady-100 text-steady-700", bar: "bg-steady-300" };
+    return { label: "Steady", pill: "bg-steady-soft text-steady-text", bar: "bg-steady" };
   }
   if (drift < 0.5) {
-    return { label: "A little", pill: "bg-checkin-100 text-checkin-700", bar: "bg-checkin-300" };
+    return { label: "A little", pill: "bg-drifting-soft text-drifting-text", bar: "bg-drifting" };
   }
-  return { label: "Showing", pill: "bg-crisis-100 text-crisis-700", bar: "bg-crisis-300" };
+  return { label: "Showing", pill: "bg-crisis-soft text-crisis-text", bar: "bg-crisis" };
 }
 
 /** Soft bar colour for a trend day. */
 export function trendBar(zone: ZoneId | null): string {
-  if (zone === "red") return "bg-crisis-300";
-  if (zone === "amber") return "bg-checkin-300";
-  if (zone === "green") return "bg-steady-300";
-  return "bg-line"; // no check-in that day
+  if (zone === "red") return "bg-crisis";
+  if (zone === "amber") return "bg-drifting";
+  if (zone === "green") return "bg-steady";
+  return "bg-line-strong"; // no check-in that day
 }
 
 export function zoneRank(zone: ZoneId): number {

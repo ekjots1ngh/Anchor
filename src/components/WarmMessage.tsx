@@ -69,14 +69,17 @@ export function WarmMessage({
         className={`flex items-center gap-2 text-lg leading-relaxed text-ink-faint ${className}`}
         aria-live="polite"
       >
-        <span className="inline-block h-2 w-2 animate-pulse rounded-pill bg-checkin-400" aria-hidden />
+        <span className="inline-block h-2 w-2 animate-pulse rounded-pill bg-drifting" aria-hidden />
         Finding the right words&hellip;
       </p>
     );
   }
 
   return (
-    <p className={`text-lg leading-relaxed text-ink-muted ${className}`} aria-live="polite">
+    <p
+      className={`font-serif text-xl leading-relaxed text-ink ${className}`}
+      aria-live="polite"
+    >
       {message ?? fallback}
     </p>
   );

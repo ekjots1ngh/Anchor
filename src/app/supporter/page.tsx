@@ -20,9 +20,9 @@ const ZONE_BLURB: Record<ZoneId, string> = {
 };
 
 const LEVEL_PILL: Record<DriftLevel, string> = {
-  steady: "bg-steady-100 text-steady-700",
-  some: "bg-checkin-100 text-checkin-700",
-  elevated: "bg-crisis-100 text-crisis-700",
+  steady: "bg-accent-soft text-accent-text",
+  some: "bg-drifting-soft text-drifting-text",
+  elevated: "bg-crisis-soft text-crisis-text",
 };
 
 const LEVEL_LABEL: Record<DriftLevel, string> = {
@@ -154,9 +154,9 @@ function Summary({ view }: { view: SupporterView }) {
             ))}
           </div>
           <div className="mt-4 flex flex-wrap gap-4 text-xs text-ink-faint">
-            <Legend swatch="bg-steady-300" label="Steady" />
-            <Legend swatch="bg-checkin-300" label="Drifting" />
-            <Legend swatch="bg-crisis-300" label="Worth support" />
+            <Legend swatch="bg-steady" label="Steady" />
+            <Legend swatch="bg-drifting" label="Drifting" />
+            <Legend swatch="bg-crisis" label="Worth support" />
             <Legend swatch="border border-dashed border-line" label="No check-in" />
           </div>
         </div>

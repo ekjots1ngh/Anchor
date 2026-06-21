@@ -49,7 +49,7 @@ export default function CheckInPage() {
         <Card>
           <Link
             href="/onboarding"
-            className="inline-flex rounded-pill bg-steady-600 px-7 py-3 font-medium text-white hover:bg-steady-700"
+            className="inline-flex rounded-pill bg-accent px-7 py-3 font-medium text-accent-foreground hover:bg-accent-strong"
           >
             Set up my Anchor
           </Link>
@@ -136,8 +136,8 @@ function QuickCheckIn({
 
   return (
     <PageShell title={`Quick check-in${name}`}>
-      <Card className="bg-steady-50/50">
-        <p className="text-lg leading-relaxed text-ink">
+      <Card className="bg-accent-soft">
+        <p className="font-serif text-xl leading-relaxed text-ink">
           Things have felt steady lately, so today can be just one tap if you
           like.
         </p>
@@ -146,14 +146,14 @@ function QuickCheckIn({
           <button
             type="button"
             onClick={confirm}
-            className="inline-flex min-h-[3.25rem] items-center justify-center rounded-pill bg-steady-600 px-7 py-3 text-lg font-medium text-white hover:bg-steady-700"
+            className="inline-flex min-h-[3.25rem] items-center justify-center rounded-pill bg-accent px-7 py-3 text-lg font-medium text-accent-foreground hover:bg-accent-strong"
           >
             Yes, still steady
           </button>
           <button
             type="button"
             onClick={onFull}
-            className="inline-flex min-h-[2.75rem] items-center justify-center rounded-pill px-5 py-3 text-ink-muted hover:bg-steady-50"
+            className="inline-flex min-h-[2.75rem] items-center justify-center rounded-pill px-5 py-3 text-ink-muted hover:bg-accent-soft"
           >
             Something feels different. Full check-in
           </button>
@@ -225,7 +225,7 @@ function CheckInForm({
         <button
           type="button"
           onClick={onQuick}
-          className="-mt-2 self-start rounded-pill px-3 py-2 text-sm font-medium text-steady-700 hover:bg-steady-50"
+          className="-mt-2 self-start rounded-pill px-3 py-2 text-sm font-medium text-accent-text hover:bg-accent-soft"
         >
           ← Back to the quick check-in
         </button>
@@ -245,8 +245,8 @@ function CheckInForm({
                 aria-pressed={on}
                 className={`rounded-2xl border px-4 py-4 text-center font-medium transition-colors ${
                   on
-                    ? "border-steady-300 bg-steady-50 text-ink"
-                    : "border-line bg-surface text-ink-muted hover:bg-steady-50/40"
+                    ? "border-accent/40 bg-accent-soft text-ink"
+                    : "border-line bg-surface text-ink-muted hover:bg-accent-soft"
                 }`}
               >
                 {opt.label}
@@ -271,8 +271,8 @@ function CheckInForm({
                 aria-label={`Mood ${value} of 5`}
                 className={`flex h-14 flex-1 items-center justify-center rounded-2xl border text-lg font-medium tabular-nums transition-colors ${
                   on
-                    ? "border-checkin-300 bg-checkin-50 text-ink"
-                    : "border-line bg-surface text-ink-muted hover:bg-steady-50/40"
+                    ? "border-drifting-border bg-drifting-soft text-ink"
+                    : "border-line bg-surface text-ink-muted hover:bg-accent-soft"
                 }`}
               >
                 {value}
@@ -303,15 +303,15 @@ function CheckInForm({
                   aria-pressed={on}
                   className={`flex w-full items-center justify-between gap-3 rounded-2xl border px-5 py-3 text-left transition-colors ${
                     on
-                      ? "border-checkin-300 bg-checkin-50"
-                      : "border-line bg-surface hover:bg-steady-50/40"
+                      ? "border-drifting-border bg-drifting-soft"
+                      : "border-line bg-surface hover:bg-accent-soft"
                   }`}
                 >
                   <span className="font-medium text-ink">{s.name}</span>
                   <span
                     className={`shrink-0 rounded-pill px-3 py-1 text-sm font-medium ${
                       on
-                        ? "bg-checkin-100 text-checkin-700"
+                        ? "bg-drifting-soft text-drifting-text"
                         : "bg-canvas text-ink-faint"
                     }`}
                   >
@@ -333,7 +333,7 @@ function CheckInForm({
         <button
           type="button"
           onClick={save}
-          className="w-full rounded-pill bg-steady-600 px-7 py-3 font-medium text-white hover:bg-steady-700 sm:w-auto"
+          className="w-full rounded-pill bg-accent px-7 py-3 font-medium text-accent-foreground hover:bg-accent-strong sm:w-auto"
         >
           Save today&rsquo;s check-in
         </button>

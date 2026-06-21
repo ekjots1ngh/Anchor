@@ -38,7 +38,7 @@ export function PageShell({
       </header>
 
       {/* Calm, persistent disclaimer — visible on every screen, not buried. */}
-      <div className="border-b border-checkin-200/70 bg-checkin-50/60">
+      <div className="border-b border-drifting-border bg-drifting-soft">
         <p className="mx-auto max-w-content px-5 py-2 text-xs leading-relaxed text-ink-muted sm:px-6">
           A staying-well <span className="font-medium text-ink">prototype</span>,
           not a medical device or diagnostic tool. It supports your care, it never

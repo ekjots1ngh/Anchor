@@ -57,7 +57,7 @@ export default function SummaryPage() {
         </p>
         <Link
           href="/onboarding"
-          className="mt-6 inline-flex min-h-[2.75rem] items-center rounded-pill bg-steady-600 px-7 py-3 font-medium text-white hover:bg-steady-700"
+          className="mt-6 inline-flex min-h-[2.75rem] items-center rounded-pill bg-accent px-7 py-3 font-medium text-accent-foreground hover:bg-accent-strong"
         >
           Set up my Anchor
         </Link>
@@ -107,14 +107,14 @@ export default function SummaryPage() {
       <div className="mb-8 flex flex-wrap items-center justify-between gap-3 print:hidden">
         <Link
           href="/data"
-          className="inline-flex min-h-[2.75rem] items-center rounded-pill px-4 py-2 text-sm font-medium text-ink-muted hover:bg-steady-50"
+          className="inline-flex min-h-[2.75rem] items-center rounded-pill px-4 py-2 text-sm font-medium text-ink-muted hover:bg-accent-soft"
         >
           ← Back to your data
         </Link>
         <button
           type="button"
           onClick={() => window.print()}
-          className="inline-flex min-h-[2.75rem] items-center rounded-pill bg-steady-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-steady-700"
+          className="inline-flex min-h-[2.75rem] items-center rounded-pill bg-accent px-6 py-2.5 text-sm font-medium text-accent-foreground hover:bg-accent-strong"
         >
           Print or save as PDF
         </button>
@@ -128,7 +128,7 @@ export default function SummaryPage() {
       </header>
 
       {/* Honest, calm framing for whoever reads it */}
-      <p className="mt-6 rounded-2xl border border-checkin-200 bg-checkin-50/60 px-5 py-4 text-sm leading-relaxed text-ink">
+      <p className="mt-6 rounded-2xl border border-drifting-border bg-drifting-soft px-5 py-4 text-sm leading-relaxed text-ink">
         This is a personal summary {profile.displayName?.trim() || "the person"}{" "}
         chose to share, in their own words. It is <strong>not a medical record</strong>{" "}
         and makes no diagnosis. Anchor supports their care, it never replaces it.

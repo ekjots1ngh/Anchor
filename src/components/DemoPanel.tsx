@@ -34,8 +34,8 @@ function focusCard(id: string) {
     const el = document.getElementById(id);
     if (!el) return;
     el.scrollIntoView({ behavior: "smooth", block: "start" });
-    el.classList.add("ring-2", "ring-steady-500");
-    setTimeout(() => el.classList.remove("ring-2", "ring-steady-500"), 2600);
+    el.classList.add("ring-2", "ring-accent");
+    setTimeout(() => el.classList.remove("ring-2", "ring-accent"), 2600);
   }, 450);
 }
 
@@ -146,7 +146,7 @@ export function DemoPanel() {
               </span>
               <span className="flex shrink-0 items-center gap-3">
                 <span
-                  className={`text-xs tabular-nums ${over ? "font-semibold text-checkin-700" : "text-ink-faint"}`}
+                  className={`text-xs tabular-nums ${over ? "font-semibold text-drifting-text" : "text-ink-faint"}`}
                 >
                   {mm}:{ss}
                 </span>
@@ -171,7 +171,7 @@ export function DemoPanel() {
               {SCRIPT.map((_, i) => (
                 <span
                   key={i}
-                  className={`h-1.5 flex-1 rounded-pill ${i <= step ? "bg-steady-500" : "bg-line"}`}
+                  className={`h-1.5 flex-1 rounded-pill ${i <= step ? "bg-accent" : "bg-line"}`}
                 />
               ))}
             </div>
@@ -181,7 +181,7 @@ export function DemoPanel() {
                 type="button"
                 onClick={() => goToStep(Math.max(0, step - 1))}
                 disabled={step === 0}
-                className="rounded-pill px-4 py-2 text-sm font-medium text-ink-muted hover:bg-steady-50 disabled:invisible"
+                className="rounded-pill px-4 py-2 text-sm font-medium text-ink-muted hover:bg-accent-soft disabled:invisible"
               >
                 Back
               </button>
@@ -189,7 +189,7 @@ export function DemoPanel() {
                 <button
                   type="button"
                   onClick={() => goToStep(step + 1)}
-                  className="rounded-pill bg-steady-600 px-6 py-2.5 text-base font-semibold text-white hover:bg-steady-700"
+                  className="rounded-pill bg-accent px-6 py-2.5 text-base font-semibold text-accent-foreground hover:bg-accent-strong"
                 >
                   Next ▸
                 </button>
@@ -197,7 +197,7 @@ export function DemoPanel() {
                 <button
                   type="button"
                   onClick={exitWalkthrough}
-                  className="rounded-pill bg-steady-600 px-6 py-2.5 text-base font-semibold text-white hover:bg-steady-700"
+                  className="rounded-pill bg-accent px-6 py-2.5 text-base font-semibold text-accent-foreground hover:bg-accent-strong"
                 >
                   Done
                 </button>
@@ -242,7 +242,7 @@ export function DemoPanel() {
       <button
         type="button"
         onClick={startWalkthrough}
-        className="mt-3 w-full rounded-pill bg-steady-600 px-4 py-3 text-base font-semibold text-white hover:bg-steady-700"
+        className="mt-3 w-full rounded-pill bg-accent px-4 py-3 text-base font-semibold text-accent-foreground hover:bg-accent-strong"
       >
         ▶ Run 2-min walkthrough
       </button>
@@ -258,14 +258,14 @@ export function DemoPanel() {
         <button
           type="button"
           onClick={seed}
-          className="w-full rounded-pill border border-steady-300 px-4 py-2 text-sm font-medium text-steady-700 hover:bg-steady-50"
+          className="w-full rounded-pill border border-accent/40 px-4 py-2 text-sm font-medium text-accent-text hover:bg-accent-soft"
         >
           Seed steady week
         </button>
         <button
           type="button"
           onClick={tip}
-          className="w-full rounded-pill border border-steady-300 px-4 py-2 text-sm font-medium text-steady-700 hover:bg-steady-50"
+          className="w-full rounded-pill border border-accent/40 px-4 py-2 text-sm font-medium text-accent-text hover:bg-accent-soft"
         >
           Tip to amber
         </button>

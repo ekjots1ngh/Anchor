@@ -49,13 +49,13 @@ export function ContactActions({
     <div className="flex flex-wrap gap-2">
       <a
         href={smsHref(phone, body)}
-        className="inline-flex min-h-[2.75rem] items-center justify-center rounded-pill bg-steady-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-steady-700"
+        className="inline-flex min-h-[2.75rem] items-center justify-center rounded-pill bg-accent px-5 py-2.5 text-sm font-medium text-accent-foreground hover:bg-accent-strong"
       >
         Message {firstNameOf(contact.name)}
       </a>
       <a
         href={telHref(phone)}
-        className="inline-flex min-h-[2.75rem] items-center justify-center rounded-pill border border-steady-300 px-5 py-2.5 text-sm font-medium text-steady-700 hover:bg-steady-50"
+        className="inline-flex min-h-[2.75rem] items-center justify-center rounded-pill border border-accent/40 px-5 py-2.5 text-sm font-medium text-accent-text hover:bg-accent-soft"
       >
         Call
       </a>

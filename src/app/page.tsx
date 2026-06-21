@@ -10,7 +10,7 @@ export default function HomePage() {
           <span className="text-lg font-semibold tracking-tight">Anchor</span>
           <Link
             href="#waitlist"
-            className="rounded-pill px-4 py-2 text-sm font-medium text-steady-700 hover:bg-steady-50"
+            className="rounded-pill px-4 py-2 text-sm font-medium text-accent-text hover:bg-accent-soft"
           >
             Join the waitlist
           </Link>
@@ -20,10 +20,10 @@ export default function HomePage() {
       <main className="mx-auto max-w-content px-5 py-16 sm:px-6 sm:py-24">
         {/* Hero */}
         <section>
-          <span className="rounded-pill bg-steady-100 px-4 py-1.5 text-sm font-medium text-steady-700">
+          <span className="rounded-pill bg-accent-soft px-4 py-1.5 text-sm font-medium text-accent-text">
             A calm staying-well companion
           </span>
-          <h1 className="mt-6 text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
+          <h1 className="mt-6 font-serif text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
             Notice your early signs, in your own words, and reach the people who
             can help.
           </h1>
@@ -37,13 +37,13 @@ export default function HomePage() {
           <div className="mt-9 flex flex-wrap gap-3">
             <Link
               href="#waitlist"
-              className="inline-flex min-h-[3rem] items-center justify-center rounded-pill bg-steady-600 px-7 py-3 text-lg font-medium text-white hover:bg-steady-700"
+              className="inline-flex min-h-[3rem] items-center justify-center rounded-pill bg-accent px-7 py-3 text-lg font-medium text-accent-foreground hover:bg-accent-strong"
             >
               Join the waitlist
             </Link>
             <Link
               href="/onboarding"
-              className="inline-flex min-h-[3rem] items-center justify-center rounded-pill border border-steady-300 px-7 py-3 text-lg font-medium text-steady-700 hover:bg-steady-50"
+              className="inline-flex min-h-[3rem] items-center justify-center rounded-pill border border-accent/40 px-7 py-3 text-lg font-medium text-accent-text hover:bg-accent-soft"
             >
               See the prototype
             </Link>
@@ -137,7 +137,7 @@ export default function HomePage() {
           </p>
           <p className="mt-4 text-sm text-ink-faint">
             Already set up?{" "}
-            <Link href="/dashboard" className="font-medium text-steady-700 underline">
+            <Link href="/dashboard" className="font-medium text-accent-text underline">
               go to your Anchor
             </Link>
             .
@@ -151,7 +151,7 @@ export default function HomePage() {
 function Step({ n, title, body }: { n: string; title: string; body: string }) {
   return (
     <div className="rounded-card border border-line bg-surface p-6 shadow-card">
-      <span className="flex h-9 w-9 items-center justify-center rounded-pill bg-steady-100 font-semibold text-steady-700">
+      <span className="flex h-9 w-9 items-center justify-center rounded-pill bg-accent-soft font-semibold text-accent-text">
         {n}
       </span>
       <h3 className="mt-4 text-lg font-semibold">{title}</h3>

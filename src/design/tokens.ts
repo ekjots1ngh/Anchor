@@ -1,14 +1,12 @@
 import type { ZoneId } from "@/lib/types";
 
 /**
- * Design tokens, in code.
+ * Design tokens, in code — see DESIGN.md.
  *
- * These mirror the Tailwind theme (tailwind.config.ts) and give non-CSS code
- * a single source of truth for how each zone is presented.
- *
- * Three zones — and NO alarm colour. "red" is rendered as a muted, dignified
- * clay/terracotta, never an emergency red. Anchor is calm by design.
- * See README → "Design principles".
+ * The single source of truth for how each zone is presented. All classes are
+ * semantic (steady / drifting / crisis), so they theme for light + dark from
+ * the variables in globals.css. Three zones, and NO alarm colour: the crisis
+ * zone is a dignified clay, never an emergency red.
  */
 
 export interface ZoneStyle {
@@ -21,27 +19,34 @@ export interface ZoneStyle {
 
 export const ZONE_STYLES: Record<ZoneId, ZoneStyle> = {
   green: {
-    badgeBg: "bg-steady-100",
-    badgeText: "text-steady-700",
-    dot: "bg-steady-400",
-    softBg: "bg-steady-50",
-    ring: "ring-steady-200",
+    badgeBg: "bg-steady-soft",
+    badgeText: "text-steady-text",
+    dot: "bg-steady",
+    softBg: "bg-steady-soft",
+    ring: "ring-steady-border",
   },
   amber: {
-    badgeBg: "bg-checkin-100",
-    badgeText: "text-checkin-700",
-    dot: "bg-checkin-400",
-    softBg: "bg-checkin-50",
-    ring: "ring-checkin-200",
+    badgeBg: "bg-drifting-soft",
+    badgeText: "text-drifting-text",
+    dot: "bg-drifting",
+    softBg: "bg-drifting-soft",
+    ring: "ring-drifting-border",
   },
   red: {
-    badgeBg: "bg-crisis-100",
-    badgeText: "text-crisis-700",
-    dot: "bg-crisis-400",
-    softBg: "bg-crisis-50",
-    ring: "ring-crisis-200",
+    badgeBg: "bg-crisis-soft",
+    badgeText: "text-crisis-text",
+    dot: "bg-crisis",
+    softBg: "bg-crisis-soft",
+    ring: "ring-crisis-border",
   },
 };
+
+/**
+ * The one input style, shared by every text field and select. Surface fill,
+ * hairline border, generous padding, and the accent focus ring.
+ */
+export const inputClass =
+  "w-full rounded-2xl border border-line bg-surface px-4 py-3 text-ink placeholder:text-ink-faint focus:outline-none focus-visible:ring-2 focus-visible:ring-accent";
 
 /** Spacing scale (rem) — kept generous on purpose. */
 export const space = {

@@ -32,7 +32,7 @@ export default function DashboardPage() {
         <Card>
           <Link
             href="/onboarding"
-            className="inline-flex rounded-pill bg-steady-600 px-7 py-3 font-medium text-white hover:bg-steady-700"
+            className="inline-flex rounded-pill bg-accent px-7 py-3 font-medium text-accent-foreground hover:bg-accent-strong"
           >
             Set up my Anchor
           </Link>
@@ -52,7 +52,7 @@ export default function DashboardPage() {
         <Card>
           <Link
             href="/checkin"
-            className="inline-flex rounded-pill bg-steady-600 px-7 py-3 font-medium text-white hover:bg-steady-700"
+            className="inline-flex rounded-pill bg-accent px-7 py-3 font-medium text-accent-foreground hover:bg-accent-strong"
           >
             Do my first check-in
           </Link>
@@ -109,12 +109,14 @@ export default function DashboardPage() {
             {result.windowSize === 1 ? "check-in" : "check-ins"}
           </span>
         </div>
-        <h2 className="mt-5 text-2xl font-semibold tracking-tight">{copy.headline}</h2>
+        <h2 className="mt-5 font-serif text-2xl font-semibold tracking-tight">
+          {copy.headline}
+        </h2>
         {result.zone === "green" ? (
           <>
-            <p className="mt-3 text-lg leading-relaxed text-ink-muted">{copy.body}</p>
+            <p className="mt-3 font-serif text-lg leading-relaxed text-ink">{copy.body}</p>
             {justCorrected && (
-              <p className="mt-3 rounded-2xl bg-steady-50 px-4 py-3 text-sm text-steady-700">
+              <p className="mt-3 rounded-2xl bg-accent-soft px-4 py-3 text-sm text-accent-text">
                 Thanks for telling me. I&rsquo;ve noted this as normal for you and
                 nudged your baseline, so I won&rsquo;t flag it at this level again.
               </p>
@@ -195,9 +197,9 @@ export default function DashboardPage() {
           })}
         </div>
         <div className="mt-5 flex flex-wrap gap-4 text-xs text-ink-faint">
-          <Legend swatch="bg-steady-300" label="Steady" />
-          <Legend swatch="bg-checkin-300" label="Drifting" />
-          <Legend swatch="bg-crisis-300" label="Worth support" />
+          <Legend swatch="bg-steady" label="Steady" />
+          <Legend swatch="bg-drifting" label="Drifting" />
+          <Legend swatch="bg-crisis" label="Worth support" />
           <Legend swatch="border border-dashed border-line" label="No check-in" />
         </div>
       </Card>
@@ -222,7 +224,7 @@ export default function DashboardPage() {
                     {status.label}
                   </span>
                 </div>
-                <div className="mt-3 h-1.5 w-full overflow-hidden rounded-pill bg-canvas">
+                <div className="mt-3 h-1.5 w-full overflow-hidden rounded-pill bg-raised">
                   <div
                     className={`h-full rounded-pill ${status.bar}`}
                     style={{ width: `${Math.max(4, Math.round(d.drift * 100))}%` }}

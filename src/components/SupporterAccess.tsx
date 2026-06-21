@@ -6,7 +6,7 @@ import { saveProfile } from "@/lib/store";
 import type { Profile, SharingSettings } from "@/lib/types";
 
 const inputCls =
-  "w-full rounded-2xl border border-line bg-surface px-4 py-3 text-ink placeholder:text-ink-faint focus:outline-none focus-visible:ring-2 focus-visible:ring-steady-300";
+  "w-full rounded-2xl border border-line bg-surface px-4 py-3 text-ink placeholder:text-ink-faint focus:outline-none focus-visible:ring-2 focus-visible:ring-accent";
 
 /**
  * The person's control panel for consent-gated supporter access. Off by
@@ -52,7 +52,7 @@ export function SupporterAccess({ profile }: { profile: Profile }) {
         <h2 className="text-xl font-semibold">Supporter access</h2>
         <span
           className={`rounded-pill px-3 py-1 text-sm font-medium ${
-            s.enabled ? "bg-steady-100 text-steady-700" : "bg-canvas text-ink-faint"
+            s.enabled ? "bg-accent-soft text-accent-text" : "bg-canvas text-ink-faint"
           }`}
         >
           {s.enabled ? "On" : "Off"}
@@ -93,7 +93,7 @@ export function SupporterAccess({ profile }: { profile: Profile }) {
               type="checkbox"
               checked={s.includeTrends}
               onChange={(e) => update({ includeTrends: e.target.checked })}
-              className="mt-1 h-5 w-5 rounded border-line text-steady-600 focus:ring-steady-300"
+              className="mt-1 h-5 w-5 rounded border-line text-accent-text focus:ring-accent"
             />
             <span className="text-sm text-ink-muted">
               Recent zone history (the last 14 days), not just today.
@@ -104,7 +104,7 @@ export function SupporterAccess({ profile }: { profile: Profile }) {
               type="checkbox"
               checked={s.includeDriftAreas}
               onChange={(e) => update({ includeDriftAreas: e.target.checked })}
-              className="mt-1 h-5 w-5 rounded border-line text-steady-600 focus:ring-steady-300"
+              className="mt-1 h-5 w-5 rounded border-line text-accent-text focus:ring-accent"
             />
             <span className="text-sm text-ink-muted">
               Which broad areas are drifting (e.g. &ldquo;Sleep&rdquo;,
@@ -115,8 +115,8 @@ export function SupporterAccess({ profile }: { profile: Profile }) {
       </div>
 
       {s.enabled ? (
-        <div className="mt-6 space-y-4 rounded-2xl border border-steady-200 bg-steady-50/50 p-4">
-          <p className="text-sm font-medium text-steady-700">
+        <div className="mt-6 space-y-4 rounded-2xl border border-accent/30 bg-accent-soft p-4">
+          <p className="text-sm font-medium text-accent-text">
             Sharing is on{s.supporterName ? ` with ${s.supporterName}` : ""}. Send
             them this private link:
           </p>
@@ -125,7 +125,7 @@ export function SupporterAccess({ profile }: { profile: Profile }) {
             <button
               type="button"
               onClick={copy}
-              className="inline-flex min-h-[2.75rem] items-center justify-center rounded-pill bg-steady-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-steady-700"
+              className="inline-flex min-h-[2.75rem] items-center justify-center rounded-pill bg-accent px-5 py-2.5 text-sm font-medium text-accent-foreground hover:bg-accent-strong"
             >
               {copied ? "Copied" : "Copy link"}
             </button>
@@ -135,14 +135,14 @@ export function SupporterAccess({ profile }: { profile: Profile }) {
               href={link || "#"}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex min-h-[2.75rem] items-center rounded-pill border border-steady-300 px-5 py-2.5 text-sm font-medium text-steady-700 hover:bg-steady-50"
+              className="inline-flex min-h-[2.75rem] items-center rounded-pill border border-accent/40 px-5 py-2.5 text-sm font-medium text-accent-text hover:bg-accent-soft"
             >
               Preview what they see
             </a>
             <button
               type="button"
               onClick={revoke}
-              className="inline-flex min-h-[2.75rem] items-center rounded-pill border border-crisis-300 px-5 py-2.5 text-sm font-medium text-crisis-700 hover:bg-crisis-50"
+              className="inline-flex min-h-[2.75rem] items-center rounded-pill border border-crisis-border px-5 py-2.5 text-sm font-medium text-crisis-text hover:bg-crisis-soft"
             >
               Turn off access
             </button>
@@ -156,7 +156,7 @@ export function SupporterAccess({ profile }: { profile: Profile }) {
         <button
           type="button"
           onClick={grant}
-          className="mt-6 inline-flex min-h-[2.75rem] items-center rounded-pill bg-steady-600 px-6 py-3 font-medium text-white hover:bg-steady-700"
+          className="mt-6 inline-flex min-h-[2.75rem] items-center rounded-pill bg-accent px-6 py-3 font-medium text-accent-foreground hover:bg-accent-strong"
         >
           Turn on supporter access
         </button>

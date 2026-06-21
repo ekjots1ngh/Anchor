@@ -11,7 +11,7 @@ const ROLES = [
 ];
 
 const inputCls =
-  "w-full rounded-2xl border border-line bg-surface px-4 py-3 text-ink placeholder:text-ink-faint focus:outline-none focus-visible:ring-2 focus-visible:ring-steady-300";
+  "w-full rounded-2xl border border-line bg-surface px-4 py-3 text-ink placeholder:text-ink-faint focus:outline-none focus-visible:ring-2 focus-visible:ring-accent";
 
 type Status = "idle" | "loading" | "done" | "error";
 
@@ -41,7 +41,7 @@ export function WaitlistForm() {
   if (status === "done") {
     return (
       <div
-        className="rounded-card border border-steady-200 bg-steady-50 p-6 sm:p-8"
+        className="rounded-card border border-accent/30 bg-accent-soft p-6 sm:p-8"
         aria-live="polite"
       >
         <h3 className="text-xl font-semibold text-ink">Thank you, you&rsquo;re on the list.</h3>
@@ -51,7 +51,7 @@ export function WaitlistForm() {
         </p>
         <a
           href="/onboarding"
-          className="mt-5 inline-flex min-h-[2.75rem] items-center rounded-pill border border-steady-300 px-5 py-2.5 font-medium text-steady-700 hover:bg-steady-50"
+          className="mt-5 inline-flex min-h-[2.75rem] items-center rounded-pill border border-accent/40 px-5 py-2.5 font-medium text-accent-text hover:bg-accent-soft"
         >
           Want to see it? Try the prototype
         </a>
@@ -120,7 +120,7 @@ export function WaitlistForm() {
       </label>
 
       {status === "error" ? (
-        <p className="text-sm text-crisis-700" aria-live="polite">
+        <p className="text-sm text-crisis-text" aria-live="polite">
           Something went wrong. Please check your email and try again.
         </p>
       ) : null}
@@ -128,7 +128,7 @@ export function WaitlistForm() {
       <button
         type="submit"
         disabled={status === "loading"}
-        className="inline-flex min-h-[3rem] w-full items-center justify-center rounded-pill bg-steady-600 px-7 py-3 text-lg font-medium text-white hover:bg-steady-700 disabled:opacity-60 sm:w-auto"
+        className="inline-flex min-h-[3rem] w-full items-center justify-center rounded-pill bg-accent px-7 py-3 text-lg font-medium text-accent-foreground hover:bg-accent-strong disabled:opacity-60 sm:w-auto"
       >
         {status === "loading" ? "Joining…" : "Join the waitlist"}
       </button>

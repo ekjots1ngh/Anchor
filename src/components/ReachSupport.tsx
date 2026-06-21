@@ -28,7 +28,7 @@ export function ReachSupportLink() {
   return (
     <a
       href="#reach-support"
-      className="inline-flex min-h-[2.75rem] items-center rounded-pill border border-steady-200 bg-steady-50 px-4 py-2 text-sm font-medium text-steady-700 hover:bg-steady-100"
+      className="inline-flex min-h-[2.75rem] items-center rounded-pill border border-accent/30 bg-accent-soft px-4 py-2 text-sm font-medium text-accent-text hover:bg-accent-soft"
     >
       Reach someone
     </a>
@@ -53,7 +53,7 @@ export function ReachSupport() {
         {hasCircle ? (
           <Link
             href="/plan#circle"
-            className="inline-flex min-h-[2.75rem] items-center rounded-pill border border-steady-300 px-5 py-2.5 text-sm font-medium text-steady-700 hover:bg-steady-50"
+            className="inline-flex min-h-[2.75rem] items-center rounded-pill border border-accent/40 px-5 py-2.5 text-sm font-medium text-accent-text hover:bg-accent-soft"
           >
             Message someone you trust
           </Link>
@@ -61,7 +61,7 @@ export function ReachSupport() {
         {phone ? (
           <a
             href={telHref(phone)}
-            className="inline-flex min-h-[2.75rem] items-center rounded-pill border border-crisis-300 px-5 py-2.5 text-sm font-medium text-crisis-700 hover:bg-crisis-50"
+            className="inline-flex min-h-[2.75rem] items-center rounded-pill border border-crisis-border px-5 py-2.5 text-sm font-medium text-crisis-text hover:bg-crisis-soft"
           >
             Call {lineName || "your crisis line"}
           </a>

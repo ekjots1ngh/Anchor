@@ -29,8 +29,8 @@ export function PrimaryNav() {
             aria-current={active ? "page" : undefined}
             className={`inline-flex min-h-[2.75rem] items-center rounded-pill px-4 py-2 ${
               active
-                ? "bg-steady-100 font-medium text-steady-700"
-                : "text-ink-muted hover:bg-steady-50 hover:text-ink"
+                ? "bg-accent-soft font-medium text-accent-text"
+                : "text-ink-muted hover:bg-accent-soft hover:text-ink"
             }`}
           >
             {item.label}

@@ -30,7 +30,7 @@ import {
 /* ------------------------------------------------------------------ */
 
 const inputBase =
-  "w-full rounded-2xl border border-line bg-surface px-4 py-3 text-ink placeholder:text-ink-faint focus:outline-none focus-visible:ring-2 focus-visible:ring-steady-300";
+  "w-full rounded-2xl border border-line bg-surface px-4 py-3 text-ink placeholder:text-ink-faint focus:outline-none focus-visible:ring-2 focus-visible:ring-accent";
 
 function Field({
   label,
@@ -66,7 +66,7 @@ function Stepper({
       <button
         type="button"
         onClick={() => onChange(Math.max(min, value - 1))}
-        className="h-9 w-9 rounded-pill border border-line text-ink-muted hover:bg-steady-50"
+        className="h-9 w-9 rounded-pill border border-line text-ink-muted hover:bg-accent-soft"
         aria-label="Fewer"
       >
         -
@@ -75,7 +75,7 @@ function Stepper({
       <button
         type="button"
         onClick={() => onChange(Math.min(max, value + 1))}
-        className="h-9 w-9 rounded-pill border border-line text-ink-muted hover:bg-steady-50"
+        className="h-9 w-9 rounded-pill border border-line text-ink-muted hover:bg-accent-soft"
         aria-label="More"
       >
         +
@@ -137,7 +137,7 @@ export default function OnboardingPage() {
             type="button"
             onClick={back}
             disabled={step === 0}
-            className="rounded-pill px-5 py-3 text-ink-muted hover:bg-steady-50 disabled:invisible"
+            className="rounded-pill px-5 py-3 text-ink-muted hover:bg-accent-soft disabled:invisible"
           >
             Back
           </button>
@@ -146,7 +146,7 @@ export default function OnboardingPage() {
             <button
               type="button"
               onClick={next}
-              className="rounded-pill bg-steady-600 px-7 py-3 font-medium text-white hover:bg-steady-700"
+              className="rounded-pill bg-accent px-7 py-3 font-medium text-accent-foreground hover:bg-accent-strong"
             >
               {step === 0 ? "Begin" : "Continue"}
             </button>
@@ -154,7 +154,7 @@ export default function OnboardingPage() {
             <button
               type="button"
               onClick={finish}
-              className="rounded-pill bg-steady-600 px-7 py-3 font-medium text-white hover:bg-steady-700"
+              className="rounded-pill bg-accent px-7 py-3 font-medium text-accent-foreground hover:bg-accent-strong"
             >
               Save my plan
             </button>
@@ -186,7 +186,7 @@ function ProgressDots({ step }: { step: number }) {
           <span
             key={label}
             className={`h-1.5 flex-1 rounded-pill ${
-              i <= step ? "bg-steady-600" : "bg-line"
+              i <= step ? "bg-accent" : "bg-line"
             }`}
           />
         ))}
@@ -209,10 +209,10 @@ function Welcome({
   return (
     <>
       <div>
-        <span className="rounded-pill bg-steady-100 px-4 py-1.5 text-sm font-medium text-steady-700">
+        <span className="rounded-pill bg-accent-soft px-4 py-1.5 text-sm font-medium text-accent-text">
           Best done on a good day
         </span>
-        <h1 className="mt-6 text-3xl font-semibold tracking-tight sm:text-4xl">
+        <h1 className="mt-6 font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
           Let&rsquo;s set up your Anchor while you&rsquo;re feeling steady.
         </h1>
         <p className="mt-5 max-w-prose text-lg leading-relaxed text-ink-muted">
@@ -237,7 +237,7 @@ function Welcome({
         </Field>
       </Card>
 
-      <Card className="bg-steady-50/50">
+      <Card className="bg-accent-soft">
         <h2 className="text-lg font-semibold">Setting this up with someone?</h2>
         <p className="mt-2 leading-relaxed text-ink-muted">
           Many people find it helpful to do this alongside someone they trust, a
@@ -250,7 +250,7 @@ function Welcome({
             type="checkbox"
             checked={!!draft.setupTogether}
             onChange={(e) => update({ setupTogether: e.target.checked })}
-            className="mt-1 h-5 w-5 rounded border-line text-steady-600 focus:ring-steady-300"
+            className="mt-1 h-5 w-5 rounded border-line text-accent-text focus:ring-accent"
           />
           <span className="text-ink-muted">
             I&rsquo;m setting this up with someone I trust. (Just a note for
@@ -324,7 +324,7 @@ function SignsStep({
               type="button"
               onClick={() => setOpenCategory(isOpen ? null : category)}
               aria-expanded={isOpen}
-              className="flex w-full items-center justify-between gap-3 rounded-card px-6 py-5 text-left hover:bg-steady-50/40 sm:px-8"
+              className="flex w-full items-center justify-between gap-3 rounded-card px-6 py-5 text-left hover:bg-accent-soft sm:px-8"
             >
               <span>
                 <span className="block text-lg font-semibold text-ink">
@@ -336,7 +336,7 @@ function SignsStep({
               </span>
               <span className="flex shrink-0 items-center gap-3">
                 {count > 0 ? (
-                  <span className="rounded-pill bg-steady-100 px-3 py-1 text-sm font-medium text-steady-700">
+                  <span className="rounded-pill bg-accent-soft px-3 py-1 text-sm font-medium text-accent-text">
                     {count}
                   </span>
                 ) : null}
@@ -357,14 +357,14 @@ function SignsStep({
                       aria-pressed={picked}
                       className={`flex w-full items-start gap-3 rounded-2xl border px-4 py-4 text-left transition-colors ${
                         picked
-                          ? "border-steady-300 bg-steady-50"
-                          : "border-line bg-surface hover:bg-steady-50/40"
+                          ? "border-accent/40 bg-accent-soft"
+                          : "border-line bg-surface hover:bg-accent-soft"
                       }`}
                     >
                       <span
                         className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md border ${
                           picked
-                            ? "border-steady-600 bg-steady-600 text-white"
+                            ? "border-accent bg-accent text-accent-foreground"
                             : "border-line"
                         }`}
                         aria-hidden
@@ -387,7 +387,7 @@ function SignsStep({
       })}
 
       {draft.signs.length > 0 && (
-        <Card className="bg-steady-50/40">
+        <Card className="bg-accent-soft">
           <h2 className="text-base font-semibold">
             Your signs, in your words
           </h2>
@@ -482,7 +482,7 @@ function AddCustomSign({ onAdd }: { onAdd: (s: EarlyWarningSign) => void }) {
           type="button"
           onClick={submit}
           disabled={!canAdd}
-          className="rounded-pill border border-steady-300 px-5 py-2.5 font-medium text-steady-700 hover:bg-steady-50 disabled:opacity-40"
+          className="rounded-pill border border-accent/40 px-5 py-2.5 font-medium text-accent-text hover:bg-accent-soft disabled:opacity-40"
         >
           Add sign
         </button>
@@ -648,7 +648,7 @@ function ActionsStep({
               key={e}
               type="button"
               onClick={() => add(e)}
-              className="rounded-pill border border-line px-4 py-2 text-sm text-ink-muted hover:bg-steady-50"
+              className="rounded-pill border border-line px-4 py-2 text-sm text-ink-muted hover:bg-accent-soft"
             >
               + {e}
             </button>
@@ -674,7 +674,7 @@ function ActionsStep({
               add(text);
               setText("");
             }}
-            className="shrink-0 rounded-pill bg-steady-600 px-5 py-3 font-medium text-white hover:bg-steady-700"
+            className="shrink-0 rounded-pill bg-accent px-5 py-3 font-medium text-accent-foreground hover:bg-accent-strong"
           >
             Add
           </button>
@@ -857,7 +857,7 @@ function AddContact({ onAdd }: { onAdd: (c: TrustedContact) => void }) {
             type="checkbox"
             checked={consent}
             onChange={(e) => setConsent(e.target.checked)}
-            className="mt-1 h-5 w-5 rounded border-line text-steady-400 focus:ring-steady-300"
+            className="mt-1 h-5 w-5 rounded border-line text-accent focus:ring-accent"
           />
           <span className="text-sm text-ink-muted">
             This person has agreed to be part of my trusted circle.
@@ -867,7 +867,7 @@ function AddContact({ onAdd }: { onAdd: (c: TrustedContact) => void }) {
           type="button"
           onClick={submit}
           disabled={!canAdd}
-          className="rounded-pill border border-steady-300 px-5 py-2.5 font-medium text-steady-700 hover:bg-steady-50 disabled:opacity-40"
+          className="rounded-pill border border-accent/40 px-5 py-2.5 font-medium text-accent-text hover:bg-accent-soft disabled:opacity-40"
         >
           Add to circle
         </button>
@@ -988,7 +988,7 @@ function ReviewStep({ draft }: { draft: Profile }) {
         />
       </Card>
 
-      <Card className="bg-steady-50/50">
+      <Card className="bg-accent-soft">
         <p className="text-sm leading-relaxed text-ink-muted">
           A gentle reminder: Anchor only ever mirrors this back to you. It makes
           no medical claims and decides nothing about your care. If you&rsquo;re

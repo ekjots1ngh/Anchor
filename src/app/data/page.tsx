@@ -15,7 +15,7 @@ import {
 } from "@/lib/types";
 
 const selectCls =
-  "w-full rounded-2xl border border-line bg-surface px-4 py-3 text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-steady-300";
+  "w-full rounded-2xl border border-line bg-surface px-4 py-3 text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-accent";
 
 export default function DataPage() {
   const router = useRouter();
@@ -37,7 +37,7 @@ export default function DataPage() {
         <Card>
           <Link
             href="/onboarding"
-            className="inline-flex min-h-[2.75rem] items-center rounded-pill bg-steady-600 px-7 py-3 font-medium text-white hover:bg-steady-700"
+            className="inline-flex min-h-[2.75rem] items-center rounded-pill bg-accent px-7 py-3 font-medium text-accent-foreground hover:bg-accent-strong"
           >
             Set up my Anchor
           </Link>
@@ -156,7 +156,7 @@ export default function DataPage() {
         </dl>
 
         <details className="mt-5">
-          <summary className="cursor-pointer rounded-pill px-3 py-2 text-sm font-medium text-ink-muted hover:bg-steady-50">
+          <summary className="cursor-pointer rounded-pill px-3 py-2 text-sm font-medium text-ink-muted hover:bg-accent-soft">
             See the raw data (JSON)
           </summary>
           <pre className="mt-3 max-h-72 overflow-auto rounded-2xl border border-line bg-canvas p-4 text-xs text-ink-muted">
@@ -242,7 +242,7 @@ export default function DataPage() {
                     type="checkbox"
                     checked={c.consent}
                     onChange={(e) => updateContact(c.id, { consent: e.target.checked })}
-                    className="mt-1 h-5 w-5 rounded border-line text-steady-600 focus:ring-steady-300"
+                    className="mt-1 h-5 w-5 rounded border-line text-accent-text focus:ring-accent"
                   />
                   <span className="text-sm text-ink-muted">
                     They&rsquo;ve agreed to be part of my circle. (Without this,
@@ -270,7 +270,7 @@ export default function DataPage() {
         <div className="mt-5">
           <Link
             href="/summary"
-            className="inline-flex min-h-[2.75rem] items-center rounded-pill border border-steady-300 px-5 py-2.5 font-medium text-steady-700 hover:bg-steady-50"
+            className="inline-flex min-h-[2.75rem] items-center rounded-pill border border-accent/40 px-5 py-2.5 font-medium text-accent-text hover:bg-accent-soft"
           >
             Open my summary
           </Link>
@@ -289,14 +289,14 @@ export default function DataPage() {
           <button
             type="button"
             onClick={exportData}
-            className="inline-flex min-h-[2.75rem] items-center rounded-pill border border-steady-300 px-5 py-2.5 font-medium text-steady-700 hover:bg-steady-50"
+            className="inline-flex min-h-[2.75rem] items-center rounded-pill border border-accent/40 px-5 py-2.5 font-medium text-accent-text hover:bg-accent-soft"
           >
             Export my data
           </button>
           <button
             type="button"
             onClick={eraseAll}
-            className="inline-flex min-h-[2.75rem] items-center rounded-pill border border-crisis-300 px-5 py-2.5 font-medium text-crisis-700 hover:bg-crisis-50"
+            className="inline-flex min-h-[2.75rem] items-center rounded-pill border border-crisis-border px-5 py-2.5 font-medium text-crisis-text hover:bg-crisis-soft"
           >
             Erase everything
           </button>
