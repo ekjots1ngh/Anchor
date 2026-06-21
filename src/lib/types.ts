@@ -203,6 +203,44 @@ export interface CheckIn {
 }
 
 /* ------------------------------------------------------------------ */
+/* Journal (private by default)                                        */
+/* ------------------------------------------------------------------ */
+
+/**
+ * What a single journal entry is shared as. PRIVATE BY DEFAULT — nothing is
+ * ever shared automatically, and the person can change this per entry at any
+ * time (including revoking back to private).
+ *
+ *  - "private"  Only the person sees it. The default.
+ *  - "summary"  The clinician summary may note that an entry exists on this date
+ *               (a frequency/trend signal) — but NEVER its text.
+ *  - "full"     The clinician summary may show the entry's full text, read-only.
+ *
+ * This single flag is the source of truth consumed by `sharedJournal()`
+ * (src/lib/journal.ts), which the clinician summary (/summary) reuses. The
+ * clinician only ever sees what each entry's flag explicitly allows.
+ */
+export type JournalSharing = "private" | "summary" | "full";
+
+/**
+ * A free-text journal entry. The person's own private reflection. Anchor does
+ * NOT scan, analyse, or AI-flag this text — analysing private thoughts silently
+ * would break trust. It is stored as-is and stays private unless the person
+ * explicitly chooses to share a given entry.
+ */
+export interface JournalEntry {
+  id: string;
+  createdAt: string; // ISO timestamp
+  updatedAt: string; // ISO timestamp
+  /** The person's free text. */
+  text: string;
+  /** The gentle prompt they used, if any (purely for their own reference). */
+  prompt?: string;
+  /** Per-entry sharing. Defaults to "private"; never shared automatically. */
+  sharing: JournalSharing;
+}
+
+/* ------------------------------------------------------------------ */
 /* Corrections ("I'm actually okay")                                   */
 /* ------------------------------------------------------------------ */
 
@@ -280,6 +318,8 @@ export interface Profile {
   trustedContacts: TrustedContact[];
   crisisPlan: CrisisPlan;
   checkIns: CheckIn[];
+  /** Private-by-default free-text journal entries. */
+  journal: JournalEntry[];
   /** "I'm actually okay" corrections that gently tune the learned baseline. */
   corrections: ZoneCorrection[];
   /** Consent-gated, read-only supporter access. Off by default. */

@@ -128,6 +128,7 @@ In `npm run dev` (or a build with `NEXT_PUBLIC_DEMO_MODE=1`), click **▶ Run 2-
 | `/` | Public landing page — warm, honest explanation + waitlist/interest form |
 | `/onboarding` | Set up your own signs, baseline, what helps, trusted circle, crisis line |
 | `/checkin` | The ~30-second daily check-in (shortens to one tap when steady) |
+| `/journal` | A private-by-default journal; per-entry, revocable clinician sharing |
 | `/dashboard` | Your zone (in your words) + “Why this zone?” + 7-day trend + reach a human |
 | `/plan` | Your staying-well & crisis plan, mirrored back |
 | `/data` | See / export / erase your data; control the consent-gated supporter view |

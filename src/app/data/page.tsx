@@ -141,6 +141,12 @@ export default function DataPage() {
             value={`${profile.checkIns.length} (${range})`}
           />
           <Row
+            label="Journal entries"
+            value={`${(profile.journal ?? []).length} (${
+              (profile.journal ?? []).filter((e) => e.sharing !== "private").length
+            } shared)`}
+          />
+          <Row
             label={"“I'm actually okay” corrections"}
             value={`${(profile.corrections ?? []).length}`}
           />

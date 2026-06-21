@@ -9,6 +9,18 @@ import { DEFAULT_CRISIS_LINE, DEFAULT_ZONE_WORDS } from "@/lib/starter-library";
  * The API below is deliberately storage-agnostic so we can swap in Supabase
  * (or an encrypted local JSON file) later WITHOUT touching the rest of the
  * app.
+ *
+ * TODO (production, before any real user data) — the profile now includes
+ * free-text JOURNAL entries and per-entry sharing flags. Journal text is
+ * private mental-health reflection, and anything a person shares is
+ * special-category health data under UK GDPR (Art. 9). A production version
+ * MUST add:
+ *   1. Encryption at rest (entries are plaintext in localStorage today).
+ *   2. A consent audit trail — an append-only log of when each entry's sharing
+ *      changed (shared / revoked / by whom), separate from the mutable flag.
+ *   3. A lawful basis + explicit consent record for processing/sharing health
+ *      data, and data-subject rights (access, erasure) honoured server-side too.
+ * This prototype does NONE of the above; do not ship it with real data.
  */
 
 const STORAGE_KEY = "anchor.profile.v1";
@@ -49,6 +61,7 @@ export function createEmptyProfile(): Profile {
       crisisLinePhone: DEFAULT_CRISIS_LINE.phone,
     },
     checkIns: [],
+    journal: [],
     corrections: [],
     sharing: {
       enabled: false,

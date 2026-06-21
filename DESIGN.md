@@ -133,6 +133,39 @@ A small set, all drawn from the tokens, in `src/components`:
 
 ---
 
+## Journal — privacy-first
+
+A calm, free-text journal (`/journal`) for thoughts and how a person is doing.
+Optional, ignorable prompts; no word counts, no streaks, no pressure. Built on
+the tokens (Inter for the interface, Source Serif for the prompt/voice moments).
+
+**Privacy model.**
+
+- **Private by default.** Every entry starts private and belongs to the person.
+  Browse, edit, and delete are always available.
+- **No surveillance.** Anchor does **not** scan, summarise, or AI-flag journal
+  text. Analysing private thoughts silently would break trust — so we don't.
+- **Granular, revocable sharing.** Per entry, the person may keep it private,
+  share a **summary only** (the clinician summary notes a date — never the text),
+  or share the **full entry** (read-only). Each entry shows its state clearly and
+  can be revoked at any time.
+- **One path, reused.** `sharedJournal()` (`src/lib/journal.ts`) is the single,
+  tested projection of what a clinician may see; the consent-gated clinician
+  summary (`/summary`) reuses it. The clinician sees only what was explicitly
+  shared — private and summary-only text never leave the device.
+- **Always-available support.** The journal keeps a quiet "find support now"
+  link to the calm `#reach-support` block — never an alarm.
+
+**⚠️ Production data TODO (do not ship with real users).** Journal text — and any
+entry a person shares — is **special-category health data under UK GDPR (Art. 9)**.
+This prototype stores plaintext in `localStorage`. A production version needs:
+(1) **encryption at rest**; (2) a **consent audit trail** (append-only log of each
+share/revoke, separate from the mutable flag); (3) a recorded **lawful basis +
+explicit consent** for processing/sharing health data, with data-subject rights
+honoured server-side. Flagged in `src/lib/store.ts` and `src/lib/journal.ts`.
+
+---
+
 ## Motion & accessibility
 
 - One **content settle** (a soft fade + 6px rise) and gentle colour transitions on

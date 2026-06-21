@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useProfile } from "@/lib/useProfile";
 import { computeZone, computeZoneForProfile } from "@/lib/zone";
 import { dayKey } from "@/lib/dashboard";
+import { sharedJournal } from "@/lib/journal";
 import {
   SIGN_CATEGORY_BLURBS,
   SIGN_CATEGORY_LABELS,
@@ -95,6 +96,9 @@ export default function SummaryPage() {
     const reading = computeZone({ signs: profile.signs, checkIns: upTo });
     counts[reading.zone] += 1;
   }
+
+  // Only what the person explicitly chose to share, entry by entry.
+  const journal = sharedJournal(profile);
 
   const signsByCategory = CATEGORY_ORDER.map((cat) => ({
     cat,
@@ -252,6 +256,43 @@ export default function SummaryPage() {
           </>
         )}
       </Section>
+
+      {journal.fullEntries.length > 0 || journal.summaryDates.length > 0 ? (
+        <Section title="From their journal">
+          <p className="mb-3 text-sm leading-relaxed text-ink-muted">
+            Only entries {name} explicitly chose to share appear here, read-only.
+            Everything else in their journal stays private.
+          </p>
+          {journal.summaryDates.length > 0 ? (
+            <p className="leading-relaxed text-ink">
+              {name} shared {journal.summaryDates.length}{" "}
+              {journal.summaryDates.length === 1 ? "entry" : "entries"} as a
+              summary only — the text is kept private. Journaled on:{" "}
+              {journal.summaryDates
+                .map((d) => new Date(d).toLocaleDateString())
+                .join(", ")}
+              .
+            </p>
+          ) : null}
+          {journal.fullEntries.map((e) => (
+            <div
+              key={e.id}
+              className="mt-4 rounded-2xl border border-line bg-surface px-4 py-3 break-inside-avoid"
+            >
+              <p className="text-sm text-ink-faint">
+                {new Date(e.date).toLocaleDateString(undefined, {
+                  weekday: "long",
+                  day: "numeric",
+                  month: "long",
+                })}
+              </p>
+              <p className="mt-1 whitespace-pre-wrap leading-relaxed text-ink">
+                {e.text}
+              </p>
+            </div>
+          ))}
+        </Section>
+      ) : null}
 
       <footer className="mt-10 border-t border-line pt-6 text-sm leading-relaxed text-ink-faint">
         Anchor reflects {name}&rsquo;s own pre-agreed early-warning signs back to
