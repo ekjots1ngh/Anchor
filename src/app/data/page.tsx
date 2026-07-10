@@ -1,12 +1,13 @@
 "use client";
 
+import { useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { PageShell } from "@/components/PageShell";
 import { Card } from "@/components/Card";
 import { SupporterAccess } from "@/components/SupporterAccess";
 import { useProfile } from "@/lib/useProfile";
-import { clearProfile, saveProfile } from "@/lib/store";
+import { clearProfile, normalizeProfile, saveProfile } from "@/lib/store";
 import {
   CONTACT_VISIBILITY_LABELS,
   type ContactVisibility,
@@ -16,6 +17,65 @@ import {
 
 const selectCls =
   "w-full rounded-2xl border border-line bg-surface px-4 py-3 text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-accent";
+
+/**
+ * Restore a previously exported anchor-my-data.json. Validates and repairs the
+ * file (normalizeProfile), asks before replacing what's on this device, and
+ * works on a brand-new device too, so a backup is a real backup.
+ */
+function ImportData({ hasExisting }: { hasExisting: boolean }) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const onFile = async (file: File | undefined) => {
+    if (!file) return;
+    setError(null);
+    try {
+      const restored = normalizeProfile(JSON.parse(await file.text()));
+      if (!restored) {
+        setError(
+          "That file doesn't look like an Anchor export. Nothing was changed.",
+        );
+        return;
+      }
+      const ok =
+        !hasExisting ||
+        window.confirm(
+          "Restoring this backup will replace everything Anchor currently has on this device. Continue?",
+        );
+      if (ok) saveProfile(restored);
+    } catch {
+      setError("That file couldn't be read. Nothing was changed.");
+    } finally {
+      if (inputRef.current) inputRef.current.value = "";
+    }
+  };
+
+  return (
+    <>
+      <input
+        ref={inputRef}
+        type="file"
+        accept="application/json,.json"
+        className="sr-only"
+        aria-label="Choose an Anchor export file to restore"
+        onChange={(e) => onFile(e.target.files?.[0])}
+      />
+      <button
+        type="button"
+        onClick={() => inputRef.current?.click()}
+        className="inline-flex min-h-[2.75rem] items-center rounded-pill border border-accent/40 px-5 py-2.5 font-medium text-accent-text hover:bg-accent-soft"
+      >
+        Restore from a backup
+      </button>
+      {error ? (
+        <p className="w-full text-sm text-crisis-text" aria-live="polite">
+          {error}
+        </p>
+      ) : null}
+    </>
+  );
+}
 
 export default function DataPage() {
   const router = useRouter();
@@ -35,12 +95,19 @@ export default function DataPage() {
         intro="Once you've set up your Anchor, everything stored about you lives here, yours to read, export, or erase."
       >
         <Card>
-          <Link
-            href="/onboarding"
-            className="inline-flex min-h-[2.75rem] items-center rounded-pill bg-accent px-7 py-3 font-medium text-accent-foreground hover:bg-accent-strong"
-          >
-            Set up my Anchor
-          </Link>
+          <div className="flex flex-wrap items-center gap-3">
+            <Link
+              href="/onboarding"
+              className="inline-flex min-h-[2.75rem] items-center rounded-pill bg-accent px-7 py-3 font-medium text-accent-foreground hover:bg-accent-strong"
+            >
+              Set up my Anchor
+            </Link>
+            <ImportData hasExisting={false} />
+          </div>
+          <p className="mt-3 text-sm leading-relaxed text-ink-faint">
+            Moved to a new device? Restore the anchor-my-data.json file you
+            exported and pick up where you left off.
+          </p>
         </Card>
       </PageShell>
     );
@@ -287,11 +354,12 @@ export default function DataPage() {
       <Card>
         <h2 className="text-xl font-semibold">Take it or delete it</h2>
         <p className="mt-2 text-sm leading-relaxed text-ink-muted">
-          It&rsquo;s your data. Download a full copy any time, or erase every
+          It&rsquo;s your data. Download a full copy any time (it also works as a
+          backup you can restore later, or on another device), or erase every
           trace of it from this device, with no account, no questions, no copies kept
           anywhere else.
         </p>
-        <div className="mt-5 flex flex-wrap gap-3">
+        <div className="mt-5 flex flex-wrap items-center gap-3">
           <button
             type="button"
             onClick={exportData}
@@ -299,6 +367,7 @@ export default function DataPage() {
           >
             Export my data
           </button>
+          <ImportData hasExisting />
           <button
             type="button"
             onClick={eraseAll}

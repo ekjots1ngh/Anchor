@@ -56,7 +56,7 @@ Every result is fully **explainable**: each driver reports its learned baseline,
 
 Safety isn’t a banner — it’s built into the data model and the tests.
 
-- **You own your data.** Everything lives in the person’s browser (`localStorage`), never sent to a server. The `/data` panel lets them **see everything stored** (readable summary + raw JSON), **export** it, and **erase all of it** — no account, no copies kept.
+- **You own your data.** Everything lives in the person’s browser (`localStorage`), never sent to a server. The `/data` panel lets them **see everything stored** (readable summary + raw JSON), **export** it, **restore** an exported backup (including on a new device — imports are validated and repaired, and journal entries with unrecognised sharing flags are coerced back to private), and **erase all of it** — no account, no copies kept.
 - **Consent-gated supporter view.** A family member or care coordinator can see a **read-only summary** at `/supporter?token=…` — but only when the person turns it on, and only **zone history + trends + generic drift-area labels**, *never raw private notes*. One auditable projection (`src/lib/supporter.ts`) is the single source of truth for what a supporter sees. Revoking rotates the token, so any link already shared stops working.
 - **The crisis path is always available.** A quiet “Call your crisis line” link is in the footer on **every page** once onboarded; in amber/red the dashboard leads with one-tap, consent-gated ways to reach a real person.
 - **Dismissals can’t silence a crisis.** An “**I’m actually okay**” correction gently tunes the baseline to reduce alert fatigue — but it can only *relax amber*. The engine re-checks the raw history and **forces red regardless of any correction** (a `crisisOverride`), so a genuine crisis is never dismissed away.
@@ -81,6 +81,8 @@ Run them with `npm test`.
 ## Tech stack
 
 Next.js 14 (App Router) · TypeScript · Tailwind CSS · `localStorage` store (swappable for Supabase later) · `@anthropic-ai/sdk` (`claude-opus-4-8`, server-side only) · deployed on Vercel.
+
+Anchor is **installable**: a web app manifest lets it be added to a phone’s home screen and opened standalone, like the daily companion it’s meant to be.
 
 ---
 

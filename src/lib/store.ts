@@ -1,4 +1,4 @@
-import type { Profile } from "@/lib/types";
+import type { JournalEntry, Profile, ZoneId } from "@/lib/types";
 import { DEFAULT_CRISIS_LINE, DEFAULT_ZONE_WORDS } from "@/lib/starter-library";
 
 /**
@@ -80,10 +80,66 @@ export function loadProfile(): Profile | null {
   if (!isBrowser()) return null;
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as Profile) : null;
+    return raw ? normalizeProfile(JSON.parse(raw)) : null;
   } catch {
     return null;
   }
+}
+
+const ZONE_IDS: ZoneId[] = ["green", "amber", "red"];
+
+const asArray = <T,>(v: unknown): T[] => (Array.isArray(v) ? (v as T[]) : []);
+
+const asObject = (v: unknown): Record<string, unknown> =>
+  typeof v === "object" && v !== null ? (v as Record<string, unknown>) : {};
+
+/**
+ * Validate and repair a profile read from storage or imported from a backup
+ * file. Fills anything missing (e.g. fields added since an older export) with
+ * the same gentle defaults as a fresh profile, so the app never crashes on
+ * old data and a person can restore a backup from another device or an
+ * earlier version. Returns null if the data isn't recognisably a profile.
+ *
+ * Privacy-conservative on purpose: any journal entry whose sharing flag is
+ * missing or unrecognised is coerced back to "private".
+ */
+export function normalizeProfile(raw: unknown): Profile | null {
+  if (typeof raw !== "object" || raw === null) return null;
+  const r = raw as Record<string, unknown>;
+  if (typeof r.id !== "string" || !r.id) return null;
+  const zones = asObject(r.zones);
+  if (!ZONE_IDS.every((z) => typeof zones[z] === "object" && zones[z] !== null)) {
+    return null;
+  }
+
+  const base = createEmptyProfile();
+  const journal = asArray<JournalEntry>(r.journal).map(
+    (e): JournalEntry => ({
+      ...e,
+      sharing:
+        e.sharing === "summary" || e.sharing === "full" ? e.sharing : "private",
+    }),
+  );
+
+  return {
+    ...base,
+    ...(r as Partial<Profile>),
+    id: r.id,
+    zones: {
+      green: { ...base.zones.green, ...asObject(zones.green), id: "green" },
+      amber: { ...base.zones.amber, ...asObject(zones.amber), id: "amber" },
+      red: { ...base.zones.red, ...asObject(zones.red), id: "red" },
+    },
+    baseline: { ...base.baseline, ...asObject(r.baseline) },
+    crisisPlan: { ...base.crisisPlan, ...asObject(r.crisisPlan) },
+    sharing: { ...base.sharing, ...asObject(r.sharing) },
+    signs: asArray(r.signs),
+    stayingWellActions: asArray(r.stayingWellActions),
+    trustedContacts: asArray(r.trustedContacts),
+    checkIns: asArray(r.checkIns),
+    journal,
+    corrections: asArray(r.corrections),
+  };
 }
 
 /** Persist the profile. No-op on the server. */
